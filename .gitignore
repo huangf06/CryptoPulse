@@ -1,9 +1,5 @@
 # Internal documentation (not for public GitHub)
-Claude.md
-PROJECT_PLAN.md
-PLAN_UPDATES.md
-integrated_learning_project.md
-SETUP_DATABRICKS_LOCAL.md
+internal/
 
 # Python
 __pycache__/
