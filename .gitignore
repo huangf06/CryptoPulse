@@ -85,3 +85,6 @@ gcp/terraform/.terraform.lock.hcl
 
 # OS
 Thumbs.db
+
+# Notes
+/study
