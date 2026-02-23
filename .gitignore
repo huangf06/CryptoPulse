@@ -1,90 +1,18 @@
-# Internal documentation (not for public GitHub)
-internal/
-
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
 venv/
 env/
-ENV/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb
-
-# PySpark / Delta Lake
-derby.log
-metastore_db/
-spark-warehouse/
-*.log
-
-# Data directories (local development)
-data/
-*.parquet
-*.delta
-*.csv
-*.json
-
-# Temporary files
-/tmp/
-*.tmp
-*.bak
-*.swp
-*~
 
 # IDE
 .vscode/
 .idea/
-*.iml
 .DS_Store
-
-# GCP credentials (NEVER commit)
-*.json
-!dbt/profiles.yml
-credentials/
-service-account*.json
-gcp-key*.json
-
-# Databricks
-.databricks/
-
-# dbt
-dbt/target/
-dbt/dbt_packages/
-dbt/logs/
-
-# Terraform
-gcp/terraform/.terraform/
-gcp/terraform/*.tfstate
-gcp/terraform/*.tfstate.backup
-gcp/terraform/.terraform.lock.hcl
+Thumbs.db
 
 # Environment variables
 .env
 .env.local
-*.env
 
-# OS
-Thumbs.db
-
-# Notes
-/study
+# Databricks
+.databricks/
