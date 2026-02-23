@@ -908,15 +908,56 @@ E. return (spark.read.table("bronze").filter(col("source_file") == f"/mnt/daily_
 
 ### Q31 ✅ — Schema 推断 vs 手动声明
 
+**原题：**
+A junior data engineer is working to implement logic for a Lakehouse table named silver_device_recordings. The source data contains 100 unique fields in a highly nested JSON structure.
+
+The silver_device_recordings table will be used downstream to power several production monitoring dashboards and a production model. At present, 45 of the 100 fields are being used in at least one of these applications.
+
+The data engineer is trying to determine the best approach for dealing with schema declaration given the highly-nested structure of the data and the numerous fields.
+
+Which of the following accurately presents information about Delta Lake and Databricks that may impact their decision-making process?
+
+**选项：**
+A. The Tungsten encoding used by Databricks is optimized for storing string data; newly-added native support for querying JSON strings means that string types are always most efficient.
+B. Because Delta Lake uses Parquet for data storage, data types can be easily evolved by just modifying file footer information in place.
+C. Human labor in writing code is the largest cost associated with data engineering workloads; as such, automating table declaration logic should be a priority in all migration workloads.
+D. Because Databricks will infer schema using types that allow all observed data to be processed, setting types manually provides greater assurance of data quality enforcement. ✅
+E. Schema inference and evolution on Databricks ensure that inferred types will always accurately match the data types used by downstream systems.
+
 **我的答案：** D ✅ | **正确答案：** D
-Databricks 自动推断 schema 时使用能容纳所有数据的类型，手动设置类型能更严格地保证数据质量。
+
+**解析：**
+- Databricks 自动推断 schema 时使用能容纳所有数据的类型（如推断为 STRING 而非 INT）
+- 手动设置类型能更严格地保证数据质量，在写入时就拦截异常数据
+- 生产环境推荐手动声明 schema
+
+**知识点：** `Schema推断` `数据质量` `手动声明优于自动推断`
 
 ---
 
 ### Q32 ✅ — DLT Live Table（非增量）JOIN 行为
 
+**原题：**
+The data engineering team maintains the following code:
+
+Assuming that this code produces logically correct results and the data in the source tables has been de-duplicated and validated, which statement describes what will occur when this code is executed?
+
+**选项：**
+A. A batch job will update the enriched_itemized_orders_by_account table, replacing only those rows that have different values than the current version of the table, using accountID as the primary key.
+B. The enriched_itemized_orders_by_account table will be overwritten using the current valid version of data in each of the three tables referenced in the join logic. ✅
+C. An incremental job will leverage information in the state store to identify unjoined rows in the source tables and write these rows to the enriched_itemized_orders_by_account table.
+D. An incremental job will detect if new rows have been written to any of the source tables; if new rows are detected, all results will be recalculated and used to overwrite the enriched_itemized_orders_by_account table.
+E. No computation will occur until enriched_itemized_orders_by_account is queried; upon query materialization, results will be calculated using the current valid version of data in each of the three tables referenced in the join logic.
+
 **我的答案：** B ✅ | **正确答案：** B
-DLT 中非增量的 live table（无 STREAMING 关键字）每次执行时用当前有效版本的源表数据完整重写目标表。
+
+**解析：**
+- DLT 中非增量的 live table（无 STREAMING 关键字）每次 pipeline 运行时完整重新计算
+- 用源表当前有效版本的数据覆盖目标表
+- 选项 C/D 描述的是 streaming live table 的增量行为
+- 选项 E 描述的是 VIEW 的行为
+
+**知识点：** `DLT Live Table` `非增量全量重写` `STREAMING关键字区分`
 
 ---
 
@@ -979,8 +1020,28 @@ E. When the workspace is being configured, make sure that external cloud object 
 
 ### Q35 ✅ — 表重命名 + View 兼容方案
 
+**原题：**
+To reduce storage and compute costs, the data engineering team has been tasked with curating a series of aggregate tables leveraged by business intelligence dashboards, customer-facing applications, production machine learning models, and ad hoc analytical queries.
+
+The data engineering team has been made aware of new requirements from a customer-facing application, which is the only downstream workload they manage entirely. As a result, an aggregate table used by numerous teams across the organization will need to have a number of fields renamed, and additional fields will also be added.
+
+Which of the solutions addresses the situation while minimally interrupting other teams in the organization without increasing the number of tables that need to be managed?
+
+**选项：**
+A. Send all users notice that the schema for the table will be changing; include in the communication the logic necessary to revert the new table schema to match historic queries.
+B. Configure a new table with all the requisite fields and new names and use this as the source for the customer-facing application; create a view that maintains the original data schema and table name by aliasing select fields from the new table. ✅
+C. Create a new table with the required schema and new fields and use Delta Lake's deep clone functionality to sync up changes committed to one table to the corresponding table.
+D. Replace the current table definition with a logical view defined with the query logic currently writing the aggregate table; create a new table to power the customer-facing application.
+E. Add a table comment warning all users that the table schema and field names will be changing on a given date; overwrite the table in place to the specifications of the customer-facing application.
+
 **我的答案：** B ✅ | **正确答案：** B
-创建新表满足新需求，同时创建 view 保持旧 schema 兼容，最小化对其他团队的影响且不增加需要维护的表数量。
+
+**解析：**
+- 新表满足客户应用的新需求（重命名字段 + 新字段）
+- View 用别名映射回旧 schema → 其他团队的查询完全不受影响
+- View 不算"表"，所以不增加需要管理的表数量
+
+**知识点：** `View别名兼容` `最小化中断` `schema变更策略`
 
 ---
 
@@ -1019,29 +1080,103 @@ E. The Delta Engine will scan the parquet file footers to identify each row that
 
 ### Q37 ✅ — 跨区域部署 Workspace
 
+**原题：**
+A small company based in the United States has recently contracted a consulting firm in India to implement several new data engineering pipelines to power artificial intelligence applications. All the company's data is stored in regional cloud storage in the United States.
+
+The workspace administrator at the company is uncertain about where the Databricks workspace used by the contractors should be deployed.
+
+Assuming that all data governance considerations are accounted for, which statement accurately informs this decision?
+
+**选项：**
+A. Databricks runs HDFS on cloud volume storage; as such, cloud virtual machines must be deployed in the region where the data is stored.
+B. Databricks workspaces do not rely on any regional infrastructure; as such, the decision should be made based upon what is most convenient for the workspace administrator.
+C. Cross-region reads and writes can incur significant costs and latency; whenever possible, compute should be deployed in the same region the data is stored. ✅
+D. Databricks leverages user workstations as the driver during interactive development; as such, users should always use a workspace deployed in a region they are physically near.
+E. Databricks notebooks send all executable code from the user's browser to virtual machines over the open internet; whenever possible, choosing a workspace region near the end users is the most secure.
+
 **我的答案：** C ✅ | **正确答案：** C
-跨区域读写会产生显著的成本和延迟，计算资源应尽量部署在数据存储的同一区域。
+
+**解析：**
+- 核心原则：计算跟着数据走，数据在美国 → workspace 部署在美国
+- 跨区域读写会产生显著的网络传输成本和延迟
+
+**知识点：** `Workspace部署` `跨区域成本` `计算与数据同区域`
 
 ---
 
 ### Q38 ✅ — CHECK Constraint 要求现有数据合规
 
+**原题：**
+The downstream consumers of a Delta Lake table have been complaining about data quality issues impacting performance in their applications. Specifically, they have complained that invalid latitude and longitude values in the activity_details table have been breaking their ability to use other geolocation processes.
+
+A junior engineer has written the following code to add CHECK constraints to the Delta Lake table. A senior engineer has confirmed the above logic is correct and the valid ranges for latitude and longitude are provided, but the code fails when executed.
+
+Which statement explains the cause of this failure?
+
+**选项：**
+A. Because another team uses this table to support a frequently running application, two-phase locking is preventing the operation from committing.
+B. The activity_details table already exists; CHECK constraints can only be added during initial table creation.
+C. The activity_details table already contains records that violate the constraints; all existing data must pass CHECK constraints in order to add them to an existing table. ✅
+D. The activity_details table already contains records; CHECK constraints can only be added prior to inserting values into a table.
+E. The current table schema does not contain the field valid_coordinates; schema evolution will need to be enabled before altering the table to add a constraint.
+
 **我的答案：** C ✅ | **正确答案：** C
-给已有表添加 CHECK 约束时，所有现有数据必须满足约束条件，否则添加失败。
+
+**解析：**
+- 给已有表添加 CHECK 约束时，所有现有数据必须满足约束条件，否则添加失败
+- 解决方案：先清理违规数据（UPDATE/DELETE），再添加约束
+
+**知识点：** `CHECK Constraint` `现有数据必须合规` `ALTER TABLE ADD CONSTRAINT`
 
 ---
 
 ### Q39 ✅ — Delta Lake 前32列自动统计
 
+**原题：**
+Which of the following is true of Delta Lake and the Lakehouse?
+
+**选项：**
+A. Because Parquet compresses data row by row, strings will only be compressed when a character is repeated multiple times.
+B. Delta Lake automatically collects statistics on the first 32 columns of each table which are leveraged in data skipping based on query filters. ✅
+C. Views in the Lakehouse maintain a valid cache of the most recent versions of source tables at all times.
+D. Primary and foreign key constraints can be leveraged to ensure duplicate values are never entered into a dimension table.
+E. Z-order can only be applied to numeric values stored in Delta Lake tables.
+
 **我的答案：** B ✅ | **正确答案：** B
-Delta Lake 自动收集前32列的统计信息（min/max/null count），用于 data skipping 优化查询。
+
+**解析：**
+- Delta Lake 默认对前32列收集 min/max/null count 统计，用于 data skipping
+- 可通过 `delta.dataSkippingNumIndexedCols` 修改列数
+- 选项 A 错：Parquet 是列式存储，按列压缩
+- 选项 D 错：Delta Lake 的 PK/FK 是信息性约束，不强制执行
+
+**知识点：** `前32列统计` `data skipping` `dataSkippingNumIndexedCols`
 
 ---
 
 ### Q40 ✅ — Type 2 SCD 实现
 
+**原题：**
+The view updates represents an incremental batch of all newly ingested data to be inserted or updated in the customers table.
+
+The following logic is used to process these records.
+
+Which statement describes this implementation?
+
+**选项：**
+A. The customers table is implemented as a Type 3 table; old values are maintained as a new column alongside the current value.
+B. The customers table is implemented as a Type 2 table; old values are maintained but marked as no longer current and new values are inserted. ✅
+C. The customers table is implemented as a Type 0 table; all writes are append only with no changes to existing values.
+D. The customers table is implemented as a Type 1 table; old values are overwritten by new values and no history is maintained.
+E. The customers table is implemented as a Type 2 table; old values are overwritten and new customers are appended.
+
 **我的答案：** B ✅ | **正确答案：** B
-旧值保留但标记为不再当前（current=false），新值插入 → 典型的 Type 2 SCD（Slowly Changing Dimension）。
+
+**解析：**
+- 旧值保留但标记为不再当前（current=false），新值插入 → 典型 Type 2 SCD
+- Type 1 = 直接覆盖；Type 2 = 保留历史+标记失效；Type 3 = 旧值存为新列
+
+**知识点：** `Type 2 SCD` `Slowly Changing Dimension` `历史版本保留`
 
 ---
 
