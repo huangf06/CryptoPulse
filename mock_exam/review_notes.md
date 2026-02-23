@@ -9,6 +9,7 @@
 | 第1轮 Page 1 | Q1-Q10 | 1/10 | 2026-02-21 |
 | 第2轮 Page 2 | Q11-Q20 | 6/10 | 2026-02-22 |
 | 第3轮 Page 3 | Q21-Q30 | 5/10 | 2026-02-22 |
+| 第4轮 Page 4 | Q31-Q40 | 7/10 | 2026-02-23 |
 
 ---
 
@@ -898,3 +899,160 @@ E. return (spark.read.table("bronze").filter(col("source_file") == f"/mnt/daily_
 | 集群配置 + Shuffle | Q26 | Wide transformation 场景下，多小节点优于少大节点 |
 | CDF batch read | Q28 | startingVersion=0 + batch read = 每次全量读取，会重复 |
 | readStream.table() | Q30 | streaming read + checkpoint 自动追踪增量 |
+
+---
+
+## Page 4: Q31 - Q40
+
+---
+
+### Q31 ✅ — Schema 推断 vs 手动声明
+
+**我的答案：** D ✅ | **正确答案：** D
+Databricks 自动推断 schema 时使用能容纳所有数据的类型，手动设置类型能更严格地保证数据质量。
+
+---
+
+### Q32 ✅ — DLT Live Table（非增量）JOIN 行为
+
+**我的答案：** B ✅ | **正确答案：** B
+DLT 中非增量的 live table（无 STREAMING 关键字）每次执行时用当前有效版本的源表数据完整重写目标表。
+
+---
+
+### Q33 ❌ — 数据库隔离与权限管理
+
+**原题：**
+The data engineering team is migrating an enterprise system with thousands of tables and views into the Lakehouse. They plan to implement the target architecture using a series of bronze, silver, and gold tables. Bronze tables will almost exclusively be used by production data engineering workloads, while silver tables will be used to support both data engineering and machine learning workloads. Gold tables will largely serve business intelligence and reporting purposes. While personal identifying information (PII) exists in all tiers of data, pseudonymization and anonymization rules are in place for all data at the silver and gold levels.
+
+The organization is interested in reducing security concerns while maximizing the ability to collaborate across diverse teams.
+
+Which statement exemplifies best practices for implementing this system?
+
+**选项：**
+A. Isolating tables in separate databases based on data quality tiers allows for easy permissions management through database ACLs and allows physical separation of default storage locations for managed tables. ✅
+B. Because databases on Databricks are merely a logical construct, choices around database organization do not impact security or discoverability in the Lakehouse.
+C. Storing all production tables in a single database provides a unified view of all data assets available throughout the Lakehouse, simplifying discoverability by granting all users view privileges on this database.
+D. Working in the default Databricks database provides the greatest security when working with managed tables, as these will be created in the DBFS root.
+E. Because all tables must live in the same storage containers used for the database they're created in, organizations should be prepared to create between dozens and thousands of databases depending on their data isolation requirements.
+
+**我的答案：** C | **正确答案：** A
+
+**解析：**
+- 按数据质量层级（bronze/silver/gold）分库，可以通过数据库级别 ACL 统一管理权限
+- 不同数据库可以指定不同的默认存储位置（LOCATION），实现物理隔离
+- 选项 C 把所有表放一个库 → 权限管理困难，PII 数据暴露风险高
+- 选项 B 说数据库只是逻辑构造不影响安全 → 错误，数据库 ACL 是重要的安全机制
+- 选项 D 用默认数据库 + DBFS root → 安全性最差
+
+**知识点：** `数据库ACL` `存储隔离` `Bronze/Silver/Gold分库` `权限管理`
+
+---
+
+### Q34 ❌ — External Table 创建方式
+
+**原题：**
+The data architect has mandated that all tables in the Lakehouse should be configured as external Delta Lake tables.
+
+Which approach will ensure that this requirement is met?
+
+**选项：**
+A. Whenever a database is being created, make sure that the LOCATION keyword is used.
+B. When configuring an external data warehouse for all table storage, leverage Databricks for all ELT.
+C. Whenever a table is being created, make sure that the LOCATION keyword is used. ✅
+D. When tables are created, make sure that the EXTERNAL keyword is used in the CREATE TABLE statement.
+E. When the workspace is being configured, make sure that external cloud object storage has been mounted.
+
+**我的答案：** D | **正确答案：** C
+
+**解析：**
+- Delta Lake 中创建 external table 的方式是在 `CREATE TABLE` 时指定 `LOCATION`
+- 指定了 LOCATION → 数据存储在指定路径 → external table
+- 不指定 LOCATION → 数据存储在数据库默认路径 → managed table
+- 选项 D 的 `EXTERNAL` 关键字：在 Hive 中有效，但 Delta Lake 不使用这个关键字来区分 managed/external
+- 选项 A：数据库指定 LOCATION 只是设置默认存储路径，不能保证每张表都是 external
+- 关键区别：是表级别的 LOCATION，不是数据库级别的
+
+**知识点：** `External Table` `LOCATION关键字` `Managed vs External` `不是EXTERNAL关键字`
+
+---
+
+### Q35 ✅ — 表重命名 + View 兼容方案
+
+**我的答案：** B ✅ | **正确答案：** B
+创建新表满足新需求，同时创建 view 保持旧 schema 兼容，最小化对其他团队的影响且不增加需要维护的表数量。
+
+---
+
+### Q36 ❌ — Delta Log Data Skipping（非分区列）
+
+**原题：**
+A Delta Lake table representing metadata about content posts from users has the following schema:
+user_id LONG, post_text STRING, post_id STRING, longitude FLOAT, latitude FLOAT, post_time TIMESTAMP, date DATE
+
+This table is partitioned by the date column. A query is run with the following filter:
+`longitude < 20 & longitude > -20`
+
+Which statement describes how data will be filtered?
+
+**选项：**
+A. Statistics in the Delta Log will be used to identify partitions that might include files in the filtered range.
+B. No file skipping will occur because the optimizer does not know the relationship between the partition column and the longitude.
+C. The Delta Engine will use row-level statistics in the transaction log to identify the files that meet the filter criteria.
+D. Statistics in the Delta Log will be used to identify data files that might include records in the filtered range. ✅
+E. The Delta Engine will scan the parquet file footers to identify each row that meets the filter criteria.
+
+**我的答案：** A | **正确答案：** D
+
+**解析：**
+- 查询条件是 longitude（非分区列），所以分区裁剪不适用
+- Delta Log 中存储了每个数据文件的列级统计信息（min/max/null count）
+- 引擎用这些统计信息跳过不可能包含匹配记录的文件（data skipping）
+- 选项 A 说"identify partitions" → 错误，这里跳过的是数据文件（data files），不是分区
+- 选项 C 说"row-level statistics" → 错误，Delta Log 存的是文件级别统计，不是行级别
+- 选项 E 说扫描 Parquet footer → 那是纯 Parquet 的做法，Delta 用 transaction log
+- 这题和 Q10 考点几乎一样！注意区分"文件级"和"分区级"
+
+**知识点：** `Data Skipping` `文件级统计` `Delta Log` `分区裁剪 vs 文件跳过`
+
+---
+
+### Q37 ✅ — 跨区域部署 Workspace
+
+**我的答案：** C ✅ | **正确答案：** C
+跨区域读写会产生显著的成本和延迟，计算资源应尽量部署在数据存储的同一区域。
+
+---
+
+### Q38 ✅ — CHECK Constraint 要求现有数据合规
+
+**我的答案：** C ✅ | **正确答案：** C
+给已有表添加 CHECK 约束时，所有现有数据必须满足约束条件，否则添加失败。
+
+---
+
+### Q39 ✅ — Delta Lake 前32列自动统计
+
+**我的答案：** B ✅ | **正确答案：** B
+Delta Lake 自动收集前32列的统计信息（min/max/null count），用于 data skipping 优化查询。
+
+---
+
+### Q40 ✅ — Type 2 SCD 实现
+
+**我的答案：** B ✅ | **正确答案：** B
+旧值保留但标记为不再当前（current=false），新值插入 → 典型的 Type 2 SCD（Slowly Changing Dimension）。
+
+---
+
+## Page 4 高频易错知识点汇总
+
+| 知识点 | 出现题号 | 核心要记住的 |
+|--------|---------|-------------|
+| 数据库分层隔离 | Q33 | bronze/silver/gold 分库，用数据库 ACL 管权限 |
+| External Table | Q34 | 表级 LOCATION 关键字，不是 EXTERNAL 关键字 |
+| Data Skipping | Q36 | Delta Log 跳过的是数据文件，不是分区；文件级统计不是行级 |
+| Schema 推断 vs 手动 | Q31 | 手动设置类型 → 更严格的数据质量保证 |
+| CHECK Constraint | Q38 | 添加约束时现有数据必须全部合规 |
+| Delta 前32列统计 | Q39 | 自动收集，用于 data skipping |
+| Type 2 SCD | Q40 | 旧值保留+标记失效，新值插入 |
