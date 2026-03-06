@@ -10,6 +10,35 @@
 | 第2轮 Page 2 | Q11-Q20 | 6/10 | 2026-02-22 |
 | 第3轮 Page 3 | Q21-Q30 | 5/10 | 2026-02-22 |
 | 第4轮 Page 4 | Q31-Q40 | 7/10 | 2026-02-23 |
+| 第5轮 Page 5 | Q41-Q50 | 6/10 | 2026-03-06 |
+| 第6轮 Page 6 | Q51-Q60 | 7/10 | 2026-03-06 |
+| 第7轮 Page 7 | Q61-Q70 | 5/10 | 2026-03-06 |
+| 第8轮 Page 8 | Q71-Q80 | 7/10 | 2026-03-06 |
+| 第9轮 Page 9 | Q81-Q90 | 5/10 | 2026-03-06 |
+| 第10轮 Page 10 | Q91-Q100 | 6/10 | 2026-03-06 |
+| 第11轮 Page 11 | Q101-Q110 | 3/10 | 2026-03-06 |
+| 第12轮 Page 12 | Q111-Q120 | 6/10 | 2026-03-06 |
+| 第13轮 Page 13 | Q121-Q130 | 9/10 | 2026-03-06 |
+| 第14轮 Page 14 | Q131-Q140 | 9/10 | 2026-03-06 |
+| 第15轮 Page 15 | Q141-Q150 | 9/10 | 2026-03-06 |
+| 第16轮 Page 16 | Q151-Q160 | 10/10 | 2026-03-06 |
+| 第17轮 Page 17 | Q161-Q170 | 8/10 | 2026-03-06 |
+| 第18轮 Page 18 | Q171-Q180 | 8/10 | 2026-03-06 |
+| 第19轮 Page 19 | Q181-Q190 | 7/10 | 2026-03-06 |
+| 第20轮 Page 20 | Q191-Q200 | 10/10 | 2026-03-06 |
+| 第21轮 Page 21 | Q201-Q210 | 9/10 | 2026-03-06 |
+| 第22轮 Page 22 | Q211-Q220 | 6/10 | 2026-03-06 |
+| 第23轮 Page 23 | Q221-Q230 | 6/10 | 2026-03-06 |
+| 第24轮 Page 24 | Q231-Q240 | 6/10 | 2026-03-06 |
+| 第25轮 Page 25 | Q241-Q250 | 5/10 | 2026-03-06 |
+| 第26轮 Page 26 | Q251-Q260 | 7/10 | 2026-03-06 |
+| 第27轮 Page 27 | Q261-Q270 | 4/10 | 2026-03-06 |
+| 第28轮 Page 28 | Q271-Q280 | 10/10 | 2026-03-06 |
+| 第29轮 Page 29 | Q281-Q290 | 7/10 | 2026-03-06 |
+| 第30轮 Page 30 | Q291-Q300 | 1/10 | 2026-03-06 |
+| 第31轮 Page 31 | Q301-Q310 | 5/10 | 2026-03-06 |
+| 第32轮 Page 32 | Q311-Q320 | 3/10 | 2026-03-06 |
+| 第33轮 Page 33 | Q321-Q327 | 3/7 | 2026-03-06 |
 
 ---
 
@@ -1191,3 +1220,1690 @@ E. The customers table is implemented as a Type 2 table; old values are overwrit
 | CHECK Constraint | Q38 | 添加约束时现有数据必须全部合规 |
 | Delta 前32列统计 | Q39 | 自动收集，用于 data skipping |
 | Type 2 SCD | Q40 | 旧值保留+标记失效，新值插入 |
+
+---
+
+## Page 5: Q41 - Q50
+
+---
+
+### Q41 ✅ — DLT expectations
+
+**知识点：** `DLT` `expectations`
+
+---
+
+### Q42 ✅ — DLT expectations
+
+**知识点：** `DLT` `expectations`
+
+---
+
+### Q43 ✅ — DLT expectations
+
+**知识点：** `DLT` `expectations`
+
+---
+
+### Q44 ✅ — DLT expectations
+
+**知识点：** `DLT` `expectations`
+
+---
+
+### Q45 ❌ — Managed table with custom location
+
+**原题:**
+An external object storage container has been mounted to the location /mnt/finance_eda_bucket.
+The following logic was executed to create a database for the finance team:
+After the database was successfully created and permissions configured, a member of the finance team runs the following code:
+If all users on the finance team are members of the finance group, which statement describes how the tx_sales table will be created?
+
+**选项:**
+A. A logical table will persist the query plan to the Hive Metastore in the Databricks control plane.
+B. An external table will be created in the storage container mounted to /mnt/finance_eda_bucket.
+C. A logical table will persist the physical plan to the Hive Metastore in the Databricks control plane.
+D. A managed table will be created in the storage container mounted to /mnt/finance_eda_bucket. ✅
+E. A managed table will be created in the DBFS root storage container.
+
+**我的答案:** B | **正确答案:** D
+
+**解析:**
+- 当数据库用 `LOCATION` 指定了存储位置时，该数据库下创建的 managed table 会存储在该位置
+- 即使指定了自定义 location，只要没有用 `EXTERNAL` 关键字，仍然是 managed table
+- Managed table 的元数据和数据都由 Databricks 管理，DROP TABLE 会删除数据
+- External table 只管理元数据，DROP TABLE 不删除数据
+
+**知识点:** `managed table` `external table` `database location`
+
+---
+
+### Q46 ❌ — Databricks Secrets 限制
+
+**原题:**
+Although the Databricks Utilities Secrets module provides tools to store sensitive credentials and avoid accidentally displaying them in plain text users should still be careful with which credentials are stored here and which users have access to using these secrets.
+Which statement describes a limitation of Databricks Secrets?
+
+**选项:**
+A. Because the SHA256 hash is used to obfuscate stored secrets, reversing this hash will display the value in plain text.
+B. Account administrators can see all secrets in plain text by logging on to the Databricks Accounts console.
+C. Secrets are stored in an administrators-only table within the Hive Metastore; database administrators have permission to query this table by default.
+D. Iterating through a stored secret and printing each character will display secret contents in plain text. ✅
+E. The Databricks REST API can be used to list secrets in plain text if the personal access token has proper credentials.
+
+**我的答案:** C | **正确答案:** D
+
+**解析:**
+- Databricks Secrets 在 notebook 中直接打印会显示 `[REDACTED]`
+- 但如果逐字符遍历并打印，可以绕过保护机制显示明文
+- 这是一个已知的安全限制，提醒用户要控制谁有权限访问 secrets
+- Secrets 不存储在 Hive Metastore，也不能通过 REST API 获取明文
+
+**知识点:** `dbutils.secrets` `security`
+
+---
+
+### Q47 ❌ — Job run history retention
+
+**原题:**
+What statement is true regarding the retention of job run history?
+
+**选项:**
+A. It is retained until you export or delete job run logs
+B. It is retained for 30 days, during which time you can deliver job run logs to DBFS or S3
+C. It is retained for 60 days, during which you can export notebook run results to HTML ✅
+D. It is retained for 60 days, after which logs are archived
+E. It is retained for 90 days or until the run-id is re-used through custom run configuration
+
+**我的答案:** D | **正确答案:** C
+
+**解析:**
+- Databricks 保留 job run history **60 天**
+- 在这 60 天内，可以导出 notebook 运行结果为 HTML
+- 60 天后日志会被删除（不是归档）
+- 如果需要长期保留，应该在 60 天内导出
+
+**知识点:** `Jobs` `run history` `retention`
+
+---
+
+### Q48 ✅ — Structured Streaming
+
+**知识点:** `Structured Streaming`
+
+---
+
+### Q49 ❌ — 性能测试最佳实践
+
+**原题:**
+A user new to Databricks is trying to troubleshoot long execution times for some pipeline logic they are working on. Presently, the user is executing code cell-by-cell, using display() calls to confirm code is producing the logically correct results as new transformations are added to an operation. To get a measure of average time to execute, the user is running each cell multiple times interactively.
+Which of the following adjustments will get a more accurate measure of how code is likely to perform in production?
+
+**选项:**
+A. Scala is the only language that can be accurately tested using interactive notebooks; because the best performance is achieved by using Scala code compiled to JARs, all PySpark and Spark SQL logic should be refactored.
+B. The only way to meaningfully troubleshoot code execution times in development notebooks is to use production-sized data and production-sized clusters with Run All execution. ✅
+C. Production code development should only be done using an IDE; executing code against a local build of open source Spark and Delta Lake will provide the most accurate benchmarks for how code will perform in production.
+D. Calling display() forces a job to trigger, while many transformations will only add to the logical query plan; because of caching, repeated execution of the same logic does not provide meaningful results.
+E. The Jobs UI should be leveraged to occasionally run the notebook as a job and track execution time during incremental code development because Photon can only be enabled on clusters launched for scheduled jobs.
+
+**我的答案:** C | **正确答案:** B
+
+**解析:**
+- 交互式 notebook 逐 cell 执行会触发缓存，无法准确反映生产性能
+- `display()` 会触发 action，但重复执行会利用缓存，结果不准确
+- 要准确测试性能，需要：
+  - 使用生产规模的数据
+  - 使用生产规模的集群
+  - 用 Run All 一次性执行整个 notebook
+- 选项 D 说法部分正确但不是最佳实践
+
+**知识点:** `performance testing` `caching` `Run All`
+
+---
+
+### Q50 ✅ — Structured Streaming
+
+**知识点:** `Structured Streaming`
+
+---
+
+
+## Page 6: Q51 - Q60
+
+---
+
+### Q51 ❌ — Spark UI 诊断 predicate push-down
+
+**原题:**
+Where in the Spark UI can one diagnose a performance problem induced by not leveraging predicate push-down?
+
+**选项:**
+A. In the Executor's log file, by grepping for "predicate push-down"
+B. In the Stage's Detail screen, in the Completed Stages table, by noting the size of data read from the Input column
+C. In the Storage Detail screen, by noting which RDDs are not stored on disk
+D. In the Delta Lake transaction log, by noting the column statistics
+E. In the Query Detail screen, by interpreting the Physical Plan ✅
+
+**我的答案:** A | **正确答案:** E
+
+**解析:**
+- Predicate push-down 是否生效需要查看 **Physical Plan**
+- 在 Spark UI 的 **SQL/Query Detail** 页面可以看到 Physical Plan
+- 如果看到 `PushedFilters: []` 或者 filter 在 scan 之后，说明没有 push-down
+- 正确的 push-down 会在 scan 阶段就应用过滤条件，减少读取的数据量
+- Executor log 不会显示 push-down 信息
+
+**知识点:** `Spark UI` `predicate push-down` `Physical Plan`
+
+---
+
+### Q52 ✅ — Python modules
+
+**知识点:** `Python` `modules`
+
+---
+
+### Q53 ✅ — REST API
+
+**知识点:** `REST API` `Jobs`
+
+---
+
+### Q54 ❌ — Python sys.path
+
+**原题:**
+Which Python variable contains a list of directories to be searched when trying to locate required modules?
+
+**选项:**
+A. importlib.resource_path
+B. sys.path ✅
+C. os.path
+D. pypi.path
+E. pylib.source
+
+**我的答案:** D | **正确答案:** B
+
+**解析:**
+- `sys.path` 是 Python 搜索模块的目录列表
+- 可以用 `sys.path.append()` 添加自定义路径
+- `os.path` 是路径操作模块，不是搜索路径列表
+- `importlib` 是导入机制，但 `resource_path` 不是标准属性
+
+**知识点:** `Python` `sys.path` `module import`
+
+---
+
+### Q55 ✅ — REST API
+
+**知识点:** `REST API` `Jobs`
+
+---
+
+### Q56 ✅ — REST API
+
+**知识点:** `REST API` `Jobs`
+
+---
+
+### Q57 ❌ — Jobs REST API
+
+**原题:**
+Which REST API call can be used to review the notebooks configured to run as tasks in a multi-task job?
+
+**选项:**
+A. /jobs/runs/list
+B. /jobs/runs/get-output
+C. /jobs/runs/get
+D. /jobs/get ✅
+E. /jobs/list
+
+**我的答案:** A | **正确答案:** D
+
+**解析:**
+- `/jobs/get` 返回 job 的**定义**，包括所有 task 配置（notebook、参数等）
+- `/jobs/runs/*` 系列 API 返回的是**运行历史**，不是 job 定义
+- `/jobs/runs/list` 列出运行记录
+- `/jobs/runs/get` 获取单次运行的详情
+- `/jobs/list` 列出所有 job，但不包含详细的 task 配置
+
+**知识点:** `Jobs API` `/jobs/get` `multi-task job`
+
+---
+
+### Q58 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q59 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q60 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+
+## Page 7: Q61 - Q70
+
+---
+
+### Q61 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q62 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q63 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q64 ❌ — DROP TABLE on managed table
+
+**原题:**
+A Delta Lake table was created with the below query:
+Consider the following query:
+DROP TABLE prod.sales_by_store
+If this statement is executed by a workspace admin, which result will occur?
+
+**选项:**
+A. Nothing will occur until a COMMIT command is executed.
+B. The table will be removed from the catalog but the data will remain in storage.
+C. The table will be removed from the catalog and the data will be deleted. ✅
+D. An error will occur because Delta Lake prevents the deletion of production data.
+E. Data will be marked as deleted but still recoverable with Time Travel.
+
+**我的答案:** E | **正确答案:** C
+
+**解析:**
+- 题目说表是用默认方式创建的（没有 EXTERNAL 关键字），所以是 **managed table**
+- DROP managed table 会：
+  - 从 catalog 删除元数据
+  - **物理删除数据文件**
+- DROP external table 只删除元数据，数据保留
+- Delta Lake 不会阻止删除生产数据，权限控制由 ACL 负责
+- Time Travel 只能恢复未被物理删除的数据
+
+**知识点:** `DROP TABLE` `managed table` `external table`
+
+---
+
+### Q65 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q66 ❌ — %sh 性能问题
+
+**原题:**
+The following code has been migrated to a Databricks notebook from a legacy workload:
+The code executes successfully and provides the logically correct results, however, it takes over 20 minutes to extract and load around 1 GB of data.
+Which statement is a possible explanation for this behavior?
+
+**选项:**
+A. %sh triggers a cluster restart to collect and install Git. Most of the latency is related to cluster startup time.
+B. Instead of cloning, the code should use %sh pip install so that the Python code can get executed in parallel across all nodes in a cluster.
+C. %sh does not distribute file moving operations; the final line of code should be updated to use %fs instead.
+D. Python will always execute slower than Scala on Databricks. The run.py script should be refactored to Scala.
+E. %sh executes shell code on the driver node. The code does not take advantage of the worker nodes or Databricks optimized Spark. ✅
+
+**我的答案:** C | **正确答案:** E
+
+**解析:**
+- `%sh` 只在 **driver node** 执行，不会分布式执行
+- 1GB 数据用单节点处理会很慢，无法利用集群的并行能力
+- 应该用 Spark API（如 `spark.read`）来利用分布式计算
+- `%fs` 是 Databricks 文件系统命令，但也不是分布式的
+- 正确做法：用 Spark DataFrame API 读取和处理数据
+
+**知识点:** `%sh` `driver node` `distributed computing`
+
+---
+
+### Q67 ✅ — Databricks CLI
+
+**知识点:** `Databricks CLI`
+
+---
+
+### Q68 ❌ — Databricks CLI upload file
+
+**原题:**
+Assuming that the Databricks CLI has been installed and configured correctly, which Databricks CLI command can be used to upload a custom Python Wheel to object storage mounted with the DBFS for use with a production job?
+
+**选项:**
+A. configure
+B. fs ✅
+C. jobs
+D. libraries
+E. workspace
+
+**我的答案:** D | **正确答案:** B
+
+**解析:**
+- `databricks fs` 命令用于文件系统操作（上传、下载、列出文件等）
+- 上传 wheel 文件：`databricks fs cp my_package.whl dbfs:/path/to/wheel/`
+- `databricks libraries` 用于管理集群库，不是上传文件
+- `databricks workspace` 用于管理 notebook 和文件夹，不是 DBFS 文件
+- `databricks jobs` 用于管理 job 配置
+
+**知识点:** `Databricks CLI` `fs` `upload wheel`
+
+---
+
+### Q69 ❌ — BI dashboard 数据刷新策略
+
+**原题:**
+The business intelligence team has a dashboard configured to track various summary metrics for retail stores. This includes total sales for the previous day alongside totals and averages for a variety of time periods. The fields required to populate this dashboard have the following schema:
+For demand forecasting, the Lakehouse contains a validated table of all itemized sales updated incrementally in near real-time. This table, named products_per_order, includes the following fields:
+Because reporting on long-term sales trends is less volatile, analysts using the new dashboard only require data to be refreshed once daily. Because the dashboard will be queried interactively by many users throughout a normal business day, it should return results quickly and reduce total compute associated with each materialization.
+Which solution meets the expectations of the end users while controlling and limiting possible costs?
+
+**选项:**
+A. Populate the dashboard by configuring a nightly batch job to save the required values as a table overwritten with each update. ✅
+B. Use Structured Streaming to configure a live dashboard against the products_per_order table within a Databricks notebook.
+C. Configure a webhook to execute an incremental read against products_per_order each time the dashboard is refreshed.
+D. Use the Delta Cache to persist the products_per_order table in memory to quickly update the dashboard with each query.
+E. Define a view against the products_per_order table and define the dashboard against this view.
+
+**我的答案:** E | **正确答案:** A
+
+**解析:**
+- 需求：每天刷新一次，快速查询，控制成本
+- **A 最佳**：nightly batch job 预计算聚合结果，存为表，查询时直接读取（快速 + 低成本）
+- B：实时流处理成本高，不符合"每天刷新一次"的需求
+- C：每次查询都触发计算，成本高
+- D：Delta Cache 只是缓存，不解决重复计算问题
+- E：View 每次查询都要重新计算聚合，成本高且慢
+
+**知识点:** `batch job` `materialized table` `cost optimization`
+
+---
+
+### Q70 ❌ — Parquet 文件大小控制（无 shuffle）
+
+**原题:**
+A data ingestion task requires a one-TB JSON dataset to be written out to Parquet with a target part-file size of 512 MB. Because Parquet is being used instead of Delta Lake, built-in file-sizing features such as Auto-Optimize & Auto-Compaction cannot be used.
+Which strategy will yield the best performance without shuffling data?
+
+**选项:**
+A. Set spark.sql.files.maxPartitionBytes to 512 MB, ingest the data, execute the narrow transformations, and then write to parquet. ✅
+B. Set spark.sql.shuffle.partitions to 2,048 partitions (1TB*1024*1024/512), ingest the data, execute the narrow transformations, optimize the data by sorting it (which automatically repartitions the data), and then write to parquet.
+C. Set spark.sql.adaptive.advisoryPartitionSizeInBytes to 512 MB bytes, ingest the data, execute the narrow transformations, coalesce to 2,048 partitions (1TB*1024*1024/512), and then write to parquet.
+D. Ingest the data, execute the narrow transformations, repartition to 2,048 partitions (1TB*1024*1024/512), and then write to parquet.
+E. Set spark.sql.shuffle.partitions to 512, ingest the data, execute the narrow transformations, and then write to parquet.
+
+**我的答案:** C | **正确答案:** A
+
+**解析:**
+- 要求：**不 shuffle**，控制文件大小为 512 MB
+- `spark.sql.files.maxPartitionBytes` 控制读取时每个 partition 的大小，影响写出的文件大小
+- 只要执行的是 narrow transformation（不触发 shuffle），partition 数量保持不变，写出的文件大小就由这个参数控制
+- B/D：`repartition()` 和 `sort()` 都会触发 shuffle
+- C：`coalesce()` 虽然不 shuffle，但 `advisoryPartitionSizeInBytes` 是 AQE 的参数，用于 shuffle 后的优化
+
+**知识点:** `maxPartitionBytes` `narrow transformation` `no shuffle`
+
+---
+
+
+## Page 8: Q71 - Q80
+
+---
+
+### Q71 ✅ — Structured Streaming
+
+**知识点:** `Structured Streaming`
+
+---
+
+### Q72 ❌ — Structured Streaming schema 变更
+
+**原题:**
+A data team's Structured Streaming job is configured to calculate running aggregates for item sales to update a downstream marketing dashboard. The marketing team has introduced a new promotion, and they would like to add a new field to track the number of times this promotion code is used for each item. A junior data engineer suggests updating the existing query as follows. Note that proposed changes are in bold.
+Original query:
+Proposed query:
+Which step must also be completed to put the proposed query into production?
+
+**选项:**
+A. Specify a new checkpointLocation ✅
+B. Increase the shuffle partitions to account for additional aggregates
+C. Run REFRESH TABLE delta.'/item_agg'
+D. Register the data in the "/item_agg" directory to the Hive metastore
+E. Remove .option('mergeSchema', 'true') from the streaming write
+
+**我的答案:** E | **正确答案:** A
+
+**解析:**
+- Structured Streaming 的 **checkpoint** 存储了查询的状态和元数据
+- 修改聚合逻辑（添加新字段）后，旧的 checkpoint 不兼容
+- 必须指定**新的 checkpointLocation**，否则会报错
+- `mergeSchema` 只处理 schema 变化，不解决聚合逻辑变化的问题
+- 不需要手动 REFRESH TABLE 或注册到 metastore
+
+**知识点:** `Structured Streaming` `checkpoint` `schema evolution`
+
+---
+
+### Q73 ✅ — Structured Streaming
+
+**知识点:** `Structured Streaming`
+
+---
+
+### Q74 ✅ — Structured Streaming
+
+**知识点:** `Structured Streaming`
+
+---
+
+### Q75 ❌ — Delta Lake 去重（跨批次）
+
+**原题:**
+A data engineer is configuring a pipeline that will potentially see late-arriving, duplicate records.
+In addition to de-duplicating records within the batch, which of the following approaches allows the data engineer to deduplicate data against previously processed records as it is inserted into a Delta table?
+
+**选项:**
+A. Set the configuration delta.deduplicate = true.
+B. VACUUM the Delta table after each batch completes.
+C. Perform an insert-only merge with a matching condition on a unique key. ✅
+D. Perform a full outer join on a unique key and overwrite existing data.
+E. Rely on Delta Lake schema enforcement to prevent duplicate records.
+
+**我的答案:** A | **正确答案:** C
+
+**解析:**
+- 跨批次去重需要用 **MERGE INTO** 语句
+- Insert-only merge：`WHEN NOT MATCHED THEN INSERT`，只插入不存在的记录
+- Matching condition 基于 unique key（如 `id`），如果已存在则跳过
+- `delta.deduplicate` 配置不存在
+- VACUUM 是清理旧文件，不是去重
+- Schema enforcement 只检查类型，不检查重复
+
+**知识点:** `MERGE INTO` `deduplication` `insert-only merge`
+
+---
+
+### Q76 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q77 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q78 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+### Q79 ❌ — External table 创建方式
+
+**原题:**
+The data architect has mandated that all tables in the Lakehouse should be configured as external (also known as "unmanaged") Delta Lake tables.
+Which approach will ensure that this requirement is met?
+
+**选项:**
+A. When a database is being created, make sure that the LOCATION keyword is used.
+B. When configuring an external data warehouse for all table storage, leverage Databricks for all ELT.
+C. When data is saved to a table, make sure that a full file path is specified alongside the Delta format. ✅
+D. When tables are created, make sure that the EXTERNAL keyword is used in the CREATE TABLE statement.
+E. When the workspace is being configured, make sure that external cloud object storage has been mounted.
+
+**我的答案:** A | **正确答案:** C
+
+**解析:**
+- 创建 external table 的方式：
+  - `CREATE TABLE ... USING delta LOCATION '/path/to/data'`
+  - 或者 `df.write.format("delta").save("/path/to/data")`，然后 `CREATE TABLE ... USING delta LOCATION '/path'`
+- **关键**：必须指定 `LOCATION`，数据存储在指定路径
+- `EXTERNAL` 关键字在 Hive 中使用，Databricks 不需要（有 LOCATION 就是 external）
+- 数据库的 LOCATION 只影响该数据库下 managed table 的默认位置，不影响 external table
+
+**知识点:** `external table` `LOCATION` `Delta Lake`
+
+---
+
+### Q80 ✅ — Delta Lake
+
+**知识点:** `Delta Lake`
+
+---
+
+
+## Page 9: Q81 - Q90
+
+错题：Q81, Q82, Q83, Q84, Q85
+
+### Q81 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q82 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q83 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** E
+
+**知识点:** 待补充
+
+---
+
+### Q84 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q85 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q86 ✅ | Q87 ✅ | Q88 ✅ | Q89 ✅ | Q90 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 10: Q91 - Q100
+
+错题：Q96, Q97, Q98, Q100
+
+### Q91 ✅ | Q92 ✅ | Q93 ✅ | Q94 ✅ | Q95 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q96 ❌ — 待补充（未答）
+
+**我的答案:** X | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q97 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q98 ❌ — 待补充
+
+**我的答案:** E | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q99 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q100 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+## Page 11: Q101 - Q110
+
+错题：Q101, Q102, Q105, Q106, Q107, Q108, Q110
+
+### Q101 ❌ — 待补充（未答）
+
+**我的答案:** X | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q102 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q103 ✅ | Q104 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q105 ❌ — 待补充
+
+**我的答案:** E | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q106 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q107 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** E
+
+**知识点:** 待补充
+
+---
+
+### Q108 ❌ — 待补充
+
+**我的答案:** E | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q109 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q110 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+## Page 12: Q111 - Q120
+
+错题：Q111, Q113, Q115, Q117
+
+### Q111 ❌ — 待补充
+
+**我的答案:** E | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q112 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q113 ❌ — 待补充
+
+**我的答案:** E | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q114 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q115 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** E
+
+**知识点:** 待补充
+
+---
+
+### Q116 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q117 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q118 ✅ | Q119 ✅ | Q120 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 13: Q121 - Q130
+
+错题：Q126
+
+### Q121 ✅ | Q122 ✅ | Q123 ✅ | Q124 ✅ | Q125 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q126 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q127 ✅ | Q128 ✅ | Q129 ✅ | Q130 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 14: Q131 - Q140
+
+错题：Q139
+
+### Q131 ✅ | Q132 ✅ | Q133 ✅ | Q134 ✅ | Q135 ✅ | Q136 ✅ | Q137 ✅ | Q138 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q139 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q140 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 15: Q141 - Q150
+
+错题：Q147
+
+### Q141 ✅ | Q142 ✅ | Q143 ✅ | Q144 ✅ | Q145 ✅ | Q146 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q147 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q148 ✅ | Q149 ✅ | Q150 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 16: Q151 - Q160
+
+全对！
+
+### Q151 ✅ | Q152 ✅ | Q153 ✅ | Q154 ✅ | Q155 ✅ | Q156 ✅ | Q157 ✅ | Q158 ✅ | Q159 ✅ | Q160 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 17: Q161 - Q170
+
+错题：Q164, Q167
+
+### Q161 ✅ | Q162 ✅ | Q163 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q164 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q165 ✅ | Q166 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q167 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q168 ✅ | Q169 ✅ | Q170 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 18: Q171 - Q180
+
+错题：Q174, Q175
+
+### Q171 ✅ | Q172 ✅ | Q173 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q174 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q175 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q176 ✅ | Q177 ✅ | Q178 ✅ | Q179 ✅ | Q180 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 19: Q181 - Q190
+
+错题：Q184, Q187, Q188
+
+### Q181 ✅ | Q182 ✅ | Q183 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q184 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q185 ✅ | Q186 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q187 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q188 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q189 ✅ | Q190 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 20: Q191 - Q200
+
+全对！
+
+### Q191 ✅ | Q192 ✅ | Q193 ✅ | Q194 ✅ | Q195 ✅ | Q196 ✅ | Q197 ✅ | Q198 ✅ | Q199 ✅ | Q200 ✅
+
+**知识点:** 待补充
+
+---
+
+
+## Page 21: Q201 - Q210
+
+错题：Q207
+
+### Q201 ✅ | Q202 ✅ | Q203 ✅ | Q204 ✅ | Q205 ✅ | Q206 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q207 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q208 ✅ | Q209 ✅ | Q210 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 22: Q211 - Q220
+
+错题：Q212, Q218, Q219, Q220
+
+### Q211 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q212 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q213 ✅ | Q214 ✅ | Q215 ✅ | Q216 ✅ | Q217 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q218 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q219 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q220 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+## Page 23: Q221 - Q230
+
+错题：Q221, Q226, Q228, Q230
+
+### Q221 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q222 ✅ | Q223 ✅ | Q224 ✅ | Q225 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q226 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q227 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q228 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q229 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q230 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+## Page 24: Q231 - Q240
+
+错题：Q232, Q233, Q235, Q238
+
+### Q231 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q232 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q233 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q234 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q235 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q236 ✅ | Q237 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q238 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q239 ✅ | Q240 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 25: Q241 - Q250
+
+错题：Q242, Q244, Q247, Q248, Q249
+
+### Q241 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q242 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q243 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q244 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q245 ✅ | Q246 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q247 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q248 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q249 ❌ — 待补充（未答）
+
+**我的答案:** X | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q250 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 26: Q251 - Q260
+
+错题：Q257, Q259, Q260
+
+### Q251 ✅ | Q252 ✅ | Q253 ✅ | Q254 ✅ | Q255 ✅ | Q256 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q257 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q258 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q259 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q260 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+## Page 27: Q261 - Q270
+
+错题：Q263, Q264, Q266, Q268, Q269, Q270
+
+### Q261 ✅ | Q262 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q263 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q264 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q265 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q266 ❌ — 待补充（未答，多选题）
+
+**我的答案:** X | **正确答案:** CD
+
+**知识点:** 待补充
+
+---
+
+### Q267 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q268 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q269 ❌ — 待补充（未答）
+
+**我的答案:** X | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q270 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+## Page 28: Q271 - Q280
+
+全对！⭐
+
+### Q271 ✅ | Q272 ✅ | Q273 ✅ | Q274 ✅ | Q275 ✅ | Q276 ✅ | Q277 ✅ | Q278 ✅ | Q279 ✅ | Q280 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 29: Q281 - Q290
+
+错题：Q287, Q288, Q289
+
+### Q281 ✅ | Q282 ✅ | Q283 ✅ | Q284 ✅ | Q285 ✅ | Q286 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q287 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q288 ❌ — 待补充（未答，多选题）
+
+**我的答案:** X | **正确答案:** AB
+
+**知识点:** 待补充
+
+---
+
+### Q289 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q290 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 30: Q291 - Q300
+
+错题：Q291, Q292, Q294, Q295, Q296, Q297, Q298, Q299, Q300（9道！）
+
+### Q291 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q292 ❌ — 待补充（未答，多选题）
+
+**我的答案:** X | **正确答案:** DE
+
+**知识点:** 待补充
+
+---
+
+### Q293 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q294 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q295 ❌ — 待补充（未答）
+
+**我的答案:** X | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q296 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q297 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q298 ❌ — 待补充（多选题）
+
+**我的答案:** A | **正确答案:** BD
+
+**知识点:** 待补充
+
+---
+
+### Q299 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q300 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+## Page 31: Q301 - Q310
+
+错题：Q301, Q302, Q303, Q308, Q309
+
+### Q301 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q302 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q303 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q304 ✅ | Q305 ✅ | Q306 ✅ | Q307 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q308 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q309 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q310 ✅
+
+**知识点:** 待补充
+
+---
+
+## Page 32: Q311 - Q320
+
+错题：Q311, Q313, Q315, Q316, Q317, Q319, Q320（7道！）
+
+### Q311 ❌ — 待补充（多选题）
+
+**我的答案:** C | **正确答案:** CD
+
+**知识点:** 待补充
+
+---
+
+### Q312 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q313 ❌ — 待补充（未答）
+
+**我的答案:** X | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
+### Q314 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q315 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q316 ❌ — 待补充
+
+**我的答案:** D | **正确答案:** B
+
+**知识点:** 待补充
+
+---
+
+### Q317 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+### Q318 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q319 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q320 ❌ — 待补充
+
+**我的答案:** B | **正确答案:** A
+
+**知识点:** 待补充
+
+---
+
+## Page 33: Q321 - Q327
+
+错题：Q322, Q325, Q326, Q327
+
+### Q321 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q322 ❌ — 待补充
+
+**我的答案:** A | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q323 ✅ | Q324 ✅
+
+**知识点:** 待补充
+
+---
+
+### Q325 ❌ — 待补充（未答，多选题）
+
+**我的答案:** X | **正确答案:** AC
+
+**知识点:** 待补充
+
+---
+
+### Q326 ❌ — 待补充
+
+**我的答案:** C | **正确答案:** D
+
+**知识点:** 待补充
+
+---
+
+### Q327 ❌ — 待补充（未答）
+
+**我的答案:** X | **正确答案:** C
+
+**知识点:** 待补充
+
+---
+
