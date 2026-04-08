@@ -1,0 +1,541 @@
+{
+  "delta_lake": {
+    "name": "Delta Lake 核心机制",
+    "questions": [
+      {
+        "num": 4,
+        "title": "SQL Alert 触发条件（GROUP BY）"
+      },
+      {
+        "num": 8,
+        "title": "dropDuplicates 作用范围"
+      },
+      {
+        "num": 10,
+        "title": "Delta Lake Data Skipping 机制"
+      },
+      {
+        "num": 14,
+        "title": "Type 1 表高效更新（account_current）"
+      },
+      {
+        "num": 16,
+        "title": "CREATE TABLE AS SELECT (CTAS) 行为"
+      },
+      {
+        "num": 20,
+        "title": "Structured Streaming 共享 Checkpoint 目录"
+      },
+      {
+        "num": 22,
+        "title": "Delta Lake Auto Compaction"
+      },
+      {
+        "num": 28,
+        "title": "Change Data Feed + append 模式重复数据"
+      },
+      {
+        "num": 30,
+        "title": "readStream.table() 增量处理"
+      },
+      {
+        "num": 34,
+        "title": "External Table 创建方式"
+      },
+      {
+        "num": 36,
+        "title": "Delta Log Data Skipping（非分区列）"
+      },
+      {
+        "num": 45,
+        "title": "Managed table with custom location"
+      },
+      {
+        "num": 51,
+        "title": "Spark UI 诊断 predicate push-down"
+      },
+      {
+        "num": 64,
+        "title": "DROP TABLE on managed table"
+      },
+      {
+        "num": 70,
+        "title": "Parquet 文件大小控制（无 shuffle）"
+      },
+      {
+        "num": 72,
+        "title": "Structured Streaming schema 变更"
+      },
+      {
+        "num": 75,
+        "title": "Delta Lake 去重（跨批次）"
+      },
+      {
+        "num": 79,
+        "title": "External table 创建方式"
+      },
+      {
+        "num": 81,
+        "title": "Delta CHECK 约束违反导致整批写入失败"
+      },
+      {
+        "num": 83,
+        "title": "Kafka PII 隔离应按 topic 分区"
+      },
+      {
+        "num": 96,
+        "title": "Delta Lake ACID 仅针对单表，不强制外键约束"
+      },
+      {
+        "num": 97,
+        "title": "Delta time travel 不适合长期版本化方案"
+      },
+      {
+        "num": 106,
+        "title": "批量去重传播最小化计算成本"
+      },
+      {
+        "num": 107,
+        "title": "Delta Lake Optimized Writes原理"
+      },
+      {
+        "num": 108,
+        "title": "Auto Loader默认执行模式"
+      },
+      {
+        "num": 110,
+        "title": "高并发高吞吐场景方案选择"
+      },
+      {
+        "num": 113,
+        "title": "表覆盖写入后获取版本差异"
+      },
+      {
+        "num": 147,
+        "title": "CDF 无增量状态导致全量重复追加"
+      },
+      {
+        "num": 164,
+        "title": "PII 数据隔离与保留策略——按 topic 分区"
+      },
+      {
+        "num": 187,
+        "title": "MLflow 预测结果追加写入 Delta 表"
+      },
+      {
+        "num": 188,
+        "title": "%sh 只在 driver 执行，无法利用 worker 节点"
+      },
+      {
+        "num": 207,
+        "title": "新表 + 视图维持旧 schema，最小化影响其他团队"
+      },
+      {
+        "num": 212,
+        "title": "DLT 跨 notebook 复用数据质量规则——Delta 表存储"
+      },
+      {
+        "num": 219,
+        "title": "display() 触发 job，缓存导致重复执行结果不准确"
+      },
+      {
+        "num": 220,
+        "title": "Spark UI 中 Physical Plan 诊断 predicate pushdown 缺失"
+      },
+      {
+        "num": 228,
+        "title": "Delta 转 Iceberg 格式"
+      },
+      {
+        "num": 233,
+        "title": "Liquid Clustering 不支持 INSERT INTO"
+      },
+      {
+        "num": 238,
+        "title": "Z-Order 优化高基数列查询"
+      },
+      {
+        "num": 248,
+        "title": "Deletion Vectors 减少文件重写"
+      },
+      {
+        "num": 260,
+        "title": "使用foreach task实现可扩展的REST API下载"
+      },
+      {
+        "num": 264,
+        "title": "Delta Sharing创建共享所需权限"
+      },
+      {
+        "num": 266,
+        "title": "Predictive Optimization自动执行的操作（未答）"
+      },
+      {
+        "num": 316,
+        "title": "Git Folders合并冲突解决"
+      },
+      {
+        "num": 319,
+        "title": "高基数列的数据布局优化"
+      },
+      {
+        "num": 320,
+        "title": "流处理进度追踪配置"
+      },
+      {
+        "num": 322,
+        "title": "Pandas UDF 分组状态处理选择"
+      },
+      {
+        "num": 326,
+        "title": "Unity Catalog 托管表与预测优化"
+      },
+      {
+        "num": 327,
+        "title": "Deletion Vectors 删除行为（未答）"
+      }
+    ]
+  },
+  "unity_catalog": {
+    "name": "Unity Catalog 与权限管理",
+    "questions": [
+      {
+        "num": 2,
+        "title": "集群最小权限"
+      },
+      {
+        "num": 33,
+        "title": "数据库隔离与权限管理"
+      },
+      {
+        "num": 82,
+        "title": "Job Owner 不能转让给群组"
+      },
+      {
+        "num": 84,
+        "title": "GRANT USAGE + SELECT 仅赋予只读查询权限"
+      },
+      {
+        "num": 98,
+        "title": "View WHERE 过滤行而非置 null"
+      },
+      {
+        "num": 100,
+        "title": "Secrets 最小权限应设 Read 在 scope 级别"
+      },
+      {
+        "num": 167,
+        "title": "Secrets 最小权限——scope 级别 Read 权限"
+      },
+      {
+        "num": 230,
+        "title": "Schema Owner 权限不自动继承表"
+      },
+      {
+        "num": 232,
+        "title": "Databricks CLI 创建集群命令"
+      },
+      {
+        "num": 242,
+        "title": "LDP 声明式管道"
+      },
+      {
+        "num": 249,
+        "title": "DAB 部署 App 和 Volume 权限（未答）"
+      },
+      {
+        "num": 259,
+        "title": "Unity Catalog工作区目录默认权限范围"
+      },
+      {
+        "num": 263,
+        "title": "Asset Bundle管理现有生产Job的正确流程"
+      },
+      {
+        "num": 308,
+        "title": "PII数据脱敏管道设计"
+      },
+      {
+        "num": 315,
+        "title": "基于映射表的动态列掩码"
+      }
+    ]
+  },
+  "structured_streaming": {
+    "name": "Structured Streaming",
+    "questions": [
+      {
+        "num": 7,
+        "title": "MLflow 预测结果保存"
+      },
+      {
+        "num": 21,
+        "title": "Structured Streaming Trigger Interval 调优"
+      },
+      {
+        "num": 66,
+        "title": "%sh 性能问题"
+      },
+      {
+        "num": 117,
+        "title": "REST API creator_user_name字段含义"
+      },
+      {
+        "num": 139,
+        "title": "Structured Streaming触发模式与存储成本优化"
+      },
+      {
+        "num": 268,
+        "title": "Lakeflow中streaming table与materialized view的选择"
+      },
+      {
+        "num": 325,
+        "title": "多任务ETL流水线自动化触发（未答，多选题）"
+      }
+    ]
+  },
+  "dlt_lakeflow": {
+    "name": "DLT / Lakeflow Pipelines",
+    "questions": [
+      {
+        "num": 49,
+        "title": "性能测试最佳实践"
+      },
+      {
+        "num": 218,
+        "title": "DLT 跨表验证——临时表 + left join 检测缺失记录"
+      },
+      {
+        "num": 221,
+        "title": "Databricks CLI 复制 pipeline 配置——get + create"
+      }
+    ]
+  },
+  "performance": {
+    "name": "性能优化与 Spark 调优",
+    "questions": [
+      {
+        "num": 26,
+        "title": "集群配置与 Wide Transformation 性能"
+      },
+      {
+        "num": 101,
+        "title": "MEMORY_ONLY 缓存异常信号：Size on Disk > 0"
+      },
+      {
+        "num": 111,
+        "title": "Notebook级别安装Python包到所有节点"
+      },
+      {
+        "num": 174,
+        "title": "%pip install 作用于 notebook 级别所有节点"
+      },
+      {
+        "num": 244,
+        "title": "Spark UI 查询计划可视化"
+      },
+      {
+        "num": 309,
+        "title": "查询执行总耗时的查看方法"
+      },
+      {
+        "num": 311,
+        "title": "减少磁盘溢出的优化方法（多选题）"
+      }
+    ]
+  },
+  "jobs_workflows": {
+    "name": "Jobs & Workflows",
+    "questions": [
+      {
+        "num": 1,
+        "title": "Jobs API 参数传递"
+      },
+      {
+        "num": 12,
+        "title": "Jobs API 2.0/jobs/create 重复调用"
+      },
+      {
+        "num": 47,
+        "title": "Job run history retention"
+      },
+      {
+        "num": 54,
+        "title": "Python sys.path"
+      },
+      {
+        "num": 57,
+        "title": "Jobs REST API"
+      },
+      {
+        "num": 68,
+        "title": "Databricks CLI upload file"
+      },
+      {
+        "num": 115,
+        "title": "Jobs API多任务响应结构"
+      },
+      {
+        "num": 235,
+        "title": "Jobs API 获取运行历史"
+      },
+      {
+        "num": 269,
+        "title": "SQL Warehouse使用归因自动化报告（未答）"
+      },
+      {
+        "num": 317,
+        "title": "Jobs API自动化监控与重跑"
+      }
+    ]
+  },
+  "auto_loader": {
+    "name": "Auto Loader",
+    "questions": [
+      {
+        "num": 257,
+        "title": "Auto Loader schema不匹配导致记录被隔离"
+      }
+    ]
+  },
+  "delta_sharing": {
+    "name": "Delta Sharing",
+    "questions": [
+      {
+        "num": 5,
+        "title": "Databricks Repos 分支不可见"
+      },
+      {
+        "num": 270,
+        "title": "Databricks Git Folder团队协作最佳实践"
+      }
+    ]
+  },
+  "git_repos": {
+    "name": "Git & Repos",
+    "questions": [
+      {
+        "num": 226,
+        "title": "Files in Repos 单元测试"
+      }
+    ]
+  },
+  "platform_ops": {
+    "name": "平台操作与工具",
+    "questions": [
+      {
+        "num": 6,
+        "title": "dbutils.secrets 行为"
+      },
+      {
+        "num": 9,
+        "title": "Python 变量 vs SQL 引用"
+      },
+      {
+        "num": 46,
+        "title": "Databricks Secrets 限制"
+      },
+      {
+        "num": 69,
+        "title": "BI dashboard 数据刷新策略"
+      },
+      {
+        "num": 85,
+        "title": "集群扩缩容事件记录在 Cluster Event Log"
+      },
+      {
+        "num": 102,
+        "title": "Databricks notebook 文件首行格式"
+      },
+      {
+        "num": 105,
+        "title": "MLflow模型在Spark中的调用方式"
+      },
+      {
+        "num": 126,
+        "title": "Python变量与Spark视图的跨语言互操作"
+      },
+      {
+        "num": 175,
+        "title": "Databricks Python notebook 首行格式"
+      },
+      {
+        "num": 184,
+        "title": "DBFS 是对象存储的文件系统抽象层"
+      }
+    ]
+  },
+  "other": {
+    "name": "其他",
+    "questions": [
+      {
+        "num": 247,
+        "title": "DataFrame.transform 模块化 ETL"
+      },
+      {
+        "num": 287,
+        "title": "待补充"
+      },
+      {
+        "num": 288,
+        "title": "待补充（未答，多选题）"
+      },
+      {
+        "num": 289,
+        "title": "待补充"
+      },
+      {
+        "num": 291,
+        "title": "待补充"
+      },
+      {
+        "num": 292,
+        "title": "待补充（未答，多选题）"
+      },
+      {
+        "num": 294,
+        "title": "待补充"
+      },
+      {
+        "num": 295,
+        "title": "待补充（未答）"
+      },
+      {
+        "num": 296,
+        "title": "待补充"
+      },
+      {
+        "num": 297,
+        "title": "待补充"
+      },
+      {
+        "num": 298,
+        "title": "待补充（多选题）"
+      },
+      {
+        "num": 299,
+        "title": "待补充"
+      },
+      {
+        "num": 300,
+        "title": "待补充"
+      },
+      {
+        "num": 301,
+        "title": "待补充"
+      },
+      {
+        "num": 302,
+        "title": "待补充"
+      },
+      {
+        "num": 303,
+        "title": "待补充"
+      },
+      {
+        "num": 313,
+        "title": "邮箱列的固定长度哈希脱敏（未答）"
+      }
+    ]
+  }
+}

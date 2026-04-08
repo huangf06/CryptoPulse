@@ -1,0 +1,1048 @@
+{
+  "delta_sharing": {
+    "name": "Delta Sharing",
+    "count": 3,
+    "questions": [
+      {
+        "num": 264,
+        "title": "Delta Sharing创建共享所需权限",
+        "my_answer": "B",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 264\nA data architect is implementing Delta Sharing as part of their data governance strategy to enable secure\ndata collaboration with external partners and internal business units. The architect must establish a\npermission framework that allows designated data stewards to create shares for their respective domains\nwhile maintaining security boundaries and audit compliance.\nWhich specific permissions and roles must be assigned to enable users to create, configure, and manage\nDelta Shares while maintaining proper security governance and access controls?\nA. Only workspace admins can create and manage shares\nB. Users need the MANAGE SHARES permission on the workspace\nC. Users need to be metastore admins or have CREATE SHARE privilege for the metastore\nD. Any user with USE_CATALOG privilege can create shares\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nCreating and managing Delta Shares requires elevated governance privileges at the metastore level.\nAssigning users as metastore admins or granting them the CREATE SHARE privilege allows designated\ndata stewards to create and configure shares within defined security boundaries, while preserving\ncentralized auditability and access control."
+      },
+      {
+        "num": 299,
+        "title": "待补充",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": true,
+        "pdf_text": "QUESTION 299\nA data engineer is configuring Delta Sharing for a Databricks-to-Databricks scenario to optimize read\nperformance. The recipient needs to perform time travel queries and streaming reads on shared sales\ndata.\nWhich configuration will provide the optimal performance while enabling these capabilities?\nA. Use the open sharing protocol instead of Databricks-to Databricks sharing for better performance.\nB. Share tables WITHOUT HISTORY and enable partitioning for better query performance.\nC. Share tables WITH HISTORY, ensure tables don't have partitioning enabled. and enable CDF before\nsharing.\nD. Share the entire schema WITHOUT HISTORY and rely on recipient-side caching for performance.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nSharing tables with history is required to support time travel queries.\nEnabling Change Data Feed (CDF) is necessary for streaming reads on shared Delta tables.\nAvoiding partitioning improves performance in Databricks-to-Databricks Delta Sharing, as the sharing\nprotocol is optimized for non-partitioned tables and predicate pushdown over shared metadata."
+      },
+      {
+        "num": 300,
+        "title": "待补充",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": true,
+        "pdf_text": "QUESTION 300\nA data organization has adopted Delta Sharing to securely distribute curated datasets from a Unity\nCatalog-enabled workspace. The data engineering team is sharing large Delta tables with an internal\npartner via Databricks-to-Databricks and aggregated reports with an external client\nvia Open Sharing. While testing new sharing workflows, the data engineering team encounters challenges\nrelated to access control, data update visibility, and shareable object types.\nWhat is a limitation of the Delta Sharing protocol or implementation when used with Databricks-to-\nDatabricks or Open Sharing?\nA. Delta Sharing does not support Unity Catalog enabled tables; only legacy Hive Metastore tables are\nshareable.\nB. With Databricks-to-Databricks sharing. Unity Catalog recipients must re-ingest data manually using \nCOPY INTO or REST APIs.\nC. Delta Sharing (both Databricks-to-Databricks and Open sharing) allows recipients to modify the source\ndata if they have SELECT privileges.\nD. With Open sharing, recipients cannot access Volumes, Models, or notebooks — only static Delta tables\nare supported.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nOpen Sharing supports sharing Delta tables only. It does not support sharing Volumes, ML models,\nnotebooks, or other Unity Catalog object types, which are only supported in Databricks-to-Databricks\nsharing scenarios."
+      }
+    ]
+  },
+  "cdf_cdc": {
+    "name": "Change Data Feed / CDC",
+    "count": 6,
+    "questions": [
+      {
+        "num": 28,
+        "title": "Change Data Feed + append 模式重复数据",
+        "my_answer": "E",
+        "correct": "B（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 28\nA junior data engineer seeks to leverage Delta Lake's Change Data Feed functionality to create a Type 1\ntable representing all of the values that have ever been valid for all rows in a bronze table created with\nthe property delta.enableChangeDataFeed = true. They plan to execute the following code as a\ndaily job:\nWhich statement describes the execution and results of running the above query multiple times?\nA. Each time the job is executed, newly updated records will be merged into the target table, overwriting\nprevious values with the same primary keys.\nB. Each time the job is executed, the entire available history of inserted or updated records will be\nappended to the target table, resulting in many duplicate entries.\nC. Each time the job is executed, the target table will be overwritten using the entire history of inserted or\nupdated records, giving the desired result.\nD. Each time the job is executed, the differences between the original and current versions are calculated;\nthis may result in duplicate entries for some records.\nE. Each time the job is executed, only those records that have been inserted or updated since the last\nexecution will be appended to the target table, giving the desired result.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 30,
+        "title": "readStream.table() 增量处理",
+        "my_answer": "D",
+        "correct": "A（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 30\nA nightly job ingests data into a Delta Lake table using the following code:\nThe next step in the pipeline requires a function that returns an object that can be used to manipulate new\nrecords that have not yet been processed to the next table in the pipeline.\nWhich code snippet completes this function definition?\ndef new_records():\nA. return spark.readStream.table(\"bronze\")\nB. return spark.readStream.load(\"bronze\")\nC.\nD. return spark.read.option(\"readChangeFeed\", \"true\").table (\"bronze\")\nE.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 113,
+        "title": "表覆盖写入后获取版本差异",
+        "my_answer": "E",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 113\nA Delta Lake table in the Lakehouse named customer_churn_params is used in churn prediction by the\nmachine learning team. The table contains information about customers derived from a number of\nupstream sources. Currently, the data engineering team populates this table nightly by overwriting the\ntable with the current valid values derived from upstream data sources.\nImmediately after each update succeeds, the data engineering team would like to determine the difference\nbetween the new version and the previous version of the table.\nGiven the current implementation, which method can be used?\nA. Execute a query to calculate the difference between the new version and the previous version using\nDelta Lake’s built-in versioning and lime travel functionality.\nB. Parse the Delta Lake transaction log to identify all newly written data files.\nC. Parse the Spark event logs to identify those rows that were updated, inserted, or deleted.\nD. Execute DESCRIBE HISTORY customer_churn_params to obtain the full operation metrics for the\nupdate, including a log of all records that have been added or modified.\nE. Use Delta Lake’s change data feed to identify those records that have been updated, inserted, or\ndeleted.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 147,
+        "title": "CDF 无增量状态导致全量重复追加",
+        "my_answer": "C",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 147\nA junior data engineer seeks to leverage Delta Lake's Change Data Feed functionality to create a Type 1\ntable representing all of the values that have ever been valid for all rows in a bronze table created with\nthe property delta.enableChangeDataFeed = true. They plan to execute the following code as a\ndaily job:\nWhich statement describes the execution and results of running the above query multiple times?\nA. Each time the job is executed, newly updated records will be merged into the target table, overwriting\nprevious values with the same primary keys.\nB. Each time the job is executed, the entire available history of inserted or updated records will be\nappended to the target table, resulting in many duplicate entries.\nC. Each time the job is executed, only those records that have been inserted or updated since the last\nexecution will be appended to the target table, giving the desired result.\nD. Each time the job is executed, the differences between the original and current versions are calculated;\nthis may result in duplicate entries for some records.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nReference:"
+      },
+      {
+        "num": 248,
+        "title": "Deletion Vectors 减少文件重写",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 248\nA company stores account transactions in a Delta Lake table. The company needs to apply frequent\naccount-level correlations (e.g., UPDATE statements) but wants to avoid rewriting entire Parquet files for\neach change to reduce file churn and improve write performance.\nWhich Delta Lake feature should they enable?\nA. Enable automatic file compaction on writes\nB. Enable change data feed on the Delta table\nC. Partition the Delta table by account_id\nD. Enable deletion vectors on the Delta table\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nDeletion vectors allow Delta Lake to track row-level deletes and updates without rewriting entire Parquet\nfiles. By recording changes separately from the base files, this feature significantly reduces file churn and\nimproves write performance for workloads with frequent row-level modifications such as account-level\nupdates."
+      },
+      {
+        "num": 296,
+        "title": "待补充",
+        "my_answer": "B",
+        "correct": "A",
+        "is_pending": true,
+        "pdf_text": "QUESTION 296\nA company has a task management system that tracks the most recent status of tasks. The system takes\ntask events as input and processes events in near real-time using Lakeflow Spark Declarative Pipelines. A\nnew task event is ingested into the system when a task is created or the status is changed. Lakeflow Spark\nDeclarative Pipelines provides a streaming table (table name: tasks_status) for the BI users to query. The\ntable represents the latest status of all tasks and includes 5 columns: task_id(unique for each task),\ntask_name, task_owner, task_status, task_event_time. The table enables 3 properties:\ndeletion vectors, row tracking, and change data feed.\nA data engineer is asked to create a new Lakeflow Spark Declarative Pipelines to enrich the \n“task_status” table in near real-time by adding one additional column representing task_owner’s\ndepartment, which can be looked up from a static dimension table (table name: employee).\nHow should this enrichment be implemented?\nA. Create a new Lakeflow Spark Declarative Pipelines: use readStream() function with option\nreadChangeFeed to read tasks_status table CDF; enrich with the employee table; create a new\nstreaming table as the result table and use apply_changes() function to process the changes from\nthe enriched CDF.\nB. Create a new Lakeflow Spark Declarative pipeline: use the readStream()function to read \ntasks_status table, enrich with the employee table; store the result in a new streaming table.\nC. Create a new Lakeflow Spark Declarative Pipeline: use the readStream() function with the option\nskipChangeCommits to read the tasks_status table; enrich with the employee table; store the result\nin a new streaming table.\nD. Create a new Lakeflow Spark Declarative Pipeline: use the read () function to read tasks_status\ntable; enrich with employee table; store the result in a materialized view.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nBecause tasks_status represents the latest state and includes updates, the downstream pipeline must\ncorrectly propagate incremental changes. Reading the table’s change data feed provides the insert/update/\ndelete events needed for near-real-time incremental processing. Enriching those change events with the\nstatic employee dimension and using apply_changes() rebuilds the latest-state target correctly while\npreserving update semantics, rather than treating the source as append-only."
+      }
+    ]
+  },
+  "auto_loader": {
+    "name": "Auto Loader",
+    "count": 7,
+    "questions": [
+      {
+        "num": 14,
+        "title": "Type 1 表高效更新（account_current）",
+        "my_answer": "A",
+        "correct": "C（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 14\nAn hourly batch job is configured to ingest data files from a cloud object storage container where each\nbatch represent all records produced by the source system in a given hour. The batch job to process these\nrecords into the Lakehouse is sufficiently delayed to ensure no late-arriving data is missed. The user_id\nfield represents a unique key for the data, which has the following schema:\nuser_id BIGINT, username STRING, user_utc STRING, user_region STRING,\nlast_login BIGINT, auto_pay BOOLEAN, last_updated BIGINT\nNew records are all ingested into a table named account_history which maintains a full record of all\ndata in the same schema as the source. The next table in the system is named account_current and is\nimplemented as a Type 1 table representing the most recent value for each unique user_id.\nAssuming there are millions of user accounts and tens of thousands of records processed hourly, which\nimplementation can be used to efficiently update the described account_current table as part of each\nhourly batch job?\nA. Use Auto Loader to subscribe to new files in the account_history directory; configure a Structured\nStreaming trigger once job to batch update newly detected files into the account_current table.\nB. Overwrite the account_current table with each batch using the results of a query against the\naccount_history table grouping by user_id and filtering for the max value of last_updated.\nC. Filter records in account_history using the last_updated field and the most recent hour\nprocessed, as well as the max last_iogin by user_id write a merge statement to update or insert\nthe most recent value for each user_id.\nD. Use Delta Lake version history to get the difference between the latest version of account_history\nand one version prior, then write these records to account_current.\nE. Filter records in account_history using the last_updated field and the most recent hour\nprocessed, making sure to deduplicate on username; write a merge statement to update or insert the\nmost recent value for each username.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 108,
+        "title": "Auto Loader默认执行模式",
+        "my_answer": "E",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 108\nWhich statement describes the default execution mode for Databricks Auto Loader?\nA. Cloud vendor-specific queue storage and notification services are configured to track newly arriving\nfiles; the target table is materialized by directly querying all valid files in the source directory.\nB. New files are identified by listing the input directory; the target table is materialized by directly querying\nall valid files in the source directory.\nC. Webhooks trigger a Databricks job to run anytime new data arrives in a source directory; new data are\nautomatically merged into target tables using rules inferred from the data.\nD. New files are identified by listing the input directory; new files are incrementally and idempotently\nloaded into the target Delta Lake table.\nE. Cloud vendor-specific queue storage and notification services are configured to track newly arriving\nfiles; new files are incrementally and idempotently loaded into the target Delta Lake table.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\n店铺：学习小店66"
+      },
+      {
+        "num": 242,
+        "title": "LDP 声明式管道",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 242\nA data engineer is evaluating tools to build a production-grade data pipeline. The team must process\nchange data from cloud object storage, filter out or isolate invalid records, and ensure the timely delivery of\nclean data to downstream consumers. The team is small, under tight deadlines, and wants to minimize\noperational overhead while keeping pipelines auditable and maintainable.\nWhich approach should the data engineer implement?\nA. Ingest data directly into Delta tables via Spark jobs, apply data quality filters using UDFs, and use LDP\nfor creating Materialized Views.\nB. Use a hybrid approach: Ingest with Auto Loader into Bronze tables, then process using SQL queries in\nDatabricks Workflows to generate cleaned Silver and Gold tables on a schedule.\nC. Implement ingestion using Auto Loader with Structured Streaming, and manage invalid data handling\nand table updates using checkpointing and merge logic.\nD. Use LDP to build declarative pipelines with Streaming Tables and Materialized Views, leveraging built-\nin support for data expectations and incremental processing.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nLDP provides a declarative framework for building production-grade pipelines with minimal operational\noverhead. Streaming Tables and Materialized Views handle incremental processing automatically, while\nbuilt-in data expectations allow invalid records to be filtered or isolated in a consistent and auditable way.\nThis approach is well suited for small teams under tight deadlines, as it simplifies maintenance, improves\nreliability, and ensures timely delivery of clean data to downstream consumers."
+      },
+      {
+        "num": 257,
+        "title": "Auto Loader schema不匹配导致记录被隔离",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 257\nA data engineer is using Auto Loader to read in JSON data as it arrives. They have configured Auto\nLoader to quarantine invalid JSON records. They are noticing that over time, some records are being\nquarantined even though they are well-formed JSON.\nThe snippet of code is:\nWhat is the cause of the missing data?\nA. The source data is valid JSON, but doesn’t conform to their defined schema in some way\nB. The badRecordsPath location is accumulating many small files\nC. The engineer forgot to set the option “cloudFiles.quarantineMode”, “rescue”.\nD. At some point, the upstream data provider switched everything to multi-line JSON.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nAuto Loader quarantines records that cannot be parsed according to the specified schema, even if the\nJSON itself is well formed. If incoming records contain additional fields, missing fields, or incompatible data\ntypes compared to the declared schema, they are treated as invalid and routed to the bad records path."
+      },
+      {
+        "num": 268,
+        "title": "Lakeflow中streaming table与materialized view的选择",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 268\nA data engineer is designing a system leveraging Lakeflow Declarative Pipeline technology to process\nreal-time truck telemetry data ingested from JSON files in S3 using Auto Loader. The data includes \ntruck_id, timestamp, location, speed, and fuel_level. The system must support two use cases:\n1. Near-real-time monitoring of the latest location, speed, and fuel_level per truck_id for the\noperations team.\n2. Daily aggregated reports of total distance traveled and average fuel efficiency per truck_id for the\nmanagement team.\nWhich approach should the data engineer use for streaming tables and materialized views in the Lakeflow\nDeclarative Pipeline to meet these requirements?\nA. Define a streaming table to ingest and store the raw telemetry data, and create a streaming table to\ncompute the daily aggregated distance and fuel efficiency per truck_id reporting. Create a\nmaterialized view to compute the latest location, speed, and fuel_level per truck_id for real-time\nmonitoring.\nB. Define a streaming table to ingest and store the raw telemetry data, and create a materialized view to\ncompute the latest location, speed, and fuel_level per truck_id for real-time monitoring. Create\nanother materialized view to compute the daily aggregated distance and fuel efficiency per truck_id\nfor reporting.\nC. Define a streaming table to ingest and store the raw telemetry data, and create a streaming table to\nincrementally compute the latest location, speed, and fuel_level per truck_id for real-time\nmonitoring. Create a materialized view to compute the daily aggregated distance and fuel efficiency\nper truck_id for reporting.\nD. Define a materialized view to ingest and store the raw telemetry data, and create a streaming table to\ncompute the latest location, speed, and fuel_level per truck_id for real-time monitoring. Create\nanother materialized view to compute the daily aggregated distance and fuel efficiency per truck_id\nfor reporting.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nA streaming table is the right construct to ingest continuously arriving telemetry from Auto Loader.\nComputing the latest per truck_id requires near-real-time incremental updates as new events arrive, which\nis best handled with a downstream streaming table. The daily aggregates are naturally suited to a\nmaterialized view, which maintains precomputed results for reporting and refreshes efficiently without\nrequiring a continuously running streaming aggregation for a once-per-day consumption pattern."
+      },
+      {
+        "num": 289,
+        "title": "待补充",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": true,
+        "pdf_text": "QUESTION 289\nA data engineer is building a streaming data pipeline to ingest JSON files from cloud storage into a Delta\nLake table. The pipeline must process files incrementally, handle schema evolution automatically, ensure\nexactly-once processing, and minimize manual infrastructure management.\nHow should the data engineer fulfill these requirements?\nA. Use Lakeflow Spark Declarative Pipelines with a static DataFrame read, merge schema with \nspark.conf.set (“spark.databricks.delta.schema.autoMerge.enabled”, “true”)\nB. Use Auto Loader in batch mode with a daily job to overwrite the Delta table.\nC. Use Lakeflow Spart Declarative Pipelines with Auto Loader and enabling schema inference with \n“cloudFiles.schemaEvolutionMode”= “addNewColumns”\nD. Use traditional Spark Structured Streaming with Auto Loader, manually configuring checkpoints\nlocation and enabling schema inference with “mergeSchema”= “true”\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nLakeflow Spark Declarative Pipelines combined with Auto Loader provide fully managed incremental file\ningestion with exactly-once guarantees and minimal operational overhead. Enabling schema inference and\nevolution allows new columns in incoming JSON files to be incorporated automatically, satisfying the\nrequirements for streaming ingestion, schema evolution, and reduced manual infrastructure management."
+      },
+      {
+        "num": 298,
+        "title": "待补充（多选题）",
+        "my_answer": "A",
+        "correct": "BD",
+        "is_pending": true,
+        "pdf_text": "QUESTION 298\nA data engineer wants to ingest a large collection of image files (JPEG and PNG) from cloud object\nstorage into Unity Catalog-managed table for further analysis and visualization.\nWhich two configurations and practices are recommended to incrementally ingest these images into the\ntable? (Choose two.)\nA. Use Auto loader and set cloudFiles.format to \"TEXT\"\nB. Use Auto loader and set cloudFiles.format to \"BINARYFILE\"\nC. Use Auto loader and set cloudFiles.format to \"IMAGE\"\nD. Use the pathGlobFilter option to select only image files (e.g.. \"*.jpg, *.png\")\nE. Move files to a volume and read with SQL editor\nCorrect Answer: BD\nSection: (none)\nExplanation/Reference:\nExplanation:\nUsing Auto Loader with the BINARYFILE format enables efficient ingestion of binary assets such as JPEG\nand PNG files into a Unity Catalog-managed table while preserving file metadata and supporting\nincremental processing.\nApplying a pathGlobFilter ensures that only image files (e.g., .jpg, .png) are incrementally detected and\ningested, preventing non-image objects from entering the pipeline and optimizing ingestion performance."
+      }
+    ]
+  },
+  "dlt_lakeflow": {
+    "name": "DLT / Lakeflow Pipelines",
+    "count": 6,
+    "questions": [
+      {
+        "num": 69,
+        "title": "BI dashboard 数据刷新策略",
+        "my_answer": "E",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 69\nThe business intelligence team has a dashboard configured to track various summary metrics for retail\nstores. This includes total sales for the previous day alongside totals and averages for a variety of time\nperiods. The fields required to populate this dashboard have the following schema:\nFor demand forecasting, the Lakehouse contains a validated table of all itemized sales updated\nincrementally in near real-time. This table, named products_per_order, includes the following fields:\nBecause reporting on long-term sales trends is less volatile, analysts using the new dashboard only\nrequire data to be refreshed once daily. Because the dashboard will be queried interactively by many users\nthroughout a normal business day, it should return results quickly and reduce total compute associated\nwith each materialization.\nWhich solution meets the expectations of the end users while controlling and limiting possible costs?\nA. Populate the dashboard by configuring a nightly batch job to save the required values as a table\noverwritten with each update.\nB. Use Structured Streaming to configure a live dashboard against the products_per_order table\nwithin a Databricks notebook.\nC. Configure a webhook to execute an incremental read against products_per_order each time the\ndashboard is refreshed.\nD. Use the Delta Cache to persist the products_per_order table in memory to quickly update the\ndashboard with each query.\nE. Define a view against the products_per_order table and define the dashboard against this view.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 85,
+        "title": "集群扩缩容事件记录在 Cluster Event Log",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 85\nA distributed team of data analysts share computing resources on an interactive cluster with autoscaling\nconfigured. In order to better manage costs and query throughput, the workspace administrator is hoping\nto evaluate whether cluster upscaling is caused by many concurrent users or resource-intensive queries.\nIn which location can one review the timeline for cluster resizing events?\nA. Workspace audit logs\nB. Driver's log file\nC. Ganglia\nD. Cluster Event Log\nE. Executor's log file\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\n店铺：学习小店66"
+      },
+      {
+        "num": 212,
+        "title": "DLT 跨 notebook 复用数据质量规则——Delta 表存储",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 212\nA team of data engineers are adding tables to a DLT pipeline that contain repetitive expectations for many\nof the same data quality checks. One member of the team suggests reusing these data quality rules across\nall tables defined for this pipeline.\nWhat approach would allow them to do this?\nA. Add data quality constraints to tables in this pipeline using an external job with access to pipeline\nconfiguration files.\nB. Use global Python variables to make expectations visible across DLT notebooks included in the same\npipeline.\nC. Maintain data quality rules in a separate Databricks notebook that each DLT notebook or file can import\nas a library.\nD. Maintain data quality rules in a Delta table outside of this pipeline's target schema, providing the\nschema name as a pipeline parameter.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 218,
+        "title": "DLT 跨表验证——临时表 + left join 检测缺失记录",
+        "my_answer": "B",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 218\nA user wants to use DLT expectations to validate that a derived table report contains all records from the\nsource, included in the table validation_copy.\nThe user attempts and fails to accomplish this by adding an expectation to the report table definition.\nWhich approach would allow using DLT expectations to validate all expected records are present in this\ntable?\nA. Define a temporary table that performs a left outer join on validation_copy and report, and define an\nexpectation that no report key values are null\nB. Define a SQL UDF that performs a left outer join on two tables, and check if this returns null values for\nreport key values in a DLT expectation for the report table\nC. Define a view that performs a left outer join on validation_copy and report, and reference this view in\nDLT expectations for the report table\nD. Define a function that performs a left outer join on validation_copy and report, and check against the\nresult in a DLT expectation for the report table\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nTo ensure that all records from the validation_copy source are present in the report table, you can\ncreate a temporary table that performs a left outer join between validation_copy and report. This\njoin will help you identify if there are any records in validation_copy that are missing from report.\nYou can then use a Delta Live Tables (DLT) expectation on this temporary table to ensure that there are\nno null key values from the report.\nYou could perform a left outer join and create a derived temporary table that contains any records from \nvalidation_copy that are missing in report.\nDefine a DLT expectation that ensures that no key values are null, which would mean all records in\nvalidation_copy exist in report."
+      },
+      {
+        "num": 302,
+        "title": "待补充",
+        "my_answer": "B",
+        "correct": "C",
+        "is_pending": true,
+        "pdf_text": "QUESTION 302\nHow are the operational aspects of Lakeflow Spark Declarative Pipelines from Spark Structured Streaming\ndifferent?\nA. Lakeflow Spark Declarative Pipelines automatically handle schema evolution, while Structured\nStreaming always requires manual schema management.\nB. Structured Streaming can process continuous data streams, while Lakeflow Spark Declarative\nPipelines cannot.\nC. Lakeflow Spark Declarative Pipelines manage the orchestration of multi-stage pipelines automatically,\nwhile Structured Streaming requires external orchestration for complex dependencies.\nD. Lakeflow Spark Declarative Pipelines can write to Delta Lake format while structured streaming cannot.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nLakeflow Spark Declarative Pipelines automatically manage orchestration, task dependencies, retries, and\nmulti-stage pipeline execution, providing built-in operational management.\nSpark Structured Streaming focuses on stream processing execution only and requires external\norchestration tools (e.g., Jobs, Airflow, workflows) to manage complex multi-stage pipelines and\ndependencies."
+      },
+      {
+        "num": 308,
+        "title": "PII数据脱敏管道设计",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 308\nAn organization processes customer data from web and mobile applications. Data includes names, emails\nphone numbers, and location history. Data arrives both as Batch files from an SFTP drop (daily) and\nStreaming JSON events from Kafka (real-time).\nTo comply with internal data privacy policies, the following requirements must be met:\nPersonally identifiable information (PII) like email, phone_number, and ip_address must be masked or\nanonymized before storage\nBoth batch and streaming pipelines must apply consistent PII handling\nMasking logic must be auditable and reproducible\nThe masked data must still be usable for downstream analytics\nHow should the data engineer design a compliant data pipeline on Databricks that supports both batch and\nstreaming modes, applies data masking to PII, and maintains traceability of transformations for audits?\nA. Ingest both batch and streaming data using Lakeflow Spark Declarative Pipelines, and apply masking\nvia Unity Catalog column masks at read time to avoid modifying the data during ingestion.\nB. Load batch data with notebooks and ingest streaming data with SQL Warehouses; use Unity Catalog\ncolumn masks on Silver tables to redact fields after storage.\nC. Use Lakeflow Spark Declarative Pipelines for batch and streaming ingestion define a PII masking\nfunction, and apply it during Bronze ingestion before writing to Delta Lake.\nD. Allow PII to be stored unmasked in Bronze for lineage tracking, then apply masking logic in Gold tables\nused for reporting.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nUsing Lakeflow Spark Declarative Pipelines for both batch and streaming ingestion ensures a single,\nconsistent processing framework.\nDefining a PII masking/anonymization function and applying it during Bronze ingestion guarantees that\nsensitive data is never stored in raw form, meeting privacy-by-design requirements.\nDeclarative pipelines provide versioned, auditable, and reproducible transformations, ensuring full\ntraceability for compliance and audits, while the masked data remains structured and usable for\ndownstream analytics."
+      }
+    ]
+  },
+  "structured_streaming": {
+    "name": "Structured Streaming",
+    "count": 13,
+    "questions": [
+      {
+        "num": 4,
+        "title": "SQL Alert 触发条件（GROUP BY）",
+        "my_answer": "A",
+        "correct": "E（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 4\nThe data engineering team has configured a Databricks SQL query and alert to monitor the values in a\nDelta Lake table. The recent_sensor_recordings table contains an identifying sensor_id alongside\nthe timestamp and temperature for the most recent 5 minutes of recordings.\nThe below query is used to create the alert:\nThe query is set to refresh each minute and always completes in less than 10 seconds. The alert is set to\ntrigger when mean (temperature) > 120. Notifications are triggered to be sent at most every 1\nminute.\nIf this alert raises notifications for 3 consecutive minutes and then stops, which statement must be true?\nA. The total average temperature across all sensors exceeded 120 on three consecutive executions of the\nquery\nB. The recent_sensor_recordings table was unresponsive for three consecutive runs of the query\nC. The source query failed to update properly for three consecutive minutes and then restarted\nD. The maximum temperature recording for at least one sensor exceeded 120 on three consecutive\nexecutions of the query\nE. The average temperature recordings for at least one sensor exceeded 120 on three consecutive\nexecutions of the query\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 20,
+        "title": "Structured Streaming 共享 Checkpoint 目录",
+        "my_answer": "D",
+        "correct": "E（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 20\nA data architect has designed a system in which two Structured Streaming jobs will concurrently write to a\nsingle bronze Delta table. Each job is subscribing to a different topic from an Apache Kafka source, but\nthey will write data with the same schema. To keep the directory structure simple, a data engineer has\ndecided to nest a checkpoint directory to be shared by both streams.\nThe proposed directory structure is displayed below:\nWhich statement describes whether this checkpoint directory structure is valid for the given scenario and\nwhy?\nA. No; Delta Lake manages streaming checkpoints in the transaction log.\nB. Yes; both of the streams can share a single checkpoint directory.\nC. No; only one stream can write to a Delta Lake table.\nD. Yes; Delta Lake supports infinite concurrent writers.\nE. No; each of the streams needs to have its own checkpoint directory.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 21,
+        "title": "Structured Streaming Trigger Interval 调优",
+        "my_answer": "A",
+        "correct": "E（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 21\nA Structured Streaming job deployed to production has been experiencing delays during peak hours of the\nday. At present, during normal execution, each microbatch of data is processed in less than 3 seconds.\nDuring peak hours of the day, execution time for each microbatch becomes very inconsistent, sometimes\nexceeding 30 seconds. The streaming write is currently configured with a trigger interval of 10 seconds.\nHolding all other variables constant and assuming records need to be processed in less than 10 seconds,\nwhich adjustment will meet the requirement?\nA. Decrease the trigger interval to 5 seconds; triggering batches more frequently allows idle executors to\nbegin processing the next batch while longer running tasks from previous batches finish.\nB. Increase the trigger interval to 30 seconds; setting the trigger interval near the maximum execution time\nobserved for each batch is always best practice to ensure no records are dropped.\nC. The trigger interval cannot be modified without modifying the checkpoint directory; to maintain the\ncurrent stream state, increase the number of shuffle partitions to maximize parallelism.\nD. Use the trigger once option and configure a Databricks job to execute the query every 10 seconds; this\nensures all backlogged records are processed with each batch.\nE. Decrease the trigger interval to 5 seconds; triggering batches more frequently may prevent records\nfrom backing up and large batches from causing spill.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 49,
+        "title": "性能测试最佳实践",
+        "my_answer": "C",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 49\nA user new to Databricks is trying to troubleshoot long execution times for some pipeline logic they are\nworking on. Presently, the user is executing code cell-by-cell, using display() calls to confirm code is\nproducing the logically correct results as new transformations are added to an operation. To get a measure\nof average time to execute, the user is running each cell multiple times interactively.\nWhich of the following adjustments will get a more accurate measure of how code is likely to perform in\nproduction?\nA. Scala is the only language that can be accurately tested using interactive notebooks; because the best\nperformance is achieved by using Scala code compiled to JARs, all PySpark and Spark SQL logic\nshould be refactored.\nB. The only way to meaningfully troubleshoot code execution times in development notebooks is to use\nproduction-sized data and production-sized clusters with Run All execution.\nC. Production code development should only be done using an IDE; executing code against a local build\nof open source Spark and Delta Lake will provide the most accurate benchmarks for how code will\nperform in production.\nD. Calling display() forces a job to trigger, while many transformations will only add to the logical query\nplan; because of caching, repeated execution of the same logic does not provide meaningful results.\nE. The Jobs UI should be leveraged to occasionally run the notebook as a job and track execution time\nduring incremental code development because Photon can only be enabled on clusters launched for\nscheduled jobs.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 72,
+        "title": "Structured Streaming schema 变更",
+        "my_answer": "E",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 72\nA data team's Structured Streaming job is configured to calculate running aggregates for item sales to\nupdate a downstream marketing dashboard. The marketing team has introduced a new promotion, and\nthey would like to add a new field to track the number of times this promotion code is used for each item. A\njunior data engineer suggests updating the existing query as follows. Note that proposed changes are in \nbold.\nOriginal query:\nProposed query:\nWhich step must also be completed to put the proposed query into production?\nA. Specify a new checkpointLocation\nB. Increase the shuffle partitions to account for additional aggregates\nC. Run REFRESH TABLE delta.'/item_agg'\nD. Register the data in the \"/item_agg\" directory to the Hive metastore\nE. Remove .option(‘mergeSchema’, ‘true’) from the streaming write\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 106,
+        "title": "批量去重传播最小化计算成本",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 106\nA nightly batch job is configured to ingest all data files from a cloud object storage container where records\nare stored in a nested directory structure YYYY/MM/DD. The data for each date represents all records that\nwere processed by the source system on that date, noting that some records may be delayed as they\nawait moderator approval. Each entry represents a user review of a product and has the following schema:\nuser_id STRING, review_id BIGINT, product_id BIGINT, review_timestamp\nTIMESTAMP, review_text STRING\nThe ingestion job is configured to append all data for the previous date to a target table reviews_raw\nwith an identical schema to the source system. The next step in the pipeline is a batch write to propagate\nall new records inserted into reviews_raw to a table where data is fully deduplicated, validated, and\nenriched.\nWhich solution minimizes the compute costs to propagate this batch of data?\nA. Perform a batch read on the reviews_raw table and perform an insert-only merge using the natural\ncomposite key user_id, review_id, product_id, review_timestamp.\nB. Configure a Structured Streaming read against the reviews_raw table using the trigger once\nexecution mode to process new records as a batch job.\nC. Use Delta Lake version history to get the difference between the latest version of reviews_raw and\none version prior, then write these records to the next table.\nD. Filter all records in the reviews_raw table based on the review_timestamp; batch append those\nrecords produced in the last 48 hours.\nE. Reprocess all records in reviews_raw and overwrite the next table in the pipeline.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 110,
+        "title": "高并发高吞吐场景方案选择",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 110\nA large company seeks to implement a near real-time solution involving hundreds of pipelines with parallel\nupdates of many tables with extremely high volume and high velocity data.\nWhich of the following solutions would you implement to achieve this requirement?\nA. Use Databricks High Concurrency clusters, which leverage optimized cloud storage connections to\nmaximize data throughput.\nB. Partition ingestion tables by a small time duration to allow for many data files to be written in parallel.\nC. Configure Databricks to save all data to attached SSD volumes instead of object storage, increasing\nfile I/O significantly.\nD. Isolate Delta Lake tables in their own storage containers to avoid API limits imposed by cloud vendors.\nE. Store all tables in a single database to ensure that the Databricks Catalyst Metastore can load balance\noverall throughput.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 117,
+        "title": "REST API creator_user_name字段含义",
+        "my_answer": "A",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 117\nA data engineer, User A, has promoted a pipeline to production by using the REST API to\nprogrammatically create several jobs. A DevOps engineer, User B, has configured an external\norchestration tool to trigger job runs through the REST API. Both users authorized the REST API calls\nusing their personal access tokens.\nA workspace admin, User C, inherits responsibility for managing this pipeline. User C uses the Databricks\nJobs UI to take \"Owner\" privileges of each job. Jobs continue to be triggered using the credentials and\ntooling configured by User B.\nAn application has been configured to collect and parse run information returned by the REST API. Which\nstatement describes the value returned in the creator_user_name field?\nA. Once User C takes \"Owner\" privileges, their email address will appear in this field; prior to this, User\nA’s email address will appear in this field.\nB. User B’s email address will always appear in this field, as their credentials are always used to trigger\nthe run.\nC. User A’s email address will always appear in this field, as they still own the underlying notebooks.\nD. Once User C takes \"Owner\" privileges, their email address will appear in this field; prior to this, User\nB’s email address will appear in this field.\nE. User C will only ever appear in this field if they manually trigger the job, otherwise it will indicate User B.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 139,
+        "title": "Structured Streaming触发模式与存储成本优化",
+        "my_answer": "C",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 139\nA Structured Streaming job deployed to production has been resulting in higher than expected cloud\nstorage costs. At present, during normal execution, each microbatch of data is processed in less than 3s;\nat least 12 times per minute, a microbatch is processed that contains 0 records. The streaming write was\nconfigured using the default trigger settings. The production job is currently scheduled alongside many\nother Databricks jobs in a workspace with instance pools provisioned to reduce start-up time for jobs with\nbatch execution.\nHolding all other variables constant and assuming records need to be processed in less than 10 minutes,\nwhich adjustment will meet the requirement?\nA. Set the trigger interval to 3 seconds; the default trigger interval is consuming too many records per\nbatch, resulting in spill to disk that can increase volume costs.\nB. Use the trigger once option and configure a Databricks job to execute the query every 10 minutes; this\napproach minimizes costs for both compute and storage.\nC. Set the trigger interval to 10 minutes; each batch calls APIs in the source storage account, so\ndecreasing trigger frequency to maximum allowable threshold should minimize this cost.\nD. Set the trigger interval to 500 milliseconds; setting a small but non-zero trigger interval ensures that the\nsource is not queried too frequently.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nReference:"
+      },
+      {
+        "num": 219,
+        "title": "display() 触发 job，缓存导致重复执行结果不准确",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 219\nA user new to Databricks is trying to troubleshoot long execution times for some pipeline logic they are\nworking on. Presently, the user is executing code cell-by-cell, using display() calls to confirm code is\nproducing the logically correct results as new transformations are added to an operation. To get a measure\nof average time to execute, the user is running each cell multiple times interactively.\nWhich adjustment will get a more accurate measure of how code is likely to perform in production and what\nis the limitation of this approach?\nA. The Jobs UI should be leveraged to occasionally run the notebook as a job and track execution time\nduring incremental code development because Photon can only be enabled on clusters launched for\nscheduled jobs.\nB. The only way to meaningfully troubleshoot code execution times in development notebooks is to use\nproduction-sized data and production-sized clusters with Run All execution.\nC. Production code development should only be done using an IDE; executing code against a local build\nof open source Spark and Delta Lake will provide the most accurate benchmarks for how code will\nperform in production.\nD. Calling display() forces a job to trigger, while many transformations will only add to the logical query\nplan; because of caching, repeated execution of the same logic does not provide meaningful results.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nIn Spark (including Databricks), many transformations like select(), filter(), and groupBy() are\nlazy, meaning they are added to the logical query plan but not immediately executed. Only actions (such\nas display(), count(), or collect()) actually trigger execution of the transformations. When the user\nrepeatedly executes code with display() or other actions, caching can impact performance because\ndata may already be in memory, which leads to faster execution times that do not represent the typical\nperformance of the first run.\nThus, running the same cells multiple times to measure execution time does not provide an accurate\nmeasure of real-world performance. To get an accurate assessment, the user should consider disabling\ncaching, running the entire pipeline (using Run All), or using a notebook in Jobs with cold data (i.e.,\nuncached)."
+      },
+      {
+        "num": 233,
+        "title": "Liquid Clustering 不支持 INSERT INTO",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 233\nA 'transactions' table has been liquid clustered on the columns 'product_id’, ’user_id' and\n'event_date'.\nWhich operation lacks support for cluster on write?\nA. CTAS and RTAS statements \nB. spark.writeStream.format(’delta').mode(’append’)\nC. spark.write.format('delta’).mode('append')\nD. INSERT INTO operations\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nIn Delta Lake, INSERT INTO operations do not support “clustered on write.” Clustered write is supported\nwhen creating or overwriting a table with CTAS/RTAS statements or when writing via Spark with .write or\n.writeStream in append mode. INSERT INTO only appends data without reorganizing it according to the\nclustering columns."
+      },
+      {
+        "num": 320,
+        "title": "流处理进度追踪配置",
+        "my_answer": "B",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 320\nA data engineer is designing an append-only pipeline that needs to handle both batch and streaming data\nin Delta Lake. The team wants to ensure that the streaming component can efficiently track which data has\nalready been processed.\nWhich configuration should be set to enable this?\nA. checkpointLocation\nB. overwriteSchema\nC. mergeSchema\nD. partitionBy\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nSetting a checkpointLocation enables Spark Structured Streaming to persist progress information (offsets\nand state) so it can reliably track which data has already been processed, support exactly-once semantics\nwith Delta, and resume correctly after restarts."
+      },
+      {
+        "num": 325,
+        "title": "多任务ETL流水线自动化触发（未答，多选题）",
+        "my_answer": "X",
+        "correct": "AC",
+        "is_pending": false,
+        "pdf_text": "QUESTION 325\nA data team is automating a daily multitask ETL pipeline in Databricks. The pipeline includes a notebook\nfor ingesting raw data, a Python wheel task for data transformation, and a SQL query to update\naggregates. They want to trigger the pipeline programmatically and see previous\nruns in the GUI. They need to ensure tasks are retried on failure and stakeholders are notified by email if\nany task fails.\nWhich two approaches will meet these requirements? (Choose two.)\nA. Trigger the job programmatically using the Databricks Jobs REST API (/jobs/run-now), the CLI\n(databricks jobs run-now), or one of the Databricks SDKs.\nB. Use Databricks Asset Bundles (DABs) to deploy the workflow, then trigger individual tasks directly by\nreferencing each task’s notebook or script path in the workspace.\nC. Create a multi-task job using the UI, DABs, or the Jobs REST API (/jobs/create) with notebook,\nPython wheel, and SQL tasks. Configure task-level retries and email notifications in the job definition.\nD. Use the REST API endpoint /jobs/runs/submit to trigger each task individually as separate job\nruns and implement retries using custom logic in the orchestrator.\nE. Create a single notebook that uses dbutils.notebook.run() to call each step in sequence. Define\na job on this orchestrator notebook and configure retries and notifications at the notebook level.\nCorrect Answer: AC\nSection: (none)\nExplanation/Reference:\nExplanation:\nTriggering an existing Databricks Job via /jobs/run-now, the CLI, or an SDK supports programmatic\nexecution while still registering runs so they are visible in the Jobs GUI with run history.\nDefining a multi-task job (UI, DABs, or /jobs/create) with notebook, Python wheel, and SQL tasks allows\nconfiguring task-level retries and email notifications on failure directly in the job definition, meeting the\noperational requirements without custom orchestration."
+      }
+    ]
+  },
+  "unity_catalog": {
+    "name": "Unity Catalog 与权限管理",
+    "count": 17,
+    "questions": [
+      {
+        "num": 2,
+        "title": "集群最小权限",
+        "my_answer": "B",
+        "correct": "D（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 2\nThe Databricks workspace administrator has configured interactive clusters for each of the data\nengineering groups. To control costs, clusters are set to terminate after 30 minutes of inactivity. Each user\nshould be able to execute workloads against their assigned clusters at any time of the day.\nAssuming users have been added to a workspace but not granted any permissions, which of the following\ndescribes the minimal permissions a user would need to start and attach to an already configured cluster.\nA. \"Can Manage\" privileges on the required cluster\nB. Workspace Admin privileges, cluster creation allowed, \"Can Attach To\" privileges on the required\ncluster\nC. Cluster creation allowed, \"Can Attach To\" privileges on the required cluster\nD. \"Can Restart\" privileges on the required cluster\nE. Cluster creation allowed, \"Can Restart\" privileges on the required cluster\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 33,
+        "title": "数据库隔离与权限管理",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 33\nThe data engineering team is migrating an enterprise system with thousands of tables and views into the\nLakehouse. They plan to implement the target architecture using a series of bronze, silver, and gold tables.\nBronze tables will almost exclusively be used by production data engineering workloads, while silver tables\nwill be used to support both data engineering and machine learning workloads. Gold tables will largely\nserve business intelligence and reporting purposes. While personal identifying information (PII) exists in all\ntiers of data, pseudonymization and anonymization rules are in place for all data at the silver and gold\nlevels.\nThe organization is interested in reducing security concerns while maximizing the ability to collaborate\nacross diverse teams.\nWhich statement exemplifies best practices for implementing this system?\nA. Isolating tables in separate databases based on data quality tiers allows for easy permissions\nmanagement through database ACLs and allows physical separation of default storage locations for\nmanaged tables.\nB. Because databases on Databricks are merely a logical construct, choices around database\norganization do not impact security or discoverability in the Lakehouse.\nC. Storing all production tables in a single database provides a unified view of all data assets available\nthroughout the Lakehouse, simplifying discoverability by granting all users view privileges on this\ndatabase.\nD. Working in the default Databricks database provides the greatest security when working with managed\ntables, as these will be created in the DBFS root.\nE. Because all tables must live in the same storage containers used for the database they're created in,\norganizations should be prepared to create between dozens and thousands of databases depending\non their data isolation requirements.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 82,
+        "title": "Job Owner 不能转让给群组",
+        "my_answer": "B",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 82\nA junior data engineer has manually configured a series of jobs using the Databricks Jobs UI. Upon\nreviewing their work, the engineer realizes that they are listed as the \"Owner\" for each job. They attempt to\ntransfer \"Owner\" privileges to the \"DevOps\" group, but cannot successfully accomplish this task.\nWhich statement explains what is preventing this privilege transfer?\nA. Databricks jobs must have exactly one owner; \"Owner\" privileges cannot be assigned to a group.\nB. The creator of a Databricks job will always have \"Owner\" privileges; this configuration cannot be\nchanged.\nC. Other than the default \"admins\" group, only individual users can be granted privileges on jobs.\nD. A user can only transfer job ownership to a group if they are also a member of that group.\nE. Only workspace administrators can grant \"Owner\" privileges to a group.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 84,
+        "title": "GRANT USAGE + SELECT 仅赋予只读查询权限",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 84\nThe data architect has decided that once data has been ingested from external sources into the\nDatabricks Lakehouse, table access controls will be leveraged to manage permissions for all production\ntables and views.\nThe following logic was executed to grant privileges for interactive queries on a production database to the\ncore engineering group.\nGRANT USAGE ON DATABASE prod TO eng;\nGRANT SELECT ON DATABASE prod TO eng;\nAssuming these are the only privileges that have been granted to the eng group along with permission on\nthe catalog, and that these users are not workspace administrators, which statement describes their\nprivileges?\nA. Group members have full permissions on the prod database and can also assign permissions to other\nusers or groups.\nB. Group members are able to list all tables in the prod database but are not able to see the results of\nany queries on those tables.\nC. Group members are able to query and modify all tables and views in the prod database, but cannot\ncreate new tables or views.\nD. Group members are able to query all tables and views in the prod database, but cannot create or edit\nanything in the database.\nE. Group members are able to create, query, and modify all tables and views in the prod database, but\ncannot define custom functions.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 100,
+        "title": "Secrets 最小权限应设 Read 在 scope 级别",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 100\nThe data engineering team has been tasked with configuring connections to an external database that\ndoes not have a supported native connector with Databricks. The external database already has data\nsecurity configured by group membership. These groups map directly to user groups already created in\nDatabricks that represent various teams within the company.\nA new login credential has been created for each group in the external database. The Databricks Utilities\nSecrets module will be used to make these credentials available to Databricks users.\nAssuming that all the credentials are configured correctly on the external database and group membership\nis properly configured on Databricks, which statement describes how teams can be granted the minimum\nnecessary access to using these credentials?\nA. \"Manage\" permissions should be set on a secret key mapped to those credentials that will be used by a\ngiven team.\nB. \"Read\" permissions should be set on a secret key mapped to those credentials that will be used by a\ngiven team.\nC. \"Read\" permissions should be set on a secret scope containing only those credentials that will be used\nby a given team.\nD. \"Manage\" permissions should be set on a secret scope containing only those credentials that will be\nused by a given team.\nE. No additional configuration is necessary as long as all users are configured as administrators in the\nworkspace where secrets have been added.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 167,
+        "title": "Secrets 最小权限——scope 级别 Read 权限",
+        "my_answer": "B",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 167\nThe data engineering team has been tasked with configuring connections to an external database that\ndoes not have a supported native connector with Databricks. The external database already has data\nsecurity configured by group membership. These groups map directly to user groups already created in\nDatabricks that represent various teams within the company.\nA new login credential has been created for each group in the external database. The Databricks Utilities\nSecrets module will be used to make these credentials available to Databricks users.\nAssuming that all the credentials are configured correctly on the external database and group membership\nis properly configured on Databricks, which statement describes how teams can be granted the minimum\nnecessary access to using these credentials?\nA. No additional configuration is necessary as long as all users are configured as administrators in the\nworkspace where secrets have been added.\nB. \"Read\" permissions should be set on a secret key mapped to those credentials that will be used by a\ngiven team.\nC. \"Read\" permissions should be set on a secret scope containing only those credentials that will be used\nby a given team.\nD. \"Manage\" permissions should be set on a secret scope containing only those credentials that will be\nused by a given team.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 207,
+        "title": "新表 + 视图维持旧 schema，最小化影响其他团队",
+        "my_answer": "C",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 207\nTo reduce storage and compute costs, the data engineering team has been tasked with curating a series\nof aggregate tables leveraged by business intelligence dashboards, customer-facing applications,\nproduction machine learning models, and ad hoc analytical queries.\nThe data engineering team has been made aware of new requirements from a customer-facing\napplication, which is the only downstream workload they manage entirely. As a result, an aggregate table\nused by numerous teams across the organization will need to have a number of fields renamed, and\nadditional fields will also be added.\nWhich of the solutions addresses the situation while minimally interrupting other teams in the organization\nwithout increasing the number of tables that need to be managed?\nA. Send all users notice that the schema for the table will be changing; include in the communication the\nlogic necessary to revert the new table schema to match historic queries.\nB. Configure a new table with all the requisite fields and new names and use this as the source for the\ncustomer-facing application; create a view that maintains the original data schema and table name by\naliasing select fields from the new table.\nC. Create a new table with the required schema and new fields and use Delta Lake's deep clone\nfunctionality to sync up changes committed to one table to the corresponding table.\nD. Replace the current table definition with a logical view defined with the query logic currently writing the\naggregate table; create a new table to power the customer-facing application.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nThis solution allows the new schema and additional fields to be used by the customer-facing application,\nwithout disrupting the existing consumers of the original table. By creating a view that aliases fields to\nmatch the original schema, downstream users can continue using their current queries without any\nchanges. This approach minimizes the interruption to other teams while ensuring that the new\nrequirements are met."
+      },
+      {
+        "num": 230,
+        "title": "Schema Owner 权限不自动继承表",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 230\nA platform engineer is creating catalogs and schemas for the development team to use.\nThe engineer has created an initial catalog, Catalog_A, and initial schema, Schema_A. The engineer has\nalso granted USE CATALOG, USE SCHEMA, and CREATE TABLE to the development team so that the\nengineer can begin populating the schema with new tables.\nDespite being owner of the catalog and schema, the engineer noticed that they do not have access to the\nunderlying tables in Schema_A.\nWhat explains the engineer's lack of access to the underlying tables?\nA. The owner of the schema does not automatically have permission to tables within the schema, but can\ngrant them to themselves at any point.\nB. Users granted with USE CATALOG can modify the owner's permissions to downstream tables.\nC. Permissions explicitly given by the table creator are the only way the Platform Engineer could access\nthe underlying tables in their schema.\nD. The platform engineer needs to execute a REFRESH statement as the table permissions did not\nautomatically update for owners.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nIn Databricks, owning a catalog or schema does not automatically grant access to the tables within it.\nTable-level permissions are separate, so even the schema or catalog owner must be explicitly granted\nprivileges on individual tables or use the ability to grant themselves access."
+      },
+      {
+        "num": 249,
+        "title": "DAB 部署 App 和 Volume 权限（未答）",
+        "my_answer": "X",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 249\nIn a Databricks Asset Bundle project, in the file resources/app.yml, the data engineer would like to\ndeploy a Databricks Apps databricks_app_deployed and Volume volume_deployed and grant the\nService Principal behind Databricks Apps permissions to READ and WRITE to the Volume.\nHow should the data engineer achieve the deployment?\nA.\nB.\nC.\nD.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nThis configuration correctly references the service principal created for the Databricks App using the\ndeployed app resource identifier, and it grants the required READ and WRITE privileges at the Volume\nlevel. The privileges are specified using the correct Volume-specific permissions, ensuring the Databricks\nApp can securely access the Volume after deployment."
+      },
+      {
+        "num": 259,
+        "title": "Unity Catalog工作区目录默认权限范围",
+        "my_answer": "C",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 259\nA data engineering workspace was automatically enabled for Unity Catalog, creating a workspace catalog.\nNew team members report they can create tables in the default schema but cannot access table in other\nschemas within the same workspace catalog.\nWhy are the new team members unable to access tables in other schemas?\nA. Workspace catalog permissions are not subject to inheritance rules.\nB. Workspace users receive USE CATALOG and specific privileges on default schema only.\nC. Tables in other schemas require additional BROWSE privileges that new users don’t receive\nautomatically\nD. New users only receive CREATE TABLE privileges on the default schema.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nWhen a workspace catalog is automatically created, new users are granted USE CATALOG and limited\nprivileges on the default schema only. Access to other schemas requires explicit grants, so users cannot\nsee or query tables in those schemas without additional permissions."
+      },
+      {
+        "num": 266,
+        "title": "Predictive Optimization自动执行的操作（未答）",
+        "my_answer": "X",
+        "correct": "CD",
+        "is_pending": false,
+        "pdf_text": "QUESTION 266\nPredictive Optimization is an automated Databricks service enabled by default for Unity Catalog Managed\ntables. It helps maintain Delta tables by continuously optimizing them to ensure optimal performance and\ncosts.\nWhich two operations does Predictive Optimization run to maintain the Delta tables? (Choose two.)\nA. PARTITION BY\nB. COMPACT\nC. ANALYZE\nD. OPTIMIZE\nE. BUCKETING\nCorrect Answer: CD\nSection: (none)\nExplanation/Reference:\nExplanation:\nPredictive Optimization automatically runs OPTIMIZE to compact small files and improve data layout, and\nANALYZE to collect and refresh table statistics. Together, these operations ensure efficient query\nplanning, better data skipping, and optimized performance and cost for Unity Catalog managed Delta\ntables."
+      },
+      {
+        "num": 269,
+        "title": "SQL Warehouse使用归因自动化报告（未答）",
+        "my_answer": "X",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 269\nA platform team lead is responsible for automating the individual teams attribution towards SQL\nWarehouse usage. The requirement is to identify the SQL warehouse usage at the individual user’s level\nand generate a daily report to be shared with an executive team that includes leaders from all business\nunits.\nHow should the platform lead generate an automated report that can be shared daily?\nA. Use the system tables to capture the audit and billing usage data and share the queries with the\nexecutive team. This enables the executives to execute the query and see the latest results any time.\nB. Use the system tables to capture the audit and billing usage data and create a dashboard with daily\nrefresh schedules and shared with the executive team.\nC. Restrict users from running any SQL query unless they provide all the query details so that the\nattribution can be calculated and shared with the executive team.\nD. Let the users run the SQL query and then directly report the usage to the executives. The ownership of\nthe SQL warehouse usage will be with the individual teams.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nSystem tables provide authoritative audit and billing data needed for per-user SQL Warehouse attribution.\nCreating a dashboard with a scheduled daily refresh automates report generation and ensures executives\nreceive consistent, up-to-date insights without needing to run queries themselves."
+      },
+      {
+        "num": 287,
+        "title": "待补充",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": true,
+        "pdf_text": "QUESTION 287\nA data engineer is implementing liquid clustering on a Delta Lale table and needs to understand how it\naffects data management operations. The table will be updated frequently with new data. The table is an\nexternal table and not managed by Unity Catalog.\nHow does liquid clustering in Delta Lake handle new data that is inserted after the initial table creation?\nA. New data is rejected if it doesn’t match the clustering pattern.\nB. New data is automatically clustered during write operations.\nC. New data is written to a staging area and clustered during scheduled maintenance.\nD. New data remains unclustered until the next OPTIMIZE operation.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nWith liquid clustering, newly inserted data is written without being immediately reclustered. The clustering\nlayout is applied incrementally during subsequent OPTIMIZE operations, which reorganize both existing\nand newly added data to maintain an efficient data layout as the table evolves."
+      },
+      {
+        "num": 291,
+        "title": "待补充",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": true,
+        "pdf_text": "QUESTION 291\nWhen a new Databricks project starts, the central IP team provisions the required infrastructure using\nTerraform and a Service Principal. This includes creating a Databricks workspace, a Unity Catalog linked\nto an External Location, and a Databricks group containing all project team members. Project teams must\nstore all assets – e.g., tables and volumes, as Managed assets in Unity Catalog. This model hides\ninfrastructure complexity while giving teams autonomy within their catalog. They can create and manage\nschemas, tables, volumes, and related objects but cannot rename, delete, or change catalog permissions,\nthose remain under IT’s control.\nWhich rights should the project group be granted to enable this model?\nA. The group needs to have USE CATALOG and USE SCHEMA on the catalog.\nB. The group needs to have ALL PRIVILEGES and the MANAGE on the catalog.\nC. The group needs to have ALL PRIVILEGES on the catalog.\nD. The group should be made OWNER of the catalog.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nGranting the project group USE CATALOG (and USE SCHEMA on existing schemas) allows team\nmembers to work within the catalog without giving them ownership or administrative control. This enables\nteams to create and manage schemas, tables, and volumes inside the catalog while preventing them from\nrenaming, deleting, or modifying catalog-level permissions, which remain under central IT governance."
+      },
+      {
+        "num": 303,
+        "title": "待补充",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": true,
+        "pdf_text": "QUESTION 303\nA workspace admin has created a new catalog called ‘finance_data’ and wants to delegate\npermission management to a finance team lead without giving them full admin rights.\nWhich privilege should be granted to the finance team lead?\nA. GRANT_OPTION privilege on the finance_data catalog.\nB. Make the finance team lead a metastore admin.\nC. MANAGE privilege on the finance_data catalog.\nD. ALL PRIVILEGES on the finance_data catalog.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nGranting the MANAGE privilege on the finance_data catalog allows the finance team lead to manage\npermissions and objects within that catalog (schemas, tables, grants) without requiring metastore admin or\nfull administrative rights, enabling delegated governance in a least-privilege model."
+      },
+      {
+        "num": 315,
+        "title": "基于映射表的动态列掩码",
+        "my_answer": "D",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 315\nA data engineer needs to implement column masking for a sensitive column in a Unity Catalog-managed\ntable. The masking logic must dynamically check if users belong to specific groups defined in a separate\ntable (group_access) that maps groups to allowed departments.\nWhich approach should the engineer use to efficiently enforce this requirement?\nA. Create a view without selecting the sensitive column\nB. Apply a column mask that references the group_access mapping table in its UDF\nC. Create a UDF that hardcodes allowed groups and apply it as a column mask.\nD. Use a row filter to restrict access based on the user's group.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nUse a Unity Catalog column mask implemented as a SQL UDF that evaluates the current user’s group\nmembership (for example via group membership functions) against the group_access mapping, so\nmasking is enforced centrally, stays auditable, and automatically reflects updates to the mapping table\nwithout redeploying code."
+      },
+      {
+        "num": 326,
+        "title": "Unity Catalog 托管表与预测优化",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 326\nA data engineer is designing a system to process batch patient encounter data stored in an S3 bucket,\ncreating a Delta table (patient_encounters) with columns encounter_id, patient_id,\nencounter_date, diagnosic_code, and treatment_cost. The table is queried frequently by\npatient_id and encounter_date, requiring fast performance. Fine grained access controls must be\nenforced. The engineer wants to minimize maintenance and boost performance.\nHow should the data engineer create the patient_encounters table?\nA. Create an external table in Unity Catalog, specifying an S3 location for the data files. Enable predictive\noptimization through table properties, and configure Unity Catalog permissions for access controls.\nB. Create a managed table in Unity Catalog. Configure Unity Catalog permissions for access controls,\nschedule jobs to run OPTIMIZE and vacuum command daily to achieve best performance.\nC. Create a managed table in Hive metastore. Configure Hive metastore permissions for access controls,\nand rely on predictive optimization to enhance query performance and simplify maintenance.\nD. Create a managed table in Unity Catalog. Configure Unity Catalog permissions for access controls, and\nrely on predictive optimization to enhance query performance and simplify maintenance.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nCreating a managed table in Unity Catalog ensures fine-grained access control, centralized governance,\nand full security integration.\nRelying on Predictive Optimization provides automatic, hands-off performance tuning (file compaction, data\nlayout optimization, clustering) without manual maintenance.\nThis combination delivers strong governance, high query performance on frequent filters, and minimal\noperational overhead, which directly matches the requirements."
+      }
+    ]
+  },
+  "jobs_workflows": {
+    "name": "Jobs & Workflows",
+    "count": 11,
+    "questions": [
+      {
+        "num": 1,
+        "title": "Jobs API 参数传递",
+        "my_answer": "D",
+        "correct": "E（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 1\nAn upstream system has been configured to pass the date for a given batch of data to the Databricks Jobs\nAPI as a parameter. The notebook to be scheduled will use this parameter to load data with the following\ncode:\ndf = spark.read.format(\"parquet\").load(f\"/mnt/source/(date)\")\nWhich code block should be used to create the date Python variable used in the above code block?\nA. date = spark.conf.get(\"date\")\nB. input_dict = input()\ndate= input_dict[\"date\"]\nC. import sys\ndate = sys.argv[1]\nD. date = dbutils.notebooks.getParam(\"date\")\nE. dbutils.widgets.text(\"date\", \"null\")\ndate = dbutils.widgets.get(\"date\")\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 8,
+        "title": "dropDuplicates 作用范围",
+        "my_answer": "A",
+        "correct": "B（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 8\nAn upstream source writes Parquet data as hourly batches to directories named with the current date. A\nnightly batch job runs the following code to ingest all data from the previous day as indicated by the date\nvariable:\nAssume that the fields customer_id and order_id serve as a composite key to uniquely identify each\norder.\nIf the upstream system is known to occasionally produce duplicate entries for a single order hours apart,\nwhich statement is correct?\nA. Each write to the orders table will only contain unique records, and only those records without\nduplicates in the target table will be written.\nB. Each write to the orders table will only contain unique records, but newly written records may have\nduplicates already present in the target table.\nC. Each write to the orders table will only contain unique records; if existing records with the same key\nare present in the target table, these records will be overwritten.\nD. Each write to the orders table will only contain unique records; if existing records with the same key\nare present in the target table, the operation will fail.\nE. Each write to the orders table will run deduplication over the union of new and existing records,\nensuring no duplicate records are present.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 12,
+        "title": "Jobs API 2.0/jobs/create 重复调用",
+        "my_answer": "D",
+        "correct": "C（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 12\nA junior data engineer has configured a workload that posts the following JSON to the Databricks REST\nAPI endpoint 2.0/jobs/create.\nWhich statement describes the result of executing this workload three times assuming that all\nconfigurations and referenced resources are available?\nA. Three new jobs named \"Ingest new data\" will be defined in the workspace, and they will each run once\ndaily.\nB. The logic defined in the referenced notebook will be executed three times on new clusters with the\nconfigurations of the provided cluster ID.\nC. Three new jobs named \"Ingest new data\" will be defined in the workspace, but no jobs will be executed.\nD. One new job named \"Ingest new data\" will be defined in the workspace, but it will not be executed.\nE. The logic defined in the referenced notebook will be executed three times on the referenced existing all\npurpose cluster.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 22,
+        "title": "Delta Lake Auto Compaction",
+        "my_answer": "A",
+        "correct": "E（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 22\nWhich statement describes Delta Lake Auto Compaction?\nA. An asynchronous job runs after the write completes to detect if files could be further compacted; if yes,\nan OPTIMIZE job is executed toward a default of 1 GB.\nB. Before a Jobs cluster terminates, OPTIMIZE is executed on all tables modified during the most recent\njob.\nC. Optimized writes use logical partitions instead of directory partitions; because partition boundaries are\nonly represented in metadata, fewer small files are written.\nD. Data is queued in a messaging bus instead of committing data directly to memory; all data is committed\nfrom the messaging bus in one batch once the job is complete.\nE. An asynchronous job runs after the write completes to detect if files could be further compacted; if yes,\nan OPTIMIZE job is executed toward a default of 128 MB.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:\n店铺：学习小店66"
+      },
+      {
+        "num": 47,
+        "title": "Job run history retention",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 47\nWhat statement is true regarding the retention of job run history?\nA. It is retained until you export or delete job run logs\nB. It is retained for 30 days, during which time you can deliver job run logs to DBFS or S3\nC. It is retained for 60 days, during which you can export notebook run results to HTML\nD. It is retained for 60 days, after which logs are archived\nE. It is retained for 90 days or until the run-id is re-used through custom run configuration\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 57,
+        "title": "Jobs REST API",
+        "my_answer": "A",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 57\nWhich REST API call can be used to review the notebooks configured to run as tasks in a multi-task job?\nA. /jobs/runs/list\nB. /jobs/runs/get-output\nC. /jobs/runs/get\nD. /jobs/get\nE. /jobs/list\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 107,
+        "title": "Delta Lake Optimized Writes原理",
+        "my_answer": "B",
+        "correct": "E",
+        "is_pending": false,
+        "pdf_text": "QUESTION 107\nWhich statement describes Delta Lake optimized writes?\nA. Before a Jobs cluster terminates, OPTIMIZE is executed on all tables modified during the most recent\njob.\nB. An asynchronous job runs after the write completes to detect if files could be further compacted; if yes,\nan OPTIMIZE job is executed toward a default of 1 GB.\nC. Data is queued in a messaging bus instead of committing data directly to memory; all data is committed\nfrom the messaging bus in one batch once the job is complete.\nD. Optimized writes use logical partitions instead of directory partitions; because partition boundaries are\nonly represented in metadata, fewer small files are written.\nE. A shuffle occurs prior to writing to try to group similar data together resulting in fewer files instead of\neach executor writing multiple files based on directory partitions.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 115,
+        "title": "Jobs API多任务响应结构",
+        "my_answer": "B",
+        "correct": "E",
+        "is_pending": false,
+        "pdf_text": "QUESTION 115\nWhen using CLI or REST API to get results from jobs with multiple tasks, which statement correctly\ndescribes the response structure?\nA. Each run of a job will have a unique job_id; all tasks within this job will have a unique job_id\nB. Each run of a job will have a unique job_id; all tasks within this job will have a unique task_id\nC. Each run of a job will have a unique orchestration_id; all tasks within this job will have a unique\nrun_id\nD. Each run of a job will have a unique run_id; all tasks within this job will have a unique task_id\nE. Each run of a job will have a unique run_id; all tasks within this job will also have a unique run_id\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:\n店铺：学习小店66"
+      },
+      {
+        "num": 235,
+        "title": "Jobs API 获取运行历史",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 235\nA data engineer needs to create an application that will collect information about the latest job run including\nthe repair history.\nHow should the data engineer format the request?\nA. Call/api/2.1/jobs/runs/list with the run_id and include_history parameters\nB. Call/api/2.1/jobs/runs/get with the run_id and include_history parameters\nC. Call/api/2.1/jobs/runs/get with the job_id and include_history parameters\nD. Call/api/2.1/jobs/runs/list with the job_id and include_history parameters\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nTo retrieve information about the latest job runs along with their repair history, you use the jobs/runs/list\nendpoint with the job_id and include_history=true. This endpoint returns a list of runs for a specific job,\nincluding details about retries and repair attempts, which is not available via runs/get that retrieves a single\nrun by run_id."
+      },
+      {
+        "num": 301,
+        "title": "待补充",
+        "my_answer": "B",
+        "correct": "C",
+        "is_pending": true,
+        "pdf_text": "QUESTION 301\nA data engineer is creating a daily reporting Job. There are two reporting notebooks one for weekdays and\nthe other for weekends. An \"If/else condition\" task is configured as \n\"{{job.start_time.is_weekday}} == true\" to route the job to either weekday or weekend\nnotebook tasks. The same job would be used in multiple time zones.\nWhich action should a senior data engineer take upon reviewing the job to merge or reject the pull\nrequest?\nA. Reject. As they should use {{job.trigger_time.is_weekday}} instead.\nB. Reject. As the {{job.start_time.is_weekday}} is not a valid value reference.\nC. Reject. As the {{job.start_time.is_weekday}} is for the UTC timezone.\nD. Merge. As the job configuration looks good.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe job.start_time.is_weekday expression is evaluated using the job’s start time in UTC, not local time\nzones.\nSince the same job is used across multiple time zones, this would route incorrectly for regions where the\nlocal date differs from UTC, making the logic unreliable for weekday/weekend routing."
+      },
+      {
+        "num": 317,
+        "title": "Jobs API自动化监控与重跑",
+        "my_answer": "B",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 317\nA data engineer wants to automate job monitoring and recovery in Databricks using the Jobs API. They\nneed to list all jobs, identify a failed job, and rerun it.\nWhich sequence of API actions should the data engineer perform?\nA. Use the jobs list endpoint to list jobs, check job run statuses with jobs runs list, and rerun a failed job\nusing jobs run-now.\nB. Use the jobs get endpoint to retrieve job details, then use jobs update to rerun failed jobs.\nC. Use the jobs list endpoint to list jobs, then use the jobs create endpoint to create a new job, and run the\nnew job using jobs run-now.\nD. Use the jobs cancel endpoint to remove failed jobs, then recreate them with jobs create endpoint and\nrun the new ones.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe correct flow is to first list jobs to obtain job identifiers, then list runs to find a run with a failed status,\nand finally trigger a rerun by invoking the job again using the run-now endpoint."
+      }
+    ]
+  },
+  "performance": {
+    "name": "性能优化与 Spark 调优",
+    "count": 14,
+    "questions": [
+      {
+        "num": 26,
+        "title": "集群配置与 Wide Transformation 性能",
+        "my_answer": "A",
+        "correct": "C（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 26\nEach configuration below is identical to the extent that each cluster has 400 GB total of RAM, 160 total\ncores and only one Executor per VM.\nGiven a job with at least one wide transformation, which of the following cluster configurations will result in\nmaximum performance?\nA. • Total VMs: 1\n• 400 GB per Executor\n• 160 Cores / Executor\nB. • Total VMs: 8\n• 50 GB per Executor\n• 20 Cores / Executor\nC. • Total VMs: 16\n• 25 GB per Executor\n• 10 Cores/Executor\nD. • Total VMs: 4\n• 100 GB per Executor\n• 40 Cores/Executor\nE. • Total VMs: 2\n• 200 GB per Executor\n• 80 Cores / Executor\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 45,
+        "title": "Managed table with custom location",
+        "my_answer": "B",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 45\nAn external object storage container has been mounted to the location /mnt/finance_eda_bucket.\nThe following logic was executed to create a database for the finance team:\nAfter the database was successfully created and permissions configured, a member of the finance team\nruns the following code:\nIf all users on the finance team are members of the finance group, which statement describes how the\ntx_sales table will be created?\nA. A logical table will persist the query plan to the Hive Metastore in the Databricks control plane.\nB. An external table will be created in the storage container mounted to /mnt/finance_eda_bucket.\nC. A logical table will persist the physical plan to the Hive Metastore in the Databricks control plane.\nD. An managed table will be created in the storage container mounted to /mnt/finance_eda_bucket.\nE. A managed table will be created in the DBFS root storage container.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 51,
+        "title": "Spark UI 诊断 predicate push-down",
+        "my_answer": "A",
+        "correct": "E",
+        "is_pending": false,
+        "pdf_text": "QUESTION 51\nWhere in the Spark UI can one diagnose a performance problem induced by not leveraging predicate\npush-down?\nA. In the Executor’s log file, by grepping for \"predicate push-down\"\nB. In the Stage’s Detail screen, in the Completed Stages table, by noting the size of data read from the\nInput column\nC. In the Storage Detail screen, by noting which RDDs are not stored on disk\nD. In the Delta Lake transaction log. by noting the column statistics\nE. In the Query Detail screen, by interpreting the Physical Plan\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:\n店铺：学习小店66"
+      },
+      {
+        "num": 70,
+        "title": "Parquet 文件大小控制（无 shuffle）",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 70\nA data ingestion task requires a one-TB JSON dataset to be written out to Parquet with a target part-file\nsize of 512 MB. Because Parquet is being used instead of Delta Lake, built-in file-sizing features such as\nAuto-Optimize & Auto-Compaction cannot be used.\nWhich strategy will yield the best performance without shuffling data?\nA. Set spark.sql.files.maxPartitionBytes to 512 MB, ingest the data, execute the narrow\ntransformations, and then write to parquet.\nB. Set spark.sql.shuffle.partitions to 2,048 partitions (1TB*1024*1024/512), ingest the data,\nexecute the narrow transformations, optimize the data by sorting it (which automatically repartitions the\ndata), and then write to parquet.\nC. Set spark.sql.adaptive.advisoryPartitionSizeInBytes to 512 MB bytes, ingest the data,\nexecute the narrow transformations, coalesce to 2,048 partitions (1TB*1024*1024/512), and then write\nto parquet.\nD. Ingest the data, execute the narrow transformations, repartition to 2,048 partitions (1TB*\n1024*1024/512), and then write to parquet.\nE. Set spark.sql.shuffle.partitions to 512, ingest the data, execute the narrow transformations,\nand then write to parquet.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 97,
+        "title": "Delta time travel 不适合长期版本化方案",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 97\nA data architect has heard about Delta Lake’s built-in versioning and time travel capabilities. For auditing\npurposes, they have a requirement to maintain a full record of all valid street addresses as they appear in\nthe customers table.\nThe architect is interested in implementing a Type 1 table, overwriting existing records with new values and\nrelying on Delta Lake time travel to support long-term auditing. A data engineer on the project feels that a\nType 2 table will provide better performance and scalability.\nWhich piece of information is critical to this decision?\nA. Data corruption can occur if a query fails in a partially completed state because Type 2 tables require\nsetting multiple fields in a single update.\nB. Shallow clones can be combined with Type 1 tables to accelerate historic queries for long-term\nversioning.\nC. Delta Lake time travel cannot be used to query previous versions of these tables because Type 1\nchanges modify data files in place.\nD. Delta Lake time travel does not scale well in cost or latency to provide a long-term versioning solution.\nE. Delta Lake only supports Type 0 tables; once records are inserted to a Delta Lake table, they cannot\nbe modified.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 101,
+        "title": "MEMORY_ONLY 缓存异常信号：Size on Disk > 0",
+        "my_answer": "X（未答）",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 101\nWhich indicators would you look for in the Spark UI’s Storage tab to signal that a cached table is not\nperforming optimally? Assume you are using Spark’s MEMORY_ONLY storage level.\nA. Size on Disk is < Size in Memory\nB. The RDD Block Name includes the “*” annotation signaling a failure to cache\nC. Size on Disk is > 0\nD. The number of Cached Partitions > the number of Spark Partitions\nE. On Heap Memory Usage is within 75% of Off Heap Memory Usage\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 220,
+        "title": "Spark UI 中 Physical Plan 诊断 predicate pushdown 缺失",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 220\nWhere in the Spark UI can one diagnose a performance problem induced by not leveraging predicate\npush-down?\nA. In the Executor’s log file, by grepping for \"predicate push-down\"\nB. In the Stage’s Detail screen, in the Completed Stages table, by noting the size of data read from the\nInput column\nC. In the Query Detail screen, by interpreting the Physical Plan\nD. In the Delta Lake transaction log. by noting the column statistics\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nTo diagnose a performance problem caused by not leveraging predicate push-down, you should look at\nthe Physical Plan in the Query Detail screen of the Spark UI. The Physical Plan shows how Spark\nexecutes the query, and it will include information about whether predicate push-down was applied.\nPredicate push-down refers to the optimization where filtering operations are pushed down to the data\nsource, reducing the amount of data read and improving performance. By examining the Physical Plan,\nyou can see if predicates (filters) are being applied at the data source level or if a larger amount of data is\nbeing read and filtered in memory."
+      },
+      {
+        "num": 238,
+        "title": "Z-Order 优化高基数列查询",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 238\nA data team is working to optimize an existing large, fast-growing table 'orders' with high cardinality\ncolumns, which experiences significant data skew and requires frequent concurrent writes. The team\nnotice that the columns 'user_id', 'event_timestamp' and 'product_id' are heavily used in\nanalytical queries and filters, although those keys may be subject to change in the future due to different\nbusiness requirements.\nWhich partitioning strategy should the team choose to optimize the table for immediate data skipping,\nincremental management over time, and flexibility?\nA. Partition the table with: ALTER TABLE orders PARTITION BY user_id, product_id,\nevent_timestamp\nB. Use z-order after partitiing the table: OPTIMIZE orders ZORDER BY (user_id, product_id)\nWHERE event_timestamp = current date () - 1 DAY\nC. Cluster the table with: ALTER TABLE orders CLUSTER BY user_id, product_id,\nevent_timestamp\nD. Z-order the table with OPTIMIZE orders ZORDER BY (user_id, product_id,\nevent_timestamp)\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nZ-ordering optimizes data skipping for selective queries on high-cardinality columns without physically\nrepartitioning the table, making it flexible if query patterns change. Using OPTIMIZE ... ZORDER BY\n(user_id, product_id, event_timestamp) improves query performance for filters and joins while allowing\nincremental writes, avoiding the data skew and maintenance overhead that explicit partitioning or\nclustering could introduce."
+      },
+      {
+        "num": 244,
+        "title": "Spark UI 查询计划可视化",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 244\nWhen monitoring a complex workload, being able to see the query plan is critical to understanding what\nthe workload is doing. \nWhere can the visualization of the query plan be found?\nA. In the Spart UI, under the Jobs tab\nB. In the Query Profiler, under Query Source\nC. In the Spark UI, under the SQL/DataFrame tab\nD. In the Query Profiler, under the Stages tab\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe Spark UI provides detailed visibility into how queries are executed. The SQL/DataFrame tab displays\nthe logical and physical query plans, allowing engineers to visualize execution details and understand how\nthe workload is processed across stages and operators."
+      },
+      {
+        "num": 288,
+        "title": "待补充（未答，多选题）",
+        "my_answer": "X",
+        "correct": "AB",
+        "is_pending": true,
+        "pdf_text": "QUESTION 288\nA data engineer is optimizing a MERGE operation on an 800GB UC-managed table that experiences\nfrequent updates and deletions.\nWhich two actions should the engineer prioritize to improve MERGE performance? (Choose two.)\nA. Apply liquid clustering using the merge join keys.\nB. Enable deletion vectors on the table if not already enabled.\nC. Partition the table by date.\nD. Use ZORDER on high-cardinality columns.\nE. Overwrite the table instead of Merge.\nCorrect Answer: AB\nSection: (none)\nExplanation/Reference:\nExplanation:\nLiquid clustering on the merge join keys improves data locality and reduces the amount of data scanned\nduring MERGE operations, which is especially effective for large, frequently updated tables. Enabling\ndeletion vectors avoids rewriting entire Parquet files for updates and deletes, significantly reducing I/O and\nimproving MERGE performance on Unity Catalog–managed tables."
+      },
+      {
+        "num": 309,
+        "title": "查询执行总耗时的查看方法",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 309\nWhich method can be used to determine the total wall-clock time it took to execute a query?\nA. In the Spark UI, take the job duration of the longest-running job associated with that query.\nB. In the Spark UI, take the sum of all task durations that ran across all stages (or all jobs associated with\nthat query.\nC. Open the Query Profiler associated with that query and use the Total wall-clock duration metric.\nD. Open the Query Profiler associated with that query and use the Aggregated task time metric.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe Query Profiler provides a dedicated metric called Total wall-clock duration, which directly represents\nthe real elapsed time from query start to completion, making it the correct and reliable way to measure\nactual execution time."
+      },
+      {
+        "num": 311,
+        "title": "减少磁盘溢出的优化方法（多选题）",
+        "my_answer": "C",
+        "correct": "CD",
+        "is_pending": false,
+        "pdf_text": "QUESTION 311\nA query is taking too long to run. After investigating the Spark UI, the data engineer discovered a\nsignificant amount of disk spill. The type of compute instance the data engineer used only provides a core-\nto-memory ratio of 1:2.\nWhat are the two steps the data engineer should take to minimize spillage? (Choose two.)\nA. Increase spark.sql.files.maxPartitionBytes.\nB. Choose a compute instance with more disk space.\nC. Choose a compute instance with a higher core-to-memory ratio\nD. Reduce spark.sql.files.maxPartitionBytes.\nE. Choose a compute instance with more network bandwidth.\nCorrect Answer: CD\nSection: (none)\nExplanation/Reference:\nExplanation:\nUse a compute instance that provides more memory per core so shuffle, joins, and aggregations can keep\nmore data in memory and avoid spilling to disk.\nReduce spark.sql.files.maxPartitionBytes to create smaller input partitions so each task processes less\ndata at once, lowering peak memory pressure and reducing spill during downstream shuffles."
+      },
+      {
+        "num": 319,
+        "title": "高基数列的数据布局优化",
+        "my_answer": "A",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 319\nA data engineer treated a daily batch ingestion pipeline using a cluster with the latest DBR version to store\nbanking transaction data, and persisted it in a MANAGED DELTA table called \nprod.gold.all_banking_transactions_daily. The data engineer is constantly receiving\ncomplaints, from business units that constantly read this table in an ad hoc way using a SOL Serverless\nWarehouse, regarding the poor performance of their queries. Analyzing the queries, the data engineer\nslated that these areas use high cardinality columns as filters, to perform their analysis. The data engineer\nis studying possibilities to implement a data layout optimization technique for that table, which is\nincremental, easy to maintain, and can easily evolve over time.\nWhich command should the data engineer implement?\nA. Alter the table to use Hive Style Partitions + Z-ORDER and implement a periodic OPTIMIZE command.\nB. Alter the table to use Hive Style Partitions and implement a periodic OPTIMIZE command.\nC. Alter the table to use Z-ORDER arid implement a periodic OPTIMIZE command.\nD. Alter the table to use Liquid Clustering and implement a periodic OPTIMIZE command\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nLiquid Clustering is designed for high-cardinality columns, provides incremental optimization, and evolves\nautomatically over time as data and query patterns change.\nIt eliminates rigid partitioning strategies and heavy manual maintenance, making it easy to operate,\nadaptive, and well-suited for ad-hoc analytics on large Delta tables with evolving access patterns."
+      },
+      {
+        "num": 322,
+        "title": "Pandas UDF 分组状态处理选择",
+        "my_answer": "A",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 322\nA data engineer, while designing a Pandas UDF to process financial time series data with complex\ncalculations that require maintaining state across rows within each stock symbol group must ensure the\nfunction is efficient and scalable.\nWhich approach will solve the problem with minimum overhead while preserving data integrity?\nA. Use a SCALAR_ITER Pandas UDF with iterator-based processing, implementing state management\nthrough persistent storage (Delta tables) that gets updated after each batch to maintain continuity\nacross iterator chunks.\nB. Use a GROUPED_AGG UPF that processes each stock symbol group independently, maintaining state\nthrough intermediate aggregation results that get passed between successive UDF calls via broadcast\nvariables.\nC. Use a SCALAR Pandas UDF that processes the entire dataset at once, implementing custom\npartitioning logic within the UDF to group by stock symbol and maintain state using global variables\nshared across all executor processes.\nD. Use ApplyInPandas method on spark dataframe that receives all rows for each stock symbol as a\npandas DataFrame, allowing processing within each group while maintaining state variables local to\neach group’s processing function.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\napplyInPandas (grouped map) sends all rows for each stock_symbol group to the function as a single\npandas DataFrame, so you can maintain per-symbol state naturally within the group’s processing logic.\nThis avoids cross-batch external state management and avoids unsafe/global state across executors,\nmaking it efficient, scalable, and deterministic for group-wise stateful calculations."
+      }
+    ]
+  },
+  "delta_lake": {
+    "name": "Delta Lake 核心机制",
+    "count": 21,
+    "questions": [
+      {
+        "num": 5,
+        "title": "Databricks Repos 分支不可见",
+        "my_answer": "C",
+        "correct": "B（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 5\nA junior developer complains that the code in their notebook isn't producing the correct results in the\ndevelopment environment. A shared screenshot reveals that while they're using a notebook versioned with\nDatabricks Repos, they're using a personal branch that contains old logic. The desired branch named \ndev-2.3.9 is not available from the branch selection dropdown.\nWhich approach will allow this developer to review the current logic for this notebook?\nA. Use Repos to make a pull request use the Databricks REST API to update the current branch to dev-\n2.3.9\nB. Use Repos to pull changes from the remote Git repository and select the dev-2.3.9 branch.\nC. Use Repos to checkout the dev-2.3.9 branch and auto-resolve conflicts with the current branch\nD. Merge all changes back to the main branch in the remote Git repository and clone the repo again\nE. Use Repos to merge the current branch and the dev-2.3.9 branch, then make a pull request to sync\nwith the remote repository\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 6,
+        "title": "dbutils.secrets 行为",
+        "my_answer": "B",
+        "correct": "E（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 6\nThe security team is exploring whether or not the Databricks secrets module can be leveraged for\nconnecting to an external database.\nAfter testing the code with all Python variables being defined with strings, they upload the password to the\nsecrets module and configure the correct permissions for the currently active user. They then modify their\ncode to the following (leaving all other variables unchanged).\nWhich statement describes what will happen when the above code is executed?\nA. The connection to the external table will fail; the string \"REDACTED\" will be printed.\nB. An interactive input box will appear in the notebook; if the right password is provided, the connection\nwill succeed and the encoded password will be saved to DBFS.\nC. An interactive input box will appear in the notebook; if the right password is provided, the connection\nwill succeed and the password will be printed in plain text.\nD. The connection to the external table will succeed; the string value of password will be printed in plain\ntext.\nE. The connection to the external table will succeed; the string \"REDACTED\" will be printed.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 7,
+        "title": "MLflow 预测结果保存",
+        "my_answer": "B",
+        "correct": "A（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 7\nThe data science team has created and logged a production model using MLflow. The following code\ncorrectly imports and applies the production model to output the predictions as a new DataFrame named \npreds with the schema \"customer_id LONG, predictions DOUBLE, date DATE\".\nThe data science team would like predictions saved to a Delta Lake table with the ability to compare all\npredictions across time. Churn predictions will be made at most once per day.\nWhich code block accomplishes this task while minimizing potential compute costs?\nA. preds.write.mode(\"append\").saveAsTable(\"churn_preds\")\nB. preds.write.format(\"delta\").save(\"/preds/churn_preds\")\nC.\nD.\nE.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 10,
+        "title": "Delta Lake Data Skipping 机制",
+        "my_answer": "B",
+        "correct": "D（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 10\nA Delta table of weather records is partitioned by date and has the below schema:\ndate DATE, device_id INT, temp FLOAT, latitude FLOAT, longitude FLOAT\nTo find all the records from within the Arctic Circle, you execute a query with the below filter:\nlatitude > 66.3\nWhich statement describes how the Delta engine identifies which files to load?\nA. All records are cached to an operational database and then the filter is applied\nB. The Parquet file footers are scanned for min and max statistics for the latitude column\nC. All records are cached to attached storage and then the filter is applied\nD. The Delta log is scanned for min and max statistics for the latitude column\nE. The Hive metastore is scanned for min and max statistics for the latitude column\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 16,
+        "title": "CREATE TABLE AS SELECT (CTAS) 行为",
+        "my_answer": "D",
+        "correct": "B（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 16\nA table is registered with the following code:\nBoth users and orders are Delta Lake tables. Which statement describes the results of querying\nrecent_orders?\nA. All logic will execute at query time and return the result of joining the valid versions of the source tables\nat the time the query finishes.\nB. All logic will execute when the table is defined and store the result of joining tables to the DBFS; this\nstored data will be returned when the table is queried.\nC. Results will be computed and cached when the table is defined; these cached results will incrementally\nupdate as new records are inserted into source tables.\nD. All logic will execute at query time and return the result of joining the valid versions of the source tables\nat the time the query began.\nE. The versions of each source table will be stored in the table transaction log; query results will be saved\nto DBFS with each query.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 34,
+        "title": "External Table 创建方式",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 34\nThe data architect has mandated that all tables in the Lakehouse should be configured as external Delta\nLake tables.\nWhich approach will ensure that this requirement is met?\nA. Whenever a database is being created, make sure that the LOCATION keyword is used.\nB. When configuring an external data warehouse for all table storage, leverage Databricks for all ELT.\nC. Whenever a table is being created, make sure that the LOCATION keyword is used.\nD. When tables are created, make sure that the EXTERNAL keyword is used in the CREATE TABLE\nstatement.\nE. When the workspace is being configured, make sure that external cloud object storage has been\nmounted.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 36,
+        "title": "Delta Log Data Skipping（非分区列）",
+        "my_answer": "A",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 36\nA Delta Lake table representing metadata about content posts from users has the following schema:\nuser_id LONG, post_text STRING, post_id STRING, longitude FLOAT, latitude\nFLOAT, post_time TIMESTAMP, date DATE\nThis table is partitioned by the date column. A query is run with the following filter:\nlongitude < 20 & longitude > -20\nWhich statement describes how data will be filtered?\nA. Statistics in the Delta Log will be used to identify partitions that might Include files in the filtered range.\nB. No file skipping will occur because the optimizer does not know the relationship between the partition\ncolumn and the longitude.\nC. The Delta Engine will use row-level statistics in the transaction log to identify the flies that meet the filter\ncriteria.\nD. Statistics in the Delta Log will be used to identify data files that might include records in the filtered\nrange.\nE. The Delta Engine will scan the parquet file footers to identify each row that meets the filter criteria.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 64,
+        "title": "DROP TABLE on managed table",
+        "my_answer": "E",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 64\nA Delta Lake table was created with the below query:\nConsider the following query:\nDROP TABLE prod.sales_by_store\nIf this statement is executed by a workspace admin, which result will occur?\nA. Nothing will occur until a COMMIT command is executed.\nB. The table will be removed from the catalog but the data will remain in storage.\nC. The table will be removed from the catalog and the data will be deleted.\nD. An error will occur because Delta Lake prevents the deletion of production data.\nE. Data will be marked as deleted but still recoverable with Time Travel.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 75,
+        "title": "Delta Lake 去重（跨批次）",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 75\nA data engineer is configuring a pipeline that will potentially see late-arriving, duplicate records.\nIn addition to de-duplicating records within the batch, which of the following approaches allows the data\nengineer to deduplicate data against previously processed records as it is inserted into a Delta table?\nA. Set the configuration delta.deduplicate = true.\nB. VACUUM the Delta table after each batch completes.\nC. Perform an insert-only merge with a matching condition on a unique key.\nD. Perform a full outer join on a unique key and overwrite existing data.\nE. Rely on Delta Lake schema enforcement to prevent duplicate records.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 79,
+        "title": "External table 创建方式",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 79\nThe data architect has mandated that all tables in the Lakehouse should be configured as external (also\nknown as \"unmanaged\") Delta Lake tables.\nWhich approach will ensure that this requirement is met?\nA. When a database is being created, make sure that the LOCATION keyword is used.\nB. When configuring an external data warehouse for all table storage, leverage Databricks for all ELT.\nC. When data is saved to a table, make sure that a full file path is specified alongside the Delta format.\nD. When tables are created, make sure that the EXTERNAL keyword is used in the CREATE TABLE\nstatement.\nE. When the workspace is being configured, make sure that external cloud object storage has been\nmounted.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 81,
+        "title": "Delta CHECK 约束违反导致整批写入失败",
+        "my_answer": "D",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 81\nA CHECK constraint has been successfully added to the Delta table named activity_details using the\nfollowing logic:\nA batch job is attempting to insert new records to the table, including a record where latitude = 45.50\nand longitude = 212.67.\nWhich statement describes the outcome of this batch insert?\nA. The write will fail when the violating record is reached; any records previously processed will be\nrecorded to the target table.\nB. The write will fail completely because of the constraint violation and no records will be inserted into the\ntarget table.\nC. The write will insert all records except those that violate the table constraints; the violating records will\nbe recorded to a quarantine table.\nD. The write will include all records in the target table; any violations will be indicated in the boolean\ncolumn named valid_coordinates.\nE. The write will insert all records except those that violate the table constraints; the violating records will\nbe reported in a warning log.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 83,
+        "title": "Kafka PII 隔离应按 topic 分区",
+        "my_answer": "B",
+        "correct": "E",
+        "is_pending": false,
+        "pdf_text": "QUESTION 83\nAll records from an Apache Kafka producer are being ingested into a single Delta Lake table with the\nfollowing schema:\nkey BINARY, value BINARY, topic STRING, partition LONG, offset LONG, timestamp\nLONG\nThere are 5 unique topics being ingested. Only the \"registration\" topic contains Personal Identifiable\nInformation (PII). The company wishes to restrict access to PII. The company also wishes to only retain\nrecords containing PII in this table for 14 days after initial ingestion. However, for non-PII information, it\nwould like to retain these records indefinitely.\nWhich of the following solutions meets the requirements?\nA. All data should be deleted biweekly; Delta Lake's time travel functionality should be leveraged to\nmaintain a history of non-PII information.\nB. Data should be partitioned by the registration field, allowing ACLs and delete statements to be set\nfor the PII directory.\nC. Because the value field is stored as binary data, this information is not considered PII and no special\nprecautions should be taken.\nD. Separate object storage containers should be specified based on the partition field, allowing\nisolation at the storage level.\nE. Data should be partitioned by the topic field, allowing ACLs and delete statements to leverage\npartition boundaries.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 96,
+        "title": "Delta Lake ACID 仅针对单表，不强制外键约束",
+        "my_answer": "X（未答）",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 96\nA junior data engineer is migrating a workload from a relational database system to the Databricks\nLakehouse. The source system uses a star schema, leveraging foreign key constraints and multi-table\ninserts to validate records on write.\nWhich consideration will impact the decisions made by the engineer while migrating this workload?\nA. Databricks only allows foreign key constraints on hashed identifiers, which avoid collisions in highly-\nparallel writes.\nB. Databricks supports Spark SQL and JDBC; all logic can be directly migrated from the source system\nwithout refactoring.\nC. Committing to multiple tables simultaneously requires taking out multiple table locks and can lead to a\nstate of deadlock.\nD. All Delta Lake transactions are ACID compliant against a single table, and Databricks does not enforce\nforeign key constraints.\nE. Foreign keys must reference a primary key field; multi-table inserts must leverage Delta Lake’s upsert\nfunctionality.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 164,
+        "title": "PII 数据隔离与保留策略——按 topic 分区",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 164\nAll records from an Apache Kafka producer are being ingested into a single Delta Lake table with the\nfollowing schema:\nkey BINARY, value BINARY, topic STRING, partition LONG, offset LONG, timestamp\nLONG\nThere are 5 unique topics being ingested. Only the \"registration\" topic contains Personal Identifiable\nInformation (PII). The company wishes to restrict access to PII. The company also wishes to only retain\nrecords containing PII in this table for 14 days after initial ingestion. However, for non-PII information, it\nwould like to retain these records indefinitely.\nWhich solution meets the requirements?\nA. All data should be deleted biweekly; Delta Lake's time travel functionality should be leveraged to\nmaintain a history of non-PII information.\nB. Data should be partitioned by the registration field, allowing ACLs and delete statements to be set\nfor the PII directory.\nC. Data should be partitioned by the topic field, allowing ACLs and delete statements to leverage\npartition boundaries.\nD. Separate object storage containers should be specified based on the partition field, allowing\nisolation at the storage level.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 187,
+        "title": "MLflow 预测结果追加写入 Delta 表",
+        "my_answer": "B",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 187\nThe data science team has created and logged a production model using MLflow. The following code\ncorrectly imports and applies the production model to output the predictions as a new DataFrame named \npreds with the schema \"customer_id LONG, predictions DOUBLE, date DATE\".\nThe data science team would like predictions saved to a Delta Lake table with the ability to compare all\npredictions across time. Churn predictions will be made at most once per day.\nWhich code block accomplishes this task while minimizing potential compute costs?\nA. preds.write.mode(\"append\").saveAsTable(\"churn_preds\")\nB. preds.write.format(\"delta\").save(\"/preds/churn_preds\")\nC.\nD.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 221,
+        "title": "Databricks CLI 复制 pipeline 配置——get + create",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 221\nA data engineer needs to capture pipeline settings from an existing setting in the workspace, and use them\nto create and version a JSON file to create a new pipeline.\nWhich command should the data engineer enter in a web terminal configured with the Databricks CLI?\nA. Use list pipelines to get the specs for all pipelines; get the pipeline spec from the returned results;\nparse and use this to create a pipeline\nB. Stop the existing pipeline; use the returned settings in a reset command\nC. Use the get command to capture the settings for the existing pipeline; remove the pipeline_id and\nrename the pipeline; use this in a create command\nD. Use the clone command to create a copy of an existing pipeline; use the get JSON command to get the\npipeline definition; save this to git\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nTo create a new pipeline using the settings of an existing one, the data engineer can:\nUse the databricks pipelines get command to capture the settings of the existing pipeline.\nRemove the pipeline_id (since it will be unique for each pipeline).\nRename the pipeline to differentiate it from the original one.\nUse these settings with a databricks pipelines create command to create a new pipeline.\nThis process allows the engineer to reuse the existing pipeline configuration and make the necessary\nchanges to avoid conflicts, effectively versioning the pipeline with a new identity."
+      },
+      {
+        "num": 228,
+        "title": "Delta 转 Iceberg 格式",
+        "my_answer": "D",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 228\nA data engineer has created a 'transactions' Delta table on Databricks that should be used by the analytics\nteam. The analytics team wants to use the table with another tool which requires Apache Iceberg format.\nWhat should the data engineer do?\nA. Require the analytics team to use a tool which supports Delta table.\nB. Create an Iceberg copy of the 'transactions' Delta table which can be used by the analytics team.\nC. Convert the 'transactions' Delta to Iceberg and enable uniform so that the table can be read as a Delta\ntable.\nD. Enable uniform on the transactions table to 'iceberg' so that the table can be read as an Iceberg table.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe analytics team requires the Iceberg format, which is different from Delta. The data engineer should\ncreate a separate Iceberg copy of the transactions Delta table so it can be used with tools that support\nIceberg without affecting the original Delta table. This approach preserves the Delta table for existing\nworkflows while providing Iceberg access for the analytics team."
+      },
+      {
+        "num": 260,
+        "title": "使用foreach task实现可扩展的REST API下载",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 260\nA data engineer is implementing a job to download multiple PDF files from a third-party provided REST API\nendpoint by specifying different report types. The REST API is time-consuming and encounters intermittent\nerrors, so the engineer wants to track each download activity to know when it fails and to retry partially,\nwhile providing scalable throughput. The engineer needs to download ten report types, and the list can be\nchanged over time.\nHow should the data engineer achieve this?\nA. Use a foreach task with a list of report types as its inputs.\nB. Define ten Notebook tasks to clearly track which report download failed.\nC. Use a Delta Lake table to track each report download status as 10 rows, and use it as a source table to\nexecute the download function as a Pandas UDF.\nD. Define a list variable within a Notebook to loop through the report types to download them, and print the\ndownload results. Execute it as a Notebook tasks.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nA foreach task allows the job to dynamically iterate over a configurable list of report types, execute\ndownloads in parallel, and track the success or failure of each item independently. This enables scalable\nthroughput, partial retries for failed downloads, and easy updates when the list of report types changes,\nwithout hardcoding tasks or introducing unnecessary complexity."
+      },
+      {
+        "num": 270,
+        "title": "Databricks Git Folder团队协作最佳实践",
+        "my_answer": "C",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 270\nA data engineering team is collaborating on a Databricks project where each team member needs to\ndevelop and test code independently before merging changes into the main branch.\nThey want to avoid accidental overwrites or branch switching issues while ensuring that all work is version-\ncontrolled and can be integrated into their CI/CD pipeline.\nHow should the data engineer achieve collaboration?\nA. Each team member creates their own Databricks Git folder, mapped to the same remote Git repository,\nand works in their own development branch within their personal folder.\nB. All team members work in the same Databricks Git folder and perform Git operations (pull, push,\ncommit, branch switching) directly in that shared folder.\nC. Team members edit notebooks directly in the workspace’s shared folder and periodically copy changes\ninto a Git folder for version control.\nD. Team members use the Databricks CLI to clone the Git repository and perform Git operations from a\ncluster’s web terminal.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nUsing separate Databricks Git folders per user mapped to the same remote repository allows each team\nmember to work independently on their own branch without interfering with others. This prevents\naccidental overwrites or branch conflicts while ensuring all changes are version-controlled and easily\nintegrated into CI/CD workflows."
+      },
+      {
+        "num": 294,
+        "title": "待补充",
+        "my_answer": "D",
+        "correct": "A",
+        "is_pending": true,
+        "pdf_text": "QUESTION 294\nA data engineer is tasked with ensuring that a Delta table in Databricks continuously retains deleted files\nfor 15 days (instead of the default 7 days), in order to permanently comply with the organization’s data\nretention policy. \nWhich code snippet correctly sets this retention period for deleted files?\nA. spark.sql(“ALTER TABLE my_table SET TBLPROPERTIES\n(‘delta.deletedFileRetentionDuration’ = ‘interval 15 days’)”)\nB.\nC. spark.sql(“VACUUM my_table RETAIN  HOURS”)\nD. spark.conf.set(“spark.databricks.delta.deletedFileRetemtionDuration”, “15\ndays”)\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe deleted file retention period in Delta Lake is controlled by the table property\ndelta.deletedFileRetentionDuration. Setting this property via ALTER TABLE ensures the retention policy is\npersistently enforced at the table level, extending deleted file retention to 15 days in compliance with\norganizational requirements."
+      },
+      {
+        "num": 327,
+        "title": "Deletion Vectors 删除行为（未答）",
+        "my_answer": "X",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 327\nA data engineer has a delta table order with deletion vectors enabled for it. The engineer is attempting to\nexecute the below code:\nDELETE FROM orders WHERE status = 'cancelled'\nWhat should be the behaviour of deletion vectors when the command is executed?\nA. Files are physically rewritten without the deleted row.\nB. Rows are marked as deleted both in metadata and in files.\nC. Rows are marked as deleted in metadata, not in files\nD. Delta automatically removes all cancelled orders permanently.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nWith deletion vectors enabled, Delta Lake records deletions in metadata (deletion vectors) rather than\nrewriting the underlying data files.\nThe rows are logically marked as deleted and filtered out at read time, while the original files remain\nunchanged, enabling faster deletes and better performance for DML operations.\n店铺：学习小店66"
+      }
+    ]
+  },
+  "cli_api": {
+    "name": "Databricks CLI, API 与部署",
+    "count": 6,
+    "questions": [
+      {
+        "num": 46,
+        "title": "Databricks Secrets 限制",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 46\nAlthough the Databricks Utilities Secrets module provides tools to store sensitive credentials and avoid\naccidentally displaying them in plain text users should still be careful with which credentials are stored here\nand which users have access to using these secrets.\nWhich statement describes a limitation of Databricks Secrets?\nA. Because the SHA256 hash is used to obfuscate stored secrets, reversing this hash will display the\nvalue in plain text.\nB. Account administrators can see all secrets in plain text by logging on to the Databricks Accounts\nconsole.\nC. Secrets are stored in an administrators-only table within the Hive Metastore; database administrators\nhave permission to query this table by default.\nD. Iterating through a stored secret and printing each character will display secret contents in plain text.\nE. The Databricks REST API can be used to list secrets in plain text if the personal access token has\nproper credentials.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 68,
+        "title": "Databricks CLI upload file",
+        "my_answer": "D",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 68\nAssuming that the Databricks CLI has been installed and configured correctly, which Databricks CLI\ncommand can be used to upload a custom Python Wheel to object storage mounted with the DBFS for use\nwith a production job?\nA. configure\nB. fs\nC. jobs\nD. libraries\nE. workspace\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 232,
+        "title": "Databricks CLI 创建集群命令",
+        "my_answer": "A",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 232\nA data engineer wants to create a cluster using the Databricks CLI for a big ETL pipeline. The cluster\nshould have five workers and one driver of type i3.xlarge and should use the '14.3.x-scala2.12'\nruntime.\nWhich command should the data engineer use?\nA. databricks compute add 14.3.x-scala2.12 --num-workers 5 --node-type-id i3.xlarge\n--cluster-name Data Engineer_cluster\nB. databricks clusters create 14.3.x-scala2.12 --num-workers 5 --node-type-id\ni3.xlarge --cluster-name Data Engineer_cluster\nC. databricks compute create 14.3.x-scala2.12 --num-workers 5 --node-type-id\ni3.xlarge --cluster-name Data Engineer_cluster\nD. databricks clusters add 14.3.x-scala2.12 --num-workers 5 --node-type-id i3.xlarge\n--cluster-name Data Engineer_cluster\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe correct Databricks CLI command to create a new cluster is databricks clusters create. You specify the\nruntime with --spark-version (here '14.3.x-scala2.12'), the number of workers with --num-workers, the node\ntype with --node-type-id, and the cluster name with --cluster-name. This command properly initializes the\ncluster with the desired configuration."
+      },
+      {
+        "num": 263,
+        "title": "Asset Bundle管理现有生产Job的正确流程",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 263\nA data engineer is brining an existing production Databricks job under asset bundle management and\nwants to ensure that:\nThe job’s current configuration is captured as YAML, and all referenced files are included in their\nbundle project.\nFuture changes to the bundle’s YAML will update the existing job in-place (not create a new job)\nHow should the data engineer successfully move the production job under asset bundle management?\nA. Run Databricks bundle generate job --existing-job-id to generate the YAML and download referenced\nfiles. Then, run Databricks bundle deploy to deploy the bundle, which will always update the existing\njob automatically.\nB. Export the job definition as JSON, convert it to YAML, and place it in your bundle. Then, run Databricks\nbundle deploy to update the existing job.\nC. Manually create the YAML configuration for the job in your bundle project, ensuring all settings match\nthe existing job. Then, run Databricks bundle deploy the bundle, which will update the existing job in\nyour workspace.\nD. Run databricks bundle generate job --existing-job-id to generate the YAML and download referenced\nfiles. Then, run Databricks bundle deployment, bind to link the bundle’s job resource to the existing job\nin Databricks.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nGenerating the bundle from the existing job captures the full job configuration as YAML and pulls in all\nreferenced files into the bundle project. Binding the generated job resource to the existing Databricks job\nestablishes a persistent link, ensuring that future bundle deployments update the same production job in\nplace rather than creating a new one.\n店铺：学习小店66"
+      },
+      {
+        "num": 295,
+        "title": "待补充（未答）",
+        "my_answer": "X",
+        "correct": "C",
+        "is_pending": true,
+        "pdf_text": "QUESTION 295\nA Data Engineer is building a fraud detection pipeline that calls out to Open AI, via a Python library, and\nneeds to include an access token when using the API.\nWhich Databricks CLI command should the Data Engineer use to create the secret?\nA. databricks secrets put-secret KEY SCOPE; dbutils.secrets.get (KEY, SCOPE)\nB. databricks tokens put-token SCOPE KEY; dbutils.tokens.get (SCOPE, KEY)\nC. databricks secrets put-secret SCOPE KEY; dbutils.secrets.get (SCOPE, KEY)\nD. databricks tokens put-token KEY SCOPE; dbutils.secrets.get (KEY, SCOPE)\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe Databricks CLI command databricks secrets put-secret <scope> <key> is used to securely store\nsensitive values such as API access tokens in a secret scope. The secret can then be retrieved at runtime\nusing dbutils.secrets.get(scope, key), ensuring credentials are not hard-coded and remain protected."
+      },
+      {
+        "num": 316,
+        "title": "Git Folders合并冲突解决",
+        "my_answer": "D",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 316\nTwo data engineers are working on the same Databricks notebook in separate branches. Both have edited\nthe same section of code. When one tries to merge the other’s branch into their own using the Databricks\nGit folders UI, a merge conflict occurs on that notebook file. The UI highlights the conflict and presents\noptions for resolution.\nHow should the data engineers resolve this merge conflict using Databricks Git folders?\nA. Use the Git CLI in the cluster's web terminal to force-push the conflicted merge (git push --force),\noverriding the remote branch with local version and discarding changes.\nB. Use the Git folders UI to manually edit the notebook file, selecting the desired lines from both versions\nand removing the conflict markers, then mark the conflict as resolved.\nC. Abort the merge, discard all local changes, and try the merge operation again without reviewing the\nconfiding code.\nD. Delete the conflicted notebook file via the Databricks workspace UI, commit the deletion, and recreate\nthe notebook from scratch in a new commit to bypass the conflict entirely.\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nIn Databricks Git folders, merge conflicts are resolved by opening the conflicted notebook, manually\nreconciling the conflicting sections by keeping the desired changes from each version, removing the\nconflict markers, and then marking the file as resolved so the merge can be completed and committed."
+      }
+    ]
+  },
+  "git_repos": {
+    "name": "Git, Repos 与测试",
+    "count": 4,
+    "questions": [
+      {
+        "num": 66,
+        "title": "%sh 性能问题",
+        "my_answer": "C",
+        "correct": "E",
+        "is_pending": false,
+        "pdf_text": "QUESTION 66\nThe following code has been migrated to a Databricks notebook from a legacy workload:\nThe code executes successfully and provides the logically correct results, however, it takes over 20\nminutes to extract and load around 1 GB of data.\nWhich statement is a possible explanation for this behavior?\nA. %sh triggers a cluster restart to collect and install Git. Most of the latency is related to cluster startup\ntime.\nB. Instead of cloning, the code should use %sh pip install so that the Python code can get executed in\nparallel across all nodes in a cluster.\nC. %sh does not distribute file moving operations; the final line of code should be updated to use %fs\ninstead.\nD. Python will always execute slower than Scala on Databricks. The run.py script should be refactored to\nScala.\nE. %sh executes shell code on the driver node. The code does not take advantage of the worker nodes or\nDatabricks optimized Spark.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:\n店铺：学习小店66"
+      },
+      {
+        "num": 188,
+        "title": "%sh 只在 driver 执行，无法利用 worker 节点",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 188\nThe following code has been migrated to a Databricks notebook from a legacy workload:\nThe code executes successfully and provides the logically correct results, however, it takes over 20\nminutes to extract and load around 1 GB of data.\nWhich statement is a possible explanation for this behavior?\nA. %sh triggers a cluster restart to collect and install Git. Most of the latency is related to cluster startup\ntime.\nB. Instead of cloning, the code should use %sh pip install so that the Python code can get executed in\nparallel across all nodes in a cluster.\nC. %sh does not distribute file moving operations; the final line of code should be updated to use %fs\ninstead.\nD. %sh executes shell code on the driver node. The code does not take advantage of the worker nodes or\nDatabricks optimized Spark.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:\nExplanation:\nThe %sh magic command in Databricks allows you to run shell commands directly, but these commands\nare executed on the driver node only. This means that the provided code is running in a single-threaded\nenvironment, which can be very inefficient for operations like cloning a repository, running Python scripts,\nand moving large amounts of data (like 1 GB). The driver node's limited resources compared to a\ndistributed cluster setup are the reason for the slowness, as the worker nodes and Databricks' Spark\noptimizations are not being utilized."
+      },
+      {
+        "num": 226,
+        "title": "Files in Repos 单元测试",
+        "my_answer": "A",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 226\nA Data Engineer wants to run unit tests using common Python testing frameworks on Python functions\ndefined across several Databricks notebooks currently used in production.\nHow can the data engineer run unit tests against functions that work with data in production?\nA. Define and import unit test functions from a separate Databricks notebook\nB. Define and unit test functions using Files in Repos\nC. Run unit tests against non-production data that closely mirrors production\nD. Define unit tests and functions within the same notebook\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nTo run unit tests on Python functions across several Databricks notebooks, the best practice is to use\nFiles in Repos. By storing the functions in reusable Python files (.py) within Databricks Repos, the Data\nEngineer can import these functions into different notebooks and easily manage unit testing using Python\ntesting frameworks like unittest or pytest. This approach supports modular code, version control,\nand makes it easier to maintain and test the functions.\nWith Files in Repos:\nThe functions can be organized and imported where needed.\nThe testing code can be separated from the production code.\nCommon Python testing frameworks can be easily used to write and execute tests."
+      },
+      {
+        "num": 247,
+        "title": "DataFrame.transform 模块化 ETL",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 247\nWhich approach demonstrates a modular and testable way to use DataFrame transform for ETL code in\nPySpark?\nA.\nB.\nC.\nD.\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nUsing DataFrame.transform with a pure transformation function promotes modular, reusable, and easily\ntestable ETL logic. Each transformation is encapsulated as a standalone function, can be independently\nunit tested, and composed cleanly in a pipeline without coupling to orchestration or class state."
+      }
+    ]
+  },
+  "platform_ops": {
+    "name": "平台操作与工具",
+    "count": 11,
+    "questions": [
+      {
+        "num": 9,
+        "title": "Python 变量 vs SQL 引用",
+        "my_answer": "B",
+        "correct": "E（社区投票",
+        "is_pending": false,
+        "pdf_text": "QUESTION 9\nA junior member of the data engineering team is exploring the language interoperability of Databricks\nnotebooks. The intended outcome of the below code is to register a view of all sales that occurred in\ncountries on the continent of Africa that appear in the geo_lookup table.\nBefore executing the code, running SHOW TABLES on the current database indicates the database contains\nonly two tables: geo_lookup and sales.\nWhich statement correctly describes the outcome of executing these command cells in order in an\ninteractive notebook?\nA. Both commands will succeed. Executing show tables will show that countries_af and sales_af\nhave been registered as views.\nB. Cmd 1 will succeed. Cmd 2 will search all accessible databases for a table or view named \ncountries_af: if this entity exists, Cmd 2 will succeed.\nC. Cmd 1 will succeed and Cmd 2 will fail. countries_af will be a Python variable representing a\nPySpark DataFrame.\nD. Both commands will fail. No new variables, tables, or views will be created.\nE. Cmd 1 will succeed and Cmd 2 will fail. countries_af will be a Python variable containing a list of\nstrings.\nCorrect Answer: E\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 54,
+        "title": "Python sys.path",
+        "my_answer": "D",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 54\nWhich Python variable contains a list of directories to be searched when trying to locate required modules?\nA. importlib.resource_path\nB. sys.path\nC. os.path\nD. pypi.path\nE. pylib.source\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 102,
+        "title": "Databricks notebook 文件首行格式",
+        "my_answer": "A",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 102\nWhat is the first line of a Databricks Python notebook when viewed in a text editor?\nA. %python\nB. // Databricks notebook source\nC. # Databricks notebook source\nD. -- Databricks notebook source\nE. # MAGIC %python\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 105,
+        "title": "MLflow模型在Spark中的调用方式",
+        "my_answer": "E",
+        "correct": "B",
+        "is_pending": false,
+        "pdf_text": "QUESTION 105\nThe data science team has created and logged a production model using MLflow. The model accepts a list\nof column names and returns a new column of type DOUBLE.\nThe following code correctly imports the production model, loads the customers table containing the\ncustomer_id key column into a DataFrame, and defines the feature columns needed for the model.\nWhich code block will output a DataFrame with the schema \"customer_id LONG, predictions\nDOUBLE\"?\nA. df.map(lambda x:model(x[columns])).select(\"customer_id, predictions\")\nB. df.select(\"customer_id\", model(*columns).alias(\"predictions\"))\nC. model.predict(df, columns)\nD. df.select(\"customer_id\", pandas_udf(model, columns).alias(\"predictions\"))\nE. df.apply(model, columns).select(\"customer_id, predictions\")\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 111,
+        "title": "Notebook级别安装Python包到所有节点",
+        "my_answer": "E",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 111\nWhich describes a method of installing a Python package scoped at the notebook level to all nodes in the\ncurrently active cluster?\nA. Run source env/bin/activate in a notebook setup script\nB. Use b in a notebook cell\nC. Use %pip install in a notebook cell\nD. Use %sh pip install in a notebook cell\nE. Install libraries from PyPI using the cluster UI\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 126,
+        "title": "Python变量与Spark视图的跨语言互操作",
+        "my_answer": "C",
+        "correct": "D",
+        "is_pending": false,
+        "pdf_text": "QUESTION 126\nA junior member of the data engineering team is exploring the language interoperability of Databricks\nnotebooks. The intended outcome of the below code is to register a view of all sales that occurred in\ncountries on the continent of Africa that appear in the geo_lookup table.\nBefore executing the code, running SHOW TABLES on the current database indicates the database contains\nonly two tables: geo_lookup and sales.\nWhat will be the outcome of executing these command cells in order in an interactive notebook?\nA. Both commands will succeed. Executing SHOW TABLES will show that countries_af and sales_af\nhave been registered as views.\nB. Cmd 1 will succeed. Cmd 2 will search all accessible databases for a table or view named \ncountries_af: if this entity exists, Cmd 2 will succeed.\nC. Cmd 1 will succeed and Cmd 2 will fail. countries_af will be a Python variable representing a\nPySpark DataFrame.\nD. Cmd 1 will succeed and Cmd 2 will fail. countries_af will be a Python variable containing a list of\nstrings.\nCorrect Answer: D\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 174,
+        "title": "%pip install 作用于 notebook 级别所有节点",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 174\nWhat is a method of installing a Python package scoped at the notebook level to all nodes in the currently\nactive cluster?\nA. Run source env/bin/activate in a notebook setup script\nB. Install libraries from PyPI using the cluster UI\nC. Use %pip install in a notebook cell\nD. Use %sh pip install in a notebook cell\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nReference:"
+      },
+      {
+        "num": 175,
+        "title": "Databricks Python notebook 首行格式",
+        "my_answer": "D",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 175\nWhat is the first line of a Databricks Python notebook when viewed in a text editor?\nA. %python\nB. // Databricks notebook source\nC. # Databricks notebook source\nD. -- Databricks notebook source\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nReference:"
+      },
+      {
+        "num": 292,
+        "title": "待补充（未答，多选题）",
+        "my_answer": "X",
+        "correct": "DE",
+        "is_pending": true,
+        "pdf_text": "QUESTION 292\nA data engineer needs to productionize a new Spark application written by teammate. This application has\nnumerous external dependencies, including libraries, and requires custom environment variables and\nSpark configuration parameters to be set. \nWhich two methods will help the data engineer accomplish the task? (Choose two.)\nA. Install libraries on DBFS\nB. Add libraries to compute policies\nC. Use secrets in init scripts to store configuration data\nD. Use compute policies to set system properties, environment variables, and Spark configuration\nparameters.\nE. Create init scripts on DBFS.\nCorrect Answer: DE\nSection: (none)\nExplanation/Reference:\nExplanation:\nCompute policies allow centrally defining and enforcing Spark configuration parameters, system\nproperties, and environment variables required by the application, ensuring consistent production settings.\nInit scripts enable installing external dependencies and performing custom environment setup at cluster\nstartup, making them essential for productionizing Spark applications with complex dependency and\nconfiguration requirements."
+      },
+      {
+        "num": 297,
+        "title": "待补充",
+        "my_answer": "C",
+        "correct": "B",
+        "is_pending": true,
+        "pdf_text": "QUESTION 297\nA data engineer is reviewing the PySpark code to copy a part of the production dataset to the sandbox\nenvironment, and needs to be sure that no PII(Personally Identifiable Information) data is being copied.\nAfter checking the sales table, the data engineer notices that it has user emails as the only PII data\nincluded as well as being the only column to identify the user.\nfrom pyspark.sql import functions as F\nWhich anonymised code should be used to achieve the required outcome?\nA. df.withColumn (“user_emai”, F.expr(“uuid()”))\nB. df.withColumn (“user_email”, F.sha2 (“user_email”))\nC. df.withColumn (“hashed_email”, sha2 (“user_email”))\nD. df.withColumn (“user_email”, F.regexp_replace (“user_eamail”, “@*”,\n“@anonymized.com”))\nCorrect Answer: B\nSection: (none)\nExplanation/Reference:\nExplanation:\nHashing the email column replaces the original PII with a deterministic, irreversible value while preserving\nits role as a unique identifier. This ensures no actual email addresses are copied to the sandbox\nenvironment, while still allowing consistent joins or user-level analysis if needed."
+      },
+      {
+        "num": 313,
+        "title": "邮箱列的固定长度哈希脱敏（未答）",
+        "my_answer": "X",
+        "correct": "C",
+        "is_pending": false,
+        "pdf_text": "QUESTION 313\nA data engineer is masking the provided data column containing the email address. The goal is to have an\noutput of the same length for all rows, while keeping different outputs for different values.\nWhich SQL function should be used to achieve this?\nA. hash(email)\nB. mask(email, ‘?’)\nC. sha1(‘email’)\nD. sha2(email,0)\nCorrect Answer: C\nSection: (none)\nExplanation/Reference:\nExplanation:\nA cryptographic hash function like SHA-1 produces a fixed-length output for every input value while\ngenerating different outputs for different inputs, which satisfies both requirements: consistent length and\ndeterministic uniqueness for different email values."
+      }
+    ]
+  },
+  "other": {
+    "name": "Other",
+    "count": 2,
+    "questions": [
+      {
+        "num": 98,
+        "title": "View WHERE 过滤行而非置 null",
+        "my_answer": "E",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 98\nA table named user_ltv is being used to create a view that will be used by data analysts on various\nteams. Users in the workspace are configured into groups, which are used for setting up data access using\nACLs.\nThe user_ltv table has the following schema:\nemail STRING, age INT, ltv INT\nThe following view definition is executed:\nAn analyst who is not a member of the auditing group executes the following query:\nSELECT * FROM user_ltv_no_minors\nWhich statement describes the results returned by this query?\nA. All columns will be displayed normally for those records that have an age greater than 17; records not\nmeeting this condition will be omitted.\nB. All age values less than 18 will be returned as null values, all other columns will be returned with the\nvalues in user_ltv.\nC. All values for the age column will be returned as null values, all other columns will be returned with the\nvalues in user_ltv.\nD. All records from all columns will be displayed with the values in user_ltv.\nE. All columns will be displayed normally for those records that have an age greater than 18; records not\nmeeting this condition will be omitted.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:"
+      },
+      {
+        "num": 184,
+        "title": "DBFS 是对象存储的文件系统抽象层",
+        "my_answer": "B",
+        "correct": "A",
+        "is_pending": false,
+        "pdf_text": "QUESTION 184\nTwo of the most common data locations on Databricks are the DBFS root storage and external object\nstorage mounted with dbutils.fs.mount().\nWhich of the following statements is correct?\nA. DBFS is a file system protocol that allows users to interact with files stored in object storage using\nsyntax and guarantees similar to Unix file systems.\nB. By default, both the DBFS root and mounted data sources are only accessible to workspace\nadministrators.\nC. The DBFS root is the most secure location to store data, because mounted storage volumes must have\nfull public read and write permissions.\nD. The DBFS root stores files in ephemeral block volumes attached to the driver, while mounted\ndirectories will always persist saved data to external storage between sessions.\nCorrect Answer: A\nSection: (none)\nExplanation/Reference:\nExplanation:\nDatabricks File System (DBFS) is an abstraction layer over cloud storage (such as S3, Azure Blob\nStorage, etc.) that allows users to interact with files stored in object storage as if they were using a Unix-\nlike file system. This simplifies file operations in Databricks and allows users to use familiar commands and\nsyntax."
+      }
+    ]
+  }
+}
