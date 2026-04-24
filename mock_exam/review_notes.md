@@ -28,8 +28,8 @@
 | 第20轮 Page 20 | Q191-Q200 | 10/10 | 2026-03-06 |
 | 第21轮 Page 21 | Q201-Q210 | 9/10 | 2026-03-06 |
 | 第22轮 Page 22 | Q211-Q220 | 6/10 | 2026-03-06 |
-| 第23轮 Page 23 | Q221-Q230 | 6/10 | 2026-03-06 |
-| 第24轮 Page 24 | Q231-Q240 | 6/10 | 2026-03-06 |
+| 第23轮 Page 23 | Q221-Q230 | 7/10 | 2026-03-06 |
+| 第24轮 Page 24 | Q231-Q240 | 8/10 | 2026-03-06 |
 | 第25轮 Page 25 | Q241-Q250 | 5/10 | 2026-03-06 |
 | 第26轮 Page 26 | Q251-Q260 | 7/10 | 2026-03-06 |
 | 第27轮 Page 27 | Q261-Q270 | 4/10 | 2026-03-06 |
@@ -39,6 +39,12 @@
 | 第31轮 Page 31 | Q301-Q310 | 5/10 | 2026-03-06 |
 | 第32轮 Page 32 | Q311-Q320 | 3/10 | 2026-03-06 |
 | 第33轮 Page 33 | Q321-Q327 | 3/7 | 2026-03-06 |
+| 第二轮复习 | Q1-Q66 | 50/66 | 2026-04-22 |
+| 第二轮复习 | Q67-Q100 | 28/34 | 2026-04-22 |
+| 第二轮复习 | Q101-Q166 | 60/66 | 2026-04-22 |
+| 第二轮复习 | Q167-Q327 | 139/161 | 2026-04-23 |
+| **第二轮合计** | **Q1-Q327** | **277/327 (84.7%)** | **2026-04-23** |
+| **Day 2 模拟考 #1** | **60题随机抽样** | **60/60 (100%)** | **2026-04-24** |
 
 ---
 
@@ -1341,23 +1347,16 @@ Which of the following adjustments will get a more accurate measure of how code 
 
 **选项:**
 A. Scala is the only language that can be accurately tested using interactive notebooks; because the best performance is achieved by using Scala code compiled to JARs, all PySpark and Spark SQL logic should be refactored.
-B. The only way to meaningfully troubleshoot code execution times in development notebooks is to use production-sized data and production-sized clusters with Run All execution. ✅
+B. The only way to meaningfully troubleshoot code execution times in development notebooks is to use production-sized data and production-sized clusters with Run All execution.
 C. Production code development should only be done using an IDE; executing code against a local build of open source Spark and Delta Lake will provide the most accurate benchmarks for how code will perform in production.
-D. Calling display() forces a job to trigger, while many transformations will only add to the logical query plan; because of caching, repeated execution of the same logic does not provide meaningful results.
+D. Calling display() forces a job to trigger, while many transformations will only add to the logical query plan; because of caching, repeated execution of the same logic does not provide meaningful results. ✅
 E. The Jobs UI should be leveraged to occasionally run the notebook as a job and track execution time during incremental code development because Photon can only be enabled on clusters launched for scheduled jobs.
 
-**我的答案:** C | **正确答案:** B
+**我的答案:** C | **正确答案:** D
 
-**解析:**
-- 交互式 notebook 逐 cell 执行会触发缓存，无法准确反映生产性能
-- `display()` 会触发 action，但重复执行会利用缓存，结果不准确
-- 要准确测试性能，需要：
-  - 使用生产规模的数据
-  - 使用生产规模的集群
-  - 用 Run All 一次性执行整个 notebook
-- 选项 D 说法部分正确但不是最佳实践
+**修正说明（2026-04-24）：** PDF 标注答案 B（"唯一方法是用生产数据+生产集群+Run All"）过于极端。Anki/ExamTopics 社区答案 D 正确识别了核心问题：`display()` 触发 action（而非 lazy transformation），且 Spark 缓存机制导致重复执行同一逻辑时结果失真。D 诊断了根因，B 只给了一个过度处方。
 
-**知识点:** `performance testing` `caching` `Run All`
+**知识点:** `performance testing` `caching` `display()触发action` `lazy evaluation`
 
 ---
 
@@ -2976,19 +2975,19 @@ D. Use `clone` command to copy existing pipeline; use `get JSON` to get definiti
 
 ---
 
-### Q228 ❌ — Delta 转 Iceberg 格式
+### Q228 ✅ — Delta 转 Iceberg 格式（PDF答案错误，我的答案 D 是对的）
 
 **原题：** Analytics team needs to use a Delta transactions table with a tool that requires Apache Iceberg format. What should the data engineer do?
 
 **选项：**
 - A. Require the analytics team to use a tool which supports Delta table
-- B. Create an Iceberg copy of the transactions Delta table which can be used by the analytics team ✅
+- B. Create an Iceberg copy of the transactions Delta table which can be used by the analytics team
 - C. Convert the transactions Delta to Iceberg and enable uniform so that the table can be read as a Delta table
-- D. Enable uniform on the transactions table to iceberg so that the table can be read as an Iceberg table
+- D. Enable uniform on the transactions table to iceberg so that the table can be read as an Iceberg table ✅
 
-**我的答案:** D | **正确答案:** B
+**我的答案:** D | **PDF标注答案:** B | **实际正确答案:** D
 
-**解析：** 正确做法是创建一个 Iceberg 格式的副本供分析团队使用，这样不会影响原始 Delta 表的现有工作流。选项 D 的 UniForm 虽然可以让 Delta 表以 Iceberg 格式被读取，但本题的正确答案是创建独立副本。注意区分 UniForm（统一格式读取）和直接创建副本（独立格式表）的适用场景。
+**修正说明（2026-04-24）：** UniForm（Universal Format）是 Databricks 专为此场景设计的功能——让 Delta 表原生可被 Iceberg 客户端读取，无需维护独立副本。创建副本（B）会引入数据冗余和同步问题。Anki/ExamTopics 社区答案 D 正确。
 
 **知识点:** `Delta Lake` `Apache Iceberg` `UniForm` `Table Format`
 
@@ -3046,21 +3045,23 @@ D. Use `clone` command to copy existing pipeline; use `get JSON` to get definiti
 
 ---
 
-### Q233 ❌ — Liquid Clustering 不支持 INSERT INTO
+### Q233 ✅ — Liquid Clustering cluster-on-write 限制（PDF答案错误，已修正）
 
 **原题：** A transactions table has been liquid clustered on product_id, user_id and event_date. Which operation lacks support for cluster on write?
 
 **选项：**
 - A. CTAS and RTAS statements
-- B. spark.writeStream.format(delta).mode(append)
+- B. spark.writeStream.format(delta).mode(append) ✅ （正确答案）
 - C. spark.write.format(delta).mode(append)
-- D. INSERT INTO operations ✅
+- D. INSERT INTO operations（PDF标注的答案，但经查官方文档证实为错误）
 
-**我的答案:** B | **正确答案:** D
+**我的答案:** B | **PDF标注答案:** D | **实际正确答案:** B
 
-**解析：** Liquid Clustering 的 cluster on write 功能支持 CTAS/RTAS 语句、Spark 的 .write 和 .writeStream append 模式，但不支持 INSERT INTO 操作。INSERT INTO 只是简单追加数据，不会按照聚簇列重新组织数据。选项 B 的 writeStream append 模式是支持 cluster on write 的。
+**修正说明（2026-04-24）：** 经查 Databricks 官方文档（2026-04-16 更新），INSERT INTO **明确支持** cluster-on-write（受数据量阈值限制）。Structured Streaming 需要显式启用 Spark config `spark.databricks.delta.liquid.eagerClustering.streaming.enabled = true` 才支持 cluster-on-write，默认不启用。因此正确答案是 B，我的原始答案是对的。
 
-**知识点:** `Liquid Clustering` `Cluster on Write` `INSERT INTO` `Delta Lake`
+**官方文档支持 cluster-on-write 的操作：** INSERT INTO、CTAS/RTAS、COPY INTO (Parquet)、spark.write.mode("append")。Streaming 需额外配置。
+
+**知识点:** `Liquid Clustering` `Cluster on Write` `Streaming需配置` `PDF答案有误`
 
 ---
 
@@ -3070,21 +3071,21 @@ D. Use `clone` command to copy existing pipeline; use `get JSON` to get definiti
 
 ---
 
-### Q235 ❌ — Jobs API 获取运行历史
+### Q235 ✅ — Jobs API 获取运行历史（PDF答案错误，我的答案 B 是对的）
 
 **原题：** How should a data engineer format the request to collect information about the latest job run including repair history?
 
 **选项：**
 - A. Call /api/2.1/jobs/runs/list with the run_id and include_history parameters
-- B. Call /api/2.1/jobs/runs/get with the run_id and include_history parameters
+- B. Call /api/2.1/jobs/runs/get with the run_id and include_history parameters ✅
 - C. Call /api/2.1/jobs/runs/get with the job_id and include_history parameters
-- D. Call /api/2.1/jobs/runs/list with the job_id and include_history parameters ✅
+- D. Call /api/2.1/jobs/runs/list with the job_id and include_history parameters
 
-**我的答案:** B | **正确答案:** D
+**我的答案:** B | **PDF标注答案:** D | **实际正确答案:** B
 
-**解析：** 要获取某个 job 的最新运行信息及修复历史，应使用 runs/list 端点配合 job_id 和 include_history 参数。runs/list 返回指定 job 的所有运行列表（包括重试和修复记录），而 runs/get 只能通过 run_id 获取单次运行的信息，无法列出完整的运行历史。
+**修正说明（2026-04-24）：** Databricks Python SDK 签名 `get_run(run_id, include_history, ...)` 和 CLI `get-run --include-history` 均证实 `runs/get` 支持 `include_history` 参数。`list-runs` 端点没有此参数。Anki 社区答案 B 正确，PDF 答案 D 错误。
 
-**知识点:** `Databricks REST API` `Jobs API` `runs/list` `Repair History`
+**知识点:** `Databricks REST API` `Jobs API` `runs/get` `include_history` `Repair History`
 
 ---
 
@@ -3094,21 +3095,21 @@ D. Use `clone` command to copy existing pipeline; use `get JSON` to get definiti
 
 ---
 
-### Q238 ❌ — Z-Order 优化高基数列查询
+### Q238 ✅ — Liquid Clustering 灵活优化（PDF答案错误，我的答案 C 是对的）
 
 **原题：** Which partitioning strategy should be used for a large, fast-growing orders table with high cardinality columns, data skew, and frequent concurrent writes?
 
 **选项：**
 - A. ALTER TABLE orders PARTITION BY user_id, product_id, event_timestamp
 - B. OPTIMIZE orders ZORDER BY (user_id, product_id) WHERE event_timestamp = current date - 1 DAY
-- C. ALTER TABLE orders CLUSTER BY user_id, product_id, event_timestamp
-- D. OPTIMIZE orders ZORDER BY (user_id, product_id, event_timestamp) ✅
+- C. ALTER TABLE orders CLUSTER BY user_id, product_id, event_timestamp ✅
+- D. OPTIMIZE orders ZORDER BY (user_id, product_id, event_timestamp)
 
-**我的答案:** C | **正确答案:** D
+**我的答案:** C | **PDF标注答案:** D | **实际正确答案:** C
 
-**解析：** Z-Order 通过 OPTIMIZE 命令优化数据跳过（data skipping），适合高基数列的查询优化，且不需要物理重分区表。选项 C 的 Liquid Clustering（CLUSTER BY）虽然也能优化，但对于已有大表且存在数据倾斜和频繁并发写入的场景，Z-Order 更灵活，避免了分区和聚簇可能带来的数据倾斜和维护开销。
+**修正说明（2026-04-24）：** 题目明确要求三个特性：data skipping（即时）、incremental management（增量管理）、flexibility（keys may change in future）。Liquid Clustering（CLUSTER BY）完美满足全部三点：自动增量优化、`ALTER TABLE CLUSTER BY` 可动态改 key、内置 data skipping。Z-Order (D) 需要手动 OPTIMIZE、不支持动态改 key。Anki 社区答案 C 正确。
 
-**知识点:** `Z-Order` `OPTIMIZE` `Data Skipping` `High Cardinality`
+**知识点:** `Liquid Clustering` `CLUSTER BY` `动态改key` `增量优化` `Data Skipping`
 
 ---
 
@@ -3880,6 +3881,903 @@ D. Use `clone` command to copy existing pipeline; use `get JSON` to get definiti
 **解析：** 启用 Deletion Vectors 后，Delta Lake 的删除操作不会重写底层数据文件，而是在元数据中记录哪些行被删除（即 deletion vectors）。读取时会自动过滤掉这些被标记删除的行。这种方式避免了昂贵的文件重写操作，显著提升了 DELETE/UPDATE/MERGE 等 DML 操作的性能。只有在执行 OPTIMIZE 或 VACUUM 时，被标记删除的行才会被物理清除。
 
 **知识点:** `Deletion Vectors` `Delta Lake DML` `元数据删除` `读时过滤`
+
+---
+
+## 第二轮复习: Q1-Q66 (50/66, 2026-04-22)
+
+---
+
+### Q13 ❌ — CDC 日志摄取策略
+
+**原题：**
+An upstream system is emitting change data capture (CDC) logs that are being written to a cloud object storage directory. Each record in the log indicates the change type (insert, update, or delete) and the values for each field after the change. The source table has a primary key identified by the field pk_id. For analytical purposes, only the most recent value for each record needs to be recorded in the target Delta Lake table in the Lakehouse. The Databricks job to ingest these records occurs once per hour, but each individual record may have changed multiple times over the course of an hour.
+
+**选项：**
+A. Create a separate history table for each pk_id resolve the current state of the table by running a UNION ALL filtering the history tables for the most recent state.
+B. Use MERGE INTO to insert, update, or delete the most recent entry for each pk_id into a bronze table, then propagate all changes throughout the system.
+C. Iterate through an ordered set of changes to the table, applying each in turn; rely on Delta Lake's versioning ability to create an audit log.
+D. Use Delta Lake's change data feed to automatically process CDC data from an external system, propagating all changes to all dependent tables in the Lakehouse.
+E. Ingest all log information into a bronze table; use MERGE INTO to insert, update, or delete the most recent entry for each pk_id into a silver table to recreate the current table state.
+
+**我的答案:** D | **正确答案:** E
+
+**解析：** 标准的 Medallion 架构做法：先把原始 CDC 日志全量写入 bronze 表（保留完整审计轨迹），再用 MERGE INTO 在 silver 表中按 pk_id 做 upsert/delete，只保留最新状态。D 的问题是 Change Data Feed (CDF) 是 Delta Lake 自身的功能，用于捕获 Delta 表的变更，不是用来处理外部系统的 CDC 日志的。B 的问题是直接在 bronze 层做 MERGE 会丢失原始数据。
+
+**知识点:** `CDC处理` `Medallion架构` `MERGE INTO` `Change Data Feed vs 外部CDC`
+
+---
+
+### Q16 ❌ — 视图 vs 表的执行时机
+
+**原题：**
+A table is registered with the following code. Both users and orders are Delta Lake tables. Which statement describes the results of querying recent_orders?
+
+**选项：**
+A. All logic will execute at query time and return the result of joining the valid versions of the source tables at the time the query finishes.
+B. All logic will execute when the table is defined and store the result of joining tables to the DBFS; this stored data will be returned when the table is queried.
+C. Results will be computed and cached when the table is defined; these cached results will incrementally update as new records are inserted into source tables.
+D. All logic will execute at query time and return the result of joining the valid versions of the source tables at the time the query began.
+E. The versions of each source table will be stored in the table transaction log; query results will be saved to DBFS with each query.
+
+**我的答案:** D | **正确答案:** B
+
+**解析：** 关键看代码用的是 `CREATE TABLE ... AS SELECT`（CTAS）还是 `CREATE VIEW`。如果是 CTAS，数据在定义时就物化存储了，查询时直接返回存储的数据，不会反映源表的后续变更。如果是 VIEW 才会在查询时执行。题目说 "registered" 用的是建表语句，所以数据是定义时就写入 DBFS 的。
+
+**知识点:** `CTAS vs VIEW` `物化表` `查询执行时机`
+
+---
+
+### Q22 ❌ — Delta Lake Auto Compaction
+
+**原题：**
+Which statement describes Delta Lake Auto Compaction?
+
+**选项：**
+A. An asynchronous job runs after the write completes to detect if files could be further compacted; if yes, an OPTIMIZE job is executed toward a default of 1 GB.
+B. Before a Jobs cluster terminates, OPTIMIZE is executed on all tables modified during the most recent job.
+C. Optimized writes use logical partitions instead of directory partitions; because partition boundaries are only represented in metadata, fewer small files are written.
+D. Data is queued in a messaging bus instead of committing data directly to memory; all data is committed from the messaging bus in one batch once the job is complete.
+E. An asynchronous job runs after the write completes to detect if files could be further compacted; if yes, an OPTIMIZE job is executed toward a default of 128 MB.
+
+**我的答案:** A | **正确答案:** E
+
+**解析：** Auto Compaction 在每次写操作完成后异步检测小文件，如果需要则自动执行 OPTIMIZE。关键区别：Auto Compaction 的目标文件大小是 **128 MB**，而手动 OPTIMIZE 的默认目标是 1 GB。A 和 E 的唯一区别就是目标大小，128 MB 是正确的。
+
+**知识点:** `Auto Compaction` `128MB目标` `vs 手动OPTIMIZE 1GB`
+
+---
+
+### Q30 ❌ — Structured Streaming 增量读取
+
+**原题：**
+A nightly job ingests data into a Delta Lake table using the following code. The next step in the pipeline requires a function that returns an object that can be used to manipulate new records that have not yet been processed to the next table in the pipeline.
+
+**选项：**
+A. return spark.readStream.table("bronze")
+B. return spark.readStream.load("bronze")
+C. (略)
+D. return spark.read.option("readChangeFeed", "true").table("bronze")
+E. (略)
+
+**我的答案:** C | **正确答案:** A
+
+**解析：** 需要增量处理"尚未处理的新记录"，这正是 Structured Streaming 的 readStream 模式。`spark.readStream.table("bronze")` 利用 checkpoint 自动追踪已处理的偏移量，只返回新增数据。`readStream.load()` 需要传路径而非表名。CDF (D) 可以读变更但不自动追踪处理进度。
+
+**知识点:** `readStream.table()` `增量处理` `Checkpoint自动追踪`
+
+---
+
+### Q36 ❌ — Delta Lake 文件跳过机制
+
+**原题：**
+Delta Lake table partitioned by `date`. Query filter: `longitude < 20 & longitude > -20`. How will data be filtered?
+
+**选项：**
+A. Statistics in the Delta Log will be used to identify partitions that might include files in the filtered range.
+B. No file skipping will occur because the optimizer does not know the relationship between the partition column and the longitude.
+C. The Delta Engine will use row-level statistics in the transaction log to identify the files that meet the filter criteria.
+D. Statistics in the Delta Log will be used to identify data files that might include records in the filtered range.
+E. The Delta Engine will scan the parquet file footers to identify each row that meets the filter criteria.
+
+**我的答案:** A | **正确答案:** D
+
+**解析：** 查询过滤的是 `longitude`，不是分区列 `date`，所以不会用分区裁剪（排除 A）。Delta Log 中存储了每个数据文件的列级统计信息（min/max），用于文件级别的 data skipping。注意是"data files"不是"partitions"也不是"rows"——Delta 的统计是文件级别的，不是行级别的（排除 C）。
+
+**知识点:** `Data Skipping` `文件级统计 min/max` `分区裁剪 vs 文件跳过`
+
+---
+
+### Q40 ❌ — SCD 类型识别
+
+**原题：**
+The view updates represents an incremental batch of all newly ingested data to be inserted or updated in the customers table. Which statement describes this implementation?
+
+**选项：**
+A. Type 3 table; old values maintained as new column alongside current value
+B. Type 2 table; old values maintained but marked as no longer current and new values inserted
+C. Type 0 table; append only, no changes
+D. Type 1 table; old values overwritten, no history
+E. Type 2 table; old values overwritten and new customers appended
+
+**我的答案:** D | **正确答案:** B
+
+**解析：** 根据代码逻辑（题目中有 MERGE 语句），matched 时将旧记录标记为 not current（设置 end_date 和 current flag），同时 insert 新记录。这是典型的 **SCD Type 2**：保留历史版本，用标志位区分当前/历史记录。Type 1 是直接覆盖不保留历史。
+
+**知识点:** `SCD Type 2` `历史记录保留` `current flag` `MERGE实现SCD`
+
+---
+
+### Q43 ❌ — 查看 PII 表的完整元数据
+
+**原题：**
+Data governance requires tables with PII to have column comments, table comments, and custom property "contains_pii" = true. Which command confirms all three requirements?
+
+**选项：**
+A. DESCRIBE EXTENDED dev.pii_test
+B. DESCRIBE DETAIL dev.pii_test
+C. SHOW TBLPROPERTIES dev.pii_test
+D. DESCRIBE HISTORY dev.pii_test
+E. SHOW TABLES dev
+
+**我的答案:** B | **正确答案:** A
+
+**解析：** `DESCRIBE EXTENDED` 是唯一能同时显示列信息（含 column comments）、table comment、和 table properties 的命令。`DESCRIBE DETAIL` 只显示表的物理元数据（location、format、size 等），不含列注释也不含自定义 properties。`SHOW TBLPROPERTIES` 只显示 properties，缺列注释。
+
+**知识点:** `DESCRIBE EXTENDED` `DESCRIBE DETAIL` `SHOW TBLPROPERTIES` `元数据查看命令区分`
+
+---
+
+### Q45 ❌ — 数据库 LOCATION 与表类型
+
+**原题：**
+External storage mounted to /mnt/finance_eda_bucket. Database created with LOCATION pointing there. A user creates a table with `CREATE TABLE tx_sales AS SELECT ...` (no explicit LOCATION). What happens?
+
+**选项：**
+A. A logical table will persist the query plan to the Hive Metastore
+B. An external table will be created in /mnt/finance_eda_bucket
+C. A logical table will persist the physical plan to the Hive Metastore
+D. A managed table will be created in /mnt/finance_eda_bucket
+E. A managed table will be created in the DBFS root storage container
+
+**我的答案:** E | **正确答案:** D
+
+**解析：** 当数据库定义了自定义 LOCATION 时，在该数据库下用 CTAS 创建的表（不指定 LOCATION）会被存储在数据库的 LOCATION 路径下，而不是 DBFS 默认路径。表本身仍然是 **managed table**（因为没有用 CREATE EXTERNAL TABLE），但数据位置继承自数据库的 LOCATION 设置。这是一个常见的混淆点。
+
+**知识点:** `数据库LOCATION继承` `Managed vs External table` `CTAS默认行为`
+
+---
+
+### Q46 ❌ — Databricks Secrets 的局限性
+
+**原题：**
+Which statement describes a limitation of Databricks Secrets?
+
+**选项：**
+A. SHA256 hash can be reversed to display plain text
+B. Account admins can see all secrets in plain text via Accounts console
+C. Secrets stored in admin-only Hive Metastore table
+D. Iterating through a stored secret and printing each character will display secret contents in plain text
+E. REST API can list secrets in plain text with proper credentials
+
+**我的答案:** E | **正确答案:** D
+
+**解析：** Databricks Secrets 的 redaction 机制只在整个 secret 值被直接输出时生效（显示为 `[REDACTED]`）。但如果逐字符遍历 secret 字符串并逐个打印，每个单独字符不会触发 redaction，从而暴露 secret 内容。这是一个已知的安全限制。REST API 只能 list secret 的 key（名称），不能获取 value。
+
+**知识点:** `Secrets Redaction绕过` `逐字符打印` `REST API只能list key`
+
+---
+
+### Q48 ❌ — REST API 审计日志与用户身份
+
+**原题：**
+User A created jobs via REST API. User B configured orchestration to trigger runs via REST API. Both use personal access tokens. What do audit logs show?
+
+**选项：**
+A. Service Principal will be automatically used
+B. User B's identity associated with both creation and runs
+C. User A associated with creation events, User B associated with run events
+D. User identity not captured for REST API calls
+E. User A's identity associated with both creation and runs
+
+**我的答案:** E | **正确答案:** C
+
+**解析：** 审计日志按照实际执行 API 调用的用户身份记录事件。User A 用自己的 token 创建了 jobs → 创建事件关联 User A。User B 用自己的 token 触发运行 → 运行事件关联 User B。每个 API 调用的身份由其使用的 personal access token 决定，事件是独立记录的。
+
+**知识点:** `审计日志` `PAT身份绑定` `事件独立记录`
+
+---
+
+### Q51 ❌ — Spark UI 诊断 Predicate Push-down
+
+**原题：**
+Where in the Spark UI can one diagnose a performance problem induced by not leveraging predicate push-down?
+
+**选项：**
+A. In the Executor's log file, by grepping for "predicate push-down"
+B. In the Stage's Detail screen, by noting the size of data read from the Input column
+C. In the Storage Detail screen, by noting which RDDs are not stored on disk
+D. In the Delta Lake transaction log, by noting the column statistics
+E. In the Query Detail screen, by interpreting the Physical Plan
+
+**我的答案:** A | **正确答案:** E
+
+**解析：** Query Detail 页面的 Physical Plan 会显示 scan 操作中是否有 `PushedFilters`。如果没有 predicate push-down，你会看到全表扫描（FileScan）后面没有 pushed filters，数据量远大于预期。Physical Plan 是诊断查询优化问题的标准工具。log 文件不会明确标注 push-down 缺失。
+
+**知识点:** `Physical Plan` `PushedFilters` `Query Detail页面` `Predicate Push-down诊断`
+
+---
+
+### Q52 ❌ — PySpark 错误诊断
+
+**原题：**
+Review the error traceback. Which statement describes the error being raised?
+
+**选项：**
+A. PySpark executed in Scala notebook
+B. No column named heartrateheartrateheartrate
+C. Type error: column object cannot be multiplied
+D. Type error: DataFrame object cannot be multiplied
+E. Syntax error: heartrate column not correctly identified
+
+**我的答案:** A | **正确答案:** B
+
+**解析：** 错误信息中出现 `heartrateheartrateheartrate` 是因为代码尝试用 `*` 运算符做字符串重复而非数学乘法（Python 中 `"str" * 3` = `"strstrstr"`）。当列名被当作字符串与整数相乘时，产生了一个不存在的列名。这表明列引用方式有误，导致字符串重复而非列运算。
+
+**知识点:** `Python字符串乘法` `列引用错误` `DataFrame列操作`
+
+---
+
+### Q57 ❌ — 查看 Job 任务配置的 API
+
+**原题：**
+Which REST API call can be used to review the notebooks configured to run as tasks in a multi-task job?
+
+**选项：**
+A. /jobs/runs/list
+B. /jobs/runs/get-output
+C. /jobs/runs/get
+D. /jobs/get
+E. /jobs/list
+
+**我的答案:** E | **正确答案:** D
+
+**解析：** `/jobs/get` 返回 job 的完整定义，包括所有 tasks 的配置（notebook 路径、参数、依赖关系等）。`/jobs/list` 只返回 job 的摘要信息（name、id），不含 task 详情。`/jobs/runs/*` 系列是查看运行记录，不是查看 job 定义/配置。
+
+**知识点:** `/jobs/get vs /jobs/list` `Job定义 vs Run记录` `REST API端点区分`
+
+---
+
+### Q61 ❌ — 生产调度前应移除的命令
+
+**原题：**
+A short notebook to be scheduled as part of a larger pipeline. Which command should be removed before scheduling as a job?
+
+**我的答案:** ADE | **正确答案:** E (Cmd 6)
+
+**解析：** 在将 notebook 调度为 job 时，应移除交互式开发中使用的 `display()` 或调试用的输出命令（Cmd 6）。`display()` 在交互模式下用于可视化数据，但在 job 模式下会增加不必要的开销，且结果无人查看。其他命令（数据读取、转换、写入）在生产中仍然需要。
+
+**知识点:** `display()移除` `交互式 vs 生产调度` `Notebook清理`
+
+---
+
+### Q64 ❌ — DROP TABLE 对 Managed Table 的影响
+
+**原题：**
+Delta Lake managed table created. `DROP TABLE prod.sales_by_store` executed by workspace admin. What happens?
+
+**选项：**
+A. Nothing until COMMIT command
+B. Table removed from catalog but data remains in storage
+C. Table removed from catalog and data deleted
+D. Error: Delta Lake prevents deletion of production data
+E. Data marked as deleted but recoverable with Time Travel
+
+**我的答案:** B | **正确答案:** C
+
+**解析：** 对于 **Managed Table**，`DROP TABLE` 会同时删除元数据（从 catalog 中移除）和底层数据文件。这是 Managed Table 和 External Table 的核心区别——External Table 的 DROP 只删除元数据，保留数据文件（即你选的 B）。题目中用 CTAS 创建且未指定 LOCATION，因此是 Managed Table。
+
+**知识点:** `Managed vs External Table` `DROP TABLE行为差异` `CTAS默认创建Managed Table`
+
+---
+
+### Q66 ❌ — %sh 执行效率问题
+
+**原题：**
+Legacy code migrated to Databricks notebook uses `%sh` to clone a git repo and run a Python script. Takes 20+ minutes for ~1GB data. Why?
+
+**选项：**
+A. %sh triggers cluster restart for Git installation
+B. Should use %sh pip install for parallel execution
+C. %sh doesn't distribute file moves; use %fs instead
+D. Python always slower than Scala on Databricks
+E. %sh executes on driver node only; doesn't leverage worker nodes or Spark
+
+**我的答案:** C | **正确答案:** E
+
+**解析：** `%sh` 魔法命令只在 driver 节点上执行 shell 命令，不利用 Spark 的分布式计算能力。整个 git clone + python 脚本都在单个 driver 节点上串行运行，完全没有使用集群的 worker 节点。这是将非 Spark 代码迁移到 Databricks 时最常见的性能陷阱。
+
+**知识点:** `%sh只在driver执行` `单节点瓶颈` `分布式 vs 单机执行`
+
+---
+
+## 第二轮复习: Q67-Q100 (28/34, 2026-04-22)
+
+---
+
+### Q67 ❌ — Delta Lake 对自由文本字段的统计
+
+**原题：**
+Data science team wants to accelerate queries on free-form text from user reviews. Schema: item_id INT, user_id INT, review_id INT, rating FLOAT, review STRING. Looking to identify if any of 30 key words exist in the review field. Junior engineer suggests converting to Delta Lake.
+
+**选项：**
+A. Delta Lake statistics are not optimized for free text fields with high cardinality.
+B. Text data cannot be stored with Delta Lake.
+C. ZORDER ON review will need to be run to see performance gains.
+D. The Delta log creates a term matrix for free text fields to support selective filtering.
+E. Delta Lake statistics are only collected on the first 4 columns in a table.
+
+**我的答案:** C | **正确答案:** A
+
+**解析：** Delta Lake 的文件级统计（min/max）对自由文本字段几乎无用——一个 review 字段的 min/max 范围极大，无法有效跳过任何文件。ZORDER 也帮不了自由文本，因为 Z-ORDER 依赖的也是 min/max 统计来做 data skipping，高基数的长文本无法从中受益。Delta Lake 不会为文本创建倒排索引或 term matrix。
+
+**知识点:** `Delta统计对高基数文本无效` `min/max不适用自由文本` `ZORDER不适用文本字段`
+
+---
+
+### Q70 ❌ — Parquet 文件大小控制（无 shuffle）
+
+**原题：**
+1TB JSON dataset to be written to Parquet with target 512MB part-files. No Delta Lake features available. Which strategy yields best performance without shuffling?
+
+**选项：**
+A. Set spark.sql.files.maxPartitionBytes to 512 MB, ingest, narrow transformations, write.
+B. Set spark.sql.shuffle.partitions to 2048, sort (which repartitions), write.
+C. Set spark.sql.adaptive.advisoryPartitionSizeInBytes to 512 MB, coalesce to 2048, write.
+D. Repartition to 2048, write.
+E. Set spark.sql.shuffle.partitions to 512, write.
+
+**我的答案:** C | **正确答案:** A
+
+**解析：** 关键约束是 **without shuffling**。`maxPartitionBytes` 控制读取阶段每个 partition 的大小，是 narrow 操作（不触发 shuffle）。而 `repartition` (D) 和 sort (B) 都会触发 shuffle。`coalesce` (C) 虽然不触发 full shuffle，但 `advisoryPartitionSizeInBytes` 是 AQE 的参数，作用于 shuffle 后的分区合并，如果没有 shuffle 阶段就不会生效。只有 A 从读取端控制分区大小，全程无 shuffle。
+
+**知识点:** `maxPartitionBytes` `读取阶段分区控制` `narrow vs wide` `advisoryPartitionSizeInBytes需要shuffle`
+
+---
+
+### Q74 ❌ — broadcast() 函数的作用对象
+
+**原题：**
+Which statement describes the correct use of pyspark.sql.functions.broadcast?
+
+**选项：**
+A. Marks a column as low cardinality for broadcast join
+B. Marks a column as small enough for broadcast join
+C. Caches a table on storage volumes for all clusters
+D. Marks a DataFrame as small enough to store in memory on all executors, allowing a broadcast join
+E. Caches a table on all nodes for all future queries
+
+**我的答案:** C | **正确答案:** D
+
+**解析：** `broadcast()` 作用于 **DataFrame**，不是 column，也不是做缓存。它标记一个 DataFrame 足够小，可以广播到所有 executor 的内存中，从而在 join 时避免 shuffle（broadcast hash join）。典型用法：`df_big.join(broadcast(df_small), "key")`。
+
+**知识点:** `broadcast()作用于DataFrame` `Broadcast Hash Join` `避免shuffle`
+
+---
+
+### Q77 ❌ — Auto Loader schema 检测与演化
+
+**原题：**
+Creating a helper function for Auto Loader with schema detection, incremental JSON processing, and automatic schema evolution. Fill in the blank.
+
+**我的答案:** C | **正确答案:** E
+
+**解析：** Auto Loader 的 schema 自动检测需要 `cloudFiles.inferColumnTypes = true`（推断列类型）加上 `cloudFiles.schemaEvolutionMode = "addNewColumns"`（新字段自动添加）以及 `cloudFiles.schemaLocation`（存储推断的 schema）。E 选项正确组合了这些配置。
+
+**知识点:** `Auto Loader Schema Detection` `cloudFiles.inferColumnTypes` `schemaEvolutionMode` `schemaLocation`
+
+---
+
+### Q79 ❌ — 创建 External Table 的方法
+
+**原题：**
+Data architect mandates all tables be external (unmanaged) Delta Lake tables. Which approach ensures this?
+
+**选项：**
+A. Use LOCATION keyword when creating database
+B. Leverage Databricks for ELT with external data warehouse
+C. Specify a full file path alongside Delta format when saving data
+D. Use EXTERNAL keyword in CREATE TABLE
+E. Mount external cloud object storage
+
+**我的答案:** A | **正确答案:** C
+
+**解析：** 在数据库上设 LOCATION (A) 只是改变 managed table 的存储位置，表本身仍然是 managed 的（DROP 时数据会被删）。要创建 external table，关键是在写数据时**指定完整文件路径**：`df.write.format("delta").save("/path/to/data")`，然后用该路径创建表。指定了路径的表就是 unmanaged/external 的——Delta Lake 不管理其生命周期。
+
+**知识点:** `External table = 指定路径` `数据库LOCATION不改变表类型` `Managed vs External判定`
+
+---
+
+### Q94 ❌ — Spark UI 中的 Spill 指标位置
+
+**原题：**
+Where in the Spark UI are two primary indicators that a partition is spilling to disk?
+
+**选项：**
+A. Query's detail screen and Job's detail screen
+B. Stage's detail screen and Executor's log files
+C. Driver's and Executor's log files
+D. Executor's detail screen and Executor's log files
+E. Stage's detail screen and Query's detail screen
+
+**我的答案:** E | **正确答案:** B
+
+**解析：** Spill 的两个主要诊断位置：(1) **Stage 详情页**——显示 Spill (Memory) 和 Spill (Disk) 的聚合指标；(2) **Executor 日志文件**——包含 spill 事件的详细警告和错误信息。注意这题和 Q200 措辞不同：Q200 问的是 "in the Spark UI"，B 更准确；而本题（Q94）直接问 "primary indicators"，日志也算在内。
+
+**知识点:** `Stage Detail的Spill指标` `Executor Log的spill警告` `Spark UI诊断`
+
+---
+
+## 第二轮复习: Q101-Q166 (60/66, 2026-04-22)
+
+---
+
+### Q110 ❌ — 高吞吐近实时管道方案
+
+**原题：**
+A large company seeks to implement a near real-time solution involving hundreds of pipelines with parallel updates of many tables with extremely high volume and high velocity data. Which solution?
+
+**选项：**
+A. Use Databricks High Concurrency clusters, which leverage optimized cloud storage connections to maximize data throughput.
+B. Partition ingestion tables by a small time duration to allow for many data files to be written in parallel.
+C. Save all data to attached SSD volumes instead of object storage.
+D. Isolate Delta Lake tables in their own storage containers to avoid API limits.
+E. Store all tables in a single database for metastore load balancing.
+
+**我的答案:** A | **正确答案:** B
+
+**解析：** High Concurrency 集群是多用户共享交互式工作负载的模式，跟"优化存储连接"或"最大化数据吞吐"无关——A 的描述本身就是错的。对于高吞吐近实时场景，按小时间粒度分区（如按小时/分钟）允许大量数据文件并行写入不同分区目录，避免写冲突。注意：PDF 标注 A，但 ANKI 社区投票 B，B 才是正确答案。
+
+**知识点:** `High Concurrency ≠ 高吞吐` `时间分区并行写入` `近实时摄取策略`
+
+---
+
+### Q117 ❌ — creator_user_name 字段的含义
+
+**原题：**
+User A created jobs via REST API. User B triggers runs via REST API. User C takes "Owner" via Jobs UI. Jobs continue triggered by User B's credentials. What appears in creator_user_name field?
+
+**选项：**
+A. User C after taking ownership, User A before that.
+B. User B's email always, as their credentials trigger the run.
+C. User A's email always, as they own the notebooks.
+D. User C after taking ownership, User B before that.
+E. User C only if they manually trigger, otherwise User B.
+
+**我的答案:** A | **正确答案:** B
+
+**解析：** `creator_user_name` 记录的是**触发 run 的用户**，不是 job owner。Job 的 ownership 变更不影响这个字段。因为 run 始终由 User B 的 credentials（PAT）触发，所以 `creator_user_name` 始终是 User B。注意区分：job owner（管理权限）vs run creator（谁触发的运行）。
+
+**知识点:** `creator_user_name = 触发者` `Job Owner vs Run Creator` `PAT身份绑定`
+
+---
+
+### Q131 ❌ — CDC 日志处理（无 Medallion 选项）
+
+**原题：**
+CDC logs from external system, primary key pk_id, only most recent value needed, hourly ingestion, records may change multiple times per hour. Which solution?
+
+**选项：**
+A. Iterate through ordered changes, apply each in turn.
+B. Use MERGE INTO to insert/update/delete most recent entry per pk_id into a table, propagate all changes.
+C. Deduplicate by pk_id and overwrite target table.
+D. Use Delta Lake's change data feed to automatically process CDC data from an external system.
+
+**我的答案:** B | **正确答案:** D
+
+**解析：** 这题和 Q13 类似但选项不同。B 的问题是"propagate all changes throughout the system"——每小时可能有多次变更，直接 MERGE 最新的一条进去会丢失中间状态的传播。D 虽然 CDF 的描述不够精确（CDF 本质上是 Delta 内部功能），但在给定选项中 D 是最佳答案。注意：两个来源（PDF + ANKI）都选 D。
+
+**知识点:** `CDC处理` `MERGE INTO局限` `选项间比较取最优`
+
+---
+
+### Q132 ❌ — 高效更新 Type 1 当前状态表
+
+**原题：**
+Millions of user accounts, tens of thousands of records per hour. account_history stores all records. account_current is Type 1 (most recent per user_id). How to efficiently update account_current hourly?
+
+**选项：**
+A. Filter by last_updated + recent hour, deduplicate on username; merge on username.
+B. Use Auto Loader + Structured Streaming trigger available to batch update.
+C. Overwrite account_current with query grouping by user_id and max(last_updated).
+D. Filter by last_updated + recent hour + max last_login by user_id; merge on user_id.
+
+**我的答案:** B | **正确答案:** D
+
+**解析：** 关键是**效率**：百万级账户但每小时只有数万条更新。C 每次全表重算太浪费。A 的问题是去重和 merge 用的是 `username` 而非 `user_id`（唯一键是 user_id）。B 用 Streaming 对定时批处理过度设计。D 正确：先按 `last_updated` 过滤出最近一小时的增量，再按 `user_id` 取 `max(last_login)` 去重，最后 MERGE INTO —— 增量处理，高效且精确。
+
+**知识点:** `增量MERGE` `按时间过滤增量` `唯一键user_id vs username` `Type 1更新策略`
+
+---
+
+### Q148 ❌ — DLT 保留手动修改的数据
+
+**原题：**
+DLT pipeline: raw_iot (streaming table) → bpm_stats (computed from raw_iot). Want to retain manually deleted/updated records in raw_iot while recomputing bpm_stats on pipeline update. How?
+
+**选项：**
+A. Set pipelines.reset.allowed = false on raw_iot
+B. Set skipChangeCommits = true on raw_iot
+C. Set pipelines.reset.allowed = false on bpm_stats
+D. Set skipChangeCommits = true on bpm_stats
+
+**我的答案:** ? | **正确答案:** A
+
+**解析：** `pipelines.reset.allowed = false` 防止 DLT pipeline 在 full refresh 时清空该表的数据。设在 raw_iot 上，意味着即使 pipeline 重跑，raw_iot 中手动删除/更新的记录变更会被保留，不会被源数据覆盖重置。而 bpm_stats 作为下游表需要被重新计算，所以不应该在它上面设这个属性。`skipChangeCommits` 是用来跳过上游的非追加变更，解决的是不同的问题。
+
+**知识点:** `pipelines.reset.allowed` `DLT Full Refresh保护` `skipChangeCommits用途`
+
+---
+
+### Q161 ❌ — Stream-Stream Join 性能优化
+
+**原题：**
+Joining ad impressions stream with user clicks stream. Query slowing down significantly. Which solution improves performance?
+
+**选项：**
+A. clickTime >= impressionTime AND clickTime <= impressionTime + interval 1 hour
+B. clickTime + 3 hours < impressionTime - 2 hours
+C. clickTime == impressionTime using leftOuter join
+D. clickTime >= impressionTime - interval 3 hours, remove watermarks
+
+**我的答案:** ? | **正确答案:** A
+
+**解析：** Stream-stream join 变慢的根本原因是 Spark 需要在 state store 中保留大量历史数据来等待匹配。解决方案是加 **时间范围约束（time range condition）**，让 Spark 知道什么时候可以安全丢弃旧状态。A 设置了合理的 1 小时窗口：点击必须发生在展示之后的 1 小时内。D 移除 watermark 会让问题更严重。B 的约束方向反了（点击在展示之前）。
+
+**知识点:** `Stream-Stream Join` `Time Range Condition` `State Store清理` `Watermark配合时间约束`
+
+---
+
+## 第二轮复习补充: Q60, Q73（追加发现）
+
+---
+
+### Q60 ❌ — 人工审计被回溯修改时的安全策略（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**要点：** store_sales_summary 存的是跨行滚动聚合（7天总和、YTD、QTD），不是简单逐行事实。Upsert 按 merge key 只更新命中行，不会级联重算所有受影响的聚合窗口。当历史数据随时可能被审计修改时，全量重算 + overwrite 是唯一零风险方案。题目问的是 "safest"，不是 "most efficient"。
+
+**知识点:** `Overwrite vs Upsert` `聚合表更新策略` `审计修改安全性`
+
+---
+
+### Q73 ❌ — Structured Streaming 降本策略（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**要点：** Databricks 官方博客推荐：对延迟容忍度宽松的场景，用 `trigger(once=True)` + 定时作业，比保持流持续运行省 10 倍成本。
+
+**知识点:** `trigger(once=True)` `流式作业降本` `定时批处理替代常驻流`
+
+---
+
+## 第二轮复习: Q167-Q327 (2026-04-23)
+
+---
+
+### Q187 ❌ — MLflow 预测结果写入（第二轮仍错）
+
+**要点：** preds 是 MLflow 推理输出的静态 DataFrame，不是 streaming source。对静态 DataFrame 调 writeStream 会报错。append vs overwrite：需要保留历史 → append。Databricks 默认格式是 Delta，saveAsTable 不写 .format("delta") 也行。
+
+**知识点:** `静态DataFrame vs Streaming` `append模式` `Delta默认格式`
+
+---
+
+### Q220 ❌ — Spark UI Physical Plan 诊断（第二轮仍错）
+
+**要点：** Spark UI → SQL/DataFrame tab → Query Detail → Physical Plan。下推生效：PushedFilters 出现在 FileScan 节点上。未下推：Filter 节点在 FileScan 上方。
+
+**知识点:** `Predicate Push-down` `Physical Plan` `PushedFilters`
+
+---
+
+### Q226 ❌ — Files in Repos 单元测试（第二轮仍错）
+
+**要点：** Files in Repos 允许把函数写成标准 .py 文件，pytest/unittest 可以直接 import 并测试。Databricks 官方："Databricks recommends storing functions and their unit tests outside of notebooks." 这是让标准测试框架能工作的结构性前提。
+
+**知识点:** `Files in Repos` `pytest/unittest` `Notebook外测试`
+
+---
+
+### Q227 ❌ — DLT 中 for 循环的闭包陷阱（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**要点：** Python 闭包捕获变量引用而非值。循环结束时 config 指向列表最后一项，所有函数体都引用同一个 config。解决：把 @dlt.table 包在工厂函数里，每次调用创建独立局部作用域，config 作为参数立即绑定。这是 Python 语言层面的经典陷阱，不是 DLT 特有问题。
+
+**知识点:** `Python闭包` `工厂函数` `DLT装饰器` `循环变量捕获`
+
+---
+
+### Q230 ❌ — Schema Owner 权限（第二轮仍错）
+
+**要点：** Unity Catalog 中 schema owner 不自动继承表访问权限，但可以随时自行授权。参见第一轮详细分析。
+
+**知识点:** `Unity Catalog` `Schema Owner` `权限继承`
+
+---
+
+### Q231 ❌ — 集群权限体系（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**要点：** CAN VIEW 根本不存在于集群权限体系中。CAN MANAGE 是唯一能查看 driver logs 的权限。
+
+**知识点:** `集群权限` `CAN MANAGE` `Driver Logs`
+
+---
+
+### Q233 ✅ — Liquid Clustering 写入限制（PDF答案错误，我的答案 B 是对的）
+
+**要点：** PDF 答案 D（INSERT INTO）经官方文档验证为错误。INSERT INTO 支持 cluster-on-write。正确答案是 B：Streaming 默认不支持 cluster-on-write，需显式启用 Spark config `spark.databricks.delta.liquid.eagerClustering.streaming.enabled = true`。
+
+**知识点:** `Liquid Clustering` `Cluster on Write` `Streaming需配置`
+
+---
+
+### Q235 ✅ — Jobs API 获取运行历史（第二轮确认答案 B 正确）
+
+**第二轮验证：** runs/get 的参数签名（Databricks Python SDK）为 `get_run(run_id, include_history, ...)`，且 Databricks CLI 的 `get-run` 有 `--include-history` flag。而 `list-runs` 没有此 flag。PDF 标注 D (runs/list) 确认为错误，Anki 答案 B (runs/get with run_id + include_history) 正确。
+
+**知识点:** `Jobs REST API` `runs/get` `include_history`
+
+---
+
+### Q236 ❌ — Driver 崩溃：collect() + 宽变换（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**原题：** Interactive notebook with wide transformations and cross join. `display(df.collect())` causes "spark driver has stopped unexpectedly and is restarting." What action?
+
+**选项：**
+A. Run on single node cluster
+B. Rewrite code to avoid putting memory pressure on the driver node ✅
+C. Check Spark UI for job/stage distribution
+D. Check compute metrics for executor memory >90%
+
+**要点：** `df.collect()` 把所有数据拉到 driver 内存中。加上 cross join 和宽变换，数据量爆炸，driver OOM 崩溃。解决方案是避免 collect()，用 `display(df)` 或写入存储代替。D 的陷阱：问题在 driver 不在 executor。
+
+**知识点:** `collect()` `Driver OOM` `宽变换` `Cross Join`
+
+---
+
+### Q240 ❌ — Liquid Clustering vs Z-Order 选择（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**原题：** Managed table with data skew, frequently changing query filter columns, <1TB. Need to avoid costly rewrites when query patterns evolve.
+
+**选项：**
+A. Hive-style partitioning
+B. Partitioning + Z-ordering
+C. Liquid clustering ✅
+D. Z-ordering
+
+**要点：** Liquid Clustering 三大优势完美匹配题目需求：(1) 高效处理数据倾斜；(2) 允许变更 clustering key 而无需重写已有数据；(3) 自动适应查询模式变化。Z-Order (D) 的陷阱：Z-Order 虽然灵活，但变更 ZORDER 列后需要重新 OPTIMIZE 全表（即 costly data rewrite），不满足"avoid costly rewrites"。
+
+**知识点:** `Liquid Clustering` `Z-Order` `数据倾斜` `Clustering Key变更`
+
+---
+
+### Q241 ❌ — Unity Catalog Row Filters + Column Masks 实现方式（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**原题：** Customer table with PII. Sales team only sees their region's customers. Non-admin users see masked emails. How to implement using Unity Catalog row filters and column masks?
+
+**选项：**
+A. Create SQL UDFs for row filtering (by region) and column masking (by group), apply with ALTER TABLE SET ROW FILTER and ALTER COLUMN SET MASK ✅
+B. Use table ACLs + GRANT SELECT WITH TAG + application-level filtering
+C. Create view with dynamic WHERE + string replacement for masking
+D. Only row filters possible, column masks cannot be combined with row filters
+
+**要点：** Unity Catalog 支持在同一张表上同时使用 row filter 和 column mask。实现方式是创建 SQL UDF，然后通过 ALTER TABLE SET ROW FILTER / ALTER COLUMN SET MASK 应用。D 说"不能组合使用"是错的。B/C 都绕开了 Unity Catalog 原生功能。注意和 Q281 几乎是同一个知识点。
+
+**知识点:** `Row Filters` `Column Masks` `SQL UDF` `ALTER TABLE SET ROW FILTER`
+
+---
+
+### Q245 ❌ — Query Profile Top Operators 诊断慢查询（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**原题：** Slow Delta Lake query with complex joins and large datasets on DBSQL. Need to identify root cause: poor data skipping, inefficient join strategies, or excessive shuffling. Which native Databricks tool?
+
+**选项：**
+A. Analyze Top Operators panel in Query Profile to identify high-cost operations like BroadcastNestedLoopJoin ✅
+B. Check execution time in Jobs UI + cluster resource utilization
+C. EXPLAIN command to review parsed logical plan + manually estimate shuffle sizes
+D. Use LIMIT clause on subset and compare times
+
+**要点：** Query Profile 的 Top Operators 面板直接展示查询中最耗资源的算子，可以精确定位 join 策略、data skipping、shuffle 的瓶颈。C 的陷阱：EXPLAIN 只给逻辑/物理计划，不给实际运行时的性能数据（算子耗时、数据量等）。
+
+**知识点:** `Query Profile` `Top Operators` `DBSQL性能诊断` `EXPLAIN局限性`
+
+---
+
+### Q260 ❌ — foreach task 实现 REST API 下载（第二轮仍错）
+
+**要点：** 参见第一轮详细分析。
+
+---
+
+### Q268 ❌ — Lakeflow streaming table vs materialized view（第二轮仍错）
+
+**要点：** 参见第一轮详细分析。
+
+---
+
+### Q279 ❌ — Repartition 减少 Shuffle（回归）
+
+**第一轮：** ✅ (10/10) | **第二轮：** ❌
+
+**要点：** 先 repartition("region") 虽然触发一次 shuffle，但之后 groupBy 发现数据已按 key 分好，可做 partition-local aggregation，不需要再 shuffle。净效果：用一次有序 shuffle 替代一次混乱 shuffle，总数据传输量更少。如果表已按 region 做了 Liquid Clustering 或 Z-ORDER，则不需要这步。
+
+**知识点:** `repartition` `partition-local aggregation` `Shuffle优化`
+
+---
+
+### Q280 ❌ — Spilling 的根因与解决（回归）
+
+**第一轮：** ✅ (10/10) | **第二轮：** ❌
+
+**要点：** Spark 排序时每个 task 需在内存中持有负责的数据。单个 task 数据量超过可用内存 → 写入磁盘（spill）→ 磁盘 I/O 比内存慢几个数量级。根因：每个 task 分到的数据太多，内存装不下。
+
+**知识点:** `Spill` `内存管理` `Task数据量` `排序性能`
+
+---
+
+### Q281 ❌ — Unity Catalog Row Filters + Column Masks（回归，与 Q241 同知识点）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**原题：** customer_data table in finance schema with ssn, credit_score. Intern Group sees masked values. Analyst Group sees only their region's rows. No data duplication.
+
+**选项：**
+A. Row filters based on region + column masks based on user roles ✅
+B. Create views using current_user() and is_account_group_member() with masking in SELECT
+C. Create dynamic views per role + ACLs
+D. Row filters based on user roles + column masks based on region
+
+**要点：** 和 Q241 同一个考点。关键是区分 row filter 和 column mask 各自的维度：row filter 控制"看哪些行"→ 按 region 过滤；column mask 控制"看到什么值"→ 按 role 脱敏。D 把维度搞反了。B 用视图能实现但不是 Unity Catalog 原生方式（题目明确要求用 row filters and column masks）。
+
+**知识点:** `Row Filters按Region` `Column Masks按Role` `维度不能搞反`
+
+---
+
+### Q288 ❌ — MERGE 性能优化：Liquid Clustering + Deletion Vectors（第二轮仍错）
+
+**原题：** Optimizing MERGE on 800GB UC-managed table with frequent updates and deletions. Which two actions? (Choose two.)
+
+**选项：**
+A. Apply liquid clustering using merge join keys ✅
+B. Enable deletion vectors ✅
+C. Partition by date
+D. ZORDER on high-cardinality columns
+E. Overwrite instead of Merge
+
+**要点：** Liquid Clustering 按 merge join key 聚簇 → MERGE 时扫描的数据量大幅减少（数据局部性）。Deletion Vectors → updates/deletes 不需要重写整个 Parquet 文件，只在元数据标记删除行，I/O 大减。C 按 date 分区对 MERGE 帮助有限（merge key 不一定是 date）。D 的 ZORDER 需要单独 OPTIMIZE 维护，不如 Liquid Clustering 自动。
+
+**知识点:** `MERGE优化` `Liquid Clustering` `Deletion Vectors` `数据局部性`
+
+---
+
+### Q291 ❌ — Unity Catalog 项目组权限模型（第二轮仍错）
+
+**原题：** IT provisions catalog + external location via Terraform/Service Principal. Project teams need autonomy to create/manage schemas, tables, volumes within their catalog, but cannot rename/delete catalog or change catalog-level permissions.
+
+**选项：**
+A. USE CATALOG + USE SCHEMA on the catalog ✅
+B. ALL PRIVILEGES + MANAGE on the catalog
+C. ALL PRIVILEGES on the catalog
+D. Make group OWNER of the catalog
+
+**要点：** 这题反直觉：USE CATALOG + USE SCHEMA 看起来只是"使用"权限，但在 Unity Catalog 中，拥有 USE 权限的用户可以在 catalog/schema 内创建对象（前提是没有其他限制）。B/C/D 都给了太多权限 — 包括重命名/删除 catalog 或修改 catalog 级权限，违反题目"cannot rename, delete, or change catalog permissions"的约束。
+
+**知识点:** `USE CATALOG` `USE SCHEMA` `最小权限` `Unity Catalog权限模型`
+
+---
+
+### Q292 ❌ — 生产化 Spark 应用：Compute Policies + Init Scripts（第二轮仍错）
+
+**原题：** Productionize teammate's Spark app with external library dependencies, custom env vars, and Spark config parameters. Which two methods? (Choose two.)
+
+**选项：**
+A. Install libraries on DBFS
+B. Add libraries to compute policies
+C. Use secrets in init scripts to store configuration data
+D. Use compute policies to set system properties, env vars, and Spark config ✅
+E. Create init scripts on DBFS ✅
+
+**要点：** D — Compute Policies 可以集中定义并强制执行 Spark 配置、系统属性和环境变量，确保生产环境一致性。E — Init Scripts 在集群启动时执行，用于安装外部依赖库和自定义环境初始化。A/B 的陷阱：在 DBFS 上安装库不是标准做法，compute policies 管的是配置不是库。
+
+**知识点:** `Compute Policies` `Init Scripts` `Spark生产化` `依赖管理`
+
+---
+
+### Q310 ❌ — Materialized View vs Streaming Table 场景选择（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**原题：** Which scenario should use a materialized view compared to a streaming table?
+
+**选项：**
+A. Precomputing complex aggregations and joins from multiple large tables to accelerate BI dashboards ✅
+B. Processing high-volume continuous clickstream data for real-time user behavior monitoring
+C. Ingesting from Kafka with sub-second processing for immediate alerting
+D. CDC pipeline detecting/responding to database changes within seconds
+
+**要点：** Materialized View = 预计算 + 存储复杂查询结果，下游直接读物化数据，适合 BI 场景。Streaming Table = 处理连续数据流，适合 B/C/D 的实时场景。区分关键词：aggregations/joins/dashboards → MV；continuous/real-time/sub-second → streaming table。
+
+**知识点:** `Materialized View` `Streaming Table` `场景选择` `BI加速`
+
+---
+
+### Q314 ❌ — Federation 一致性（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**要点：** Federation 解决一致性问题的方式：不复制就不会不一致。所有"副本过期"、"同步延迟"、"版本冲突"问题，根源都是数据有多份拷贝。Federation 消除了拷贝，问题不存在了。
+
+**知识点:** `Federation` `数据一致性` `零拷贝`
+
+---
+
+### Q324 ❌ — Delta Lake Dynamic File Pruning（回归）
+
+**第一轮：** ✅ | **第二轮：** ❌
+
+**原题：** Legacy Hadoop (ORC/RCFile) migrated to Delta Lake. Side-by-side benchmark shows Delta queries use Shuffle Hash Join (vs Sort Merge Join in legacy) and read less data. Why?
+
+**选项：**
+A. ORC used dynamic data skipping but not dynamic file pruning
+B. Delta Lake tables leveraged dynamic file pruning ✅
+C. Delta Lake uses vectorized Parquet reader for data skipping and file pruning
+D. Shuffle Hash Joins are always more efficient than Sort Merge Joins
+
+**要点：** Dynamic File Pruning 让 Delta Lake 在 join 执行时根据 join/filter 条件跳过不相关的文件 → 读取数据量大减 → 查询计划改变（小数据量可用 Shuffle Hash Join 而非 Sort Merge Join）。D 说"always"就是错的。C 混淆了 vectorized reader 和 file pruning 的关系。
+
+**知识点:** `Dynamic File Pruning` `Shuffle Hash Join vs Sort Merge Join` `Delta Lake查询优化`
+
+---
+
+### Q326 ❌ — Unity Catalog 托管表与预测优化（第二轮仍错）
+
+**要点：** 参见第一轮详细分析。Unity Catalog managed table + Predictive Optimization 是满足细粒度访问控制 + 最小维护 + 最佳性能的正确组合。
+
+**知识点:** `Unity Catalog` `Managed Table` `Predictive Optimization`
+
+---
+
+## Day 2 模拟考 #1 — 60/60 (100%) — 2026-04-24
+
+> 60 题随机抽样，120 分钟限时，无笔记
+> **结果：PERFECT SCORE → Go: 报名考试**
+> 注：Q49、Q60、Q200 使用修正后答案批改（PDF 原始答案已被验证为错误）
+
+### Q49 ✅ — 性能测试最佳实践（修正答案 D，PDF 错标 B）
+
+### Q60 ✅ — 聚合表更新策略（修正答案 A overwrite，PDF 错标 C）
+
+### Q200 ✅ — Spark UI 中 Spill 诊断位置（修正答案 A，PDF 错标 B）
+
+**查证结论（2026-04-24）：** PDF 答案 B（Stage detail + Executor logs）错误。正确答案 A（Stage detail + Query detail）。
+
+证据：
+- [Spark 官方文档](https://spark.apache.org/docs/latest/web-ui.html) SQL tab 部分明确列出 `spill size` 作为 Sort/HashAggregate 算子指标
+- Spark 官方文档 Stages tab 列出 `Shuffle spill (memory)` 和 `Shuffle spill (disk)`
+- Executor log files 在官方文档中无任何 spill 相关描述，spill 默认不产生日志
 
 ---
 

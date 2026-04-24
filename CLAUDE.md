@@ -8,7 +8,13 @@
 
 ## 项目背景
 Databricks Certified Data Engineer Professional 认证考试备考项目。
-题库来源：examtopics.com 完整版 PDF，共 327 题。
+
+**考试版本：November 30, 2025 blueprint**（考试已于 2025 年大改版）
+- 59 道计分多选题，120 分钟，$200，通过线 80%
+- 旧版 ExamTopics 327 题已掌握（模拟考 100%），但仅覆盖新考纲 ~60-70%
+- 新考纲新增内容（DABs、Lakeflow、System Tables、APPLY CHANGES API 等）需要额外学习
+- 当前备考计划：`docs/plans/2026-04-24-new-exam-plan.md`（8 天计划）
+- 官方考纲详情、资源列表、术语映射：见 memory 中的 reference 文件
 
 ## 题库文件
 - `mock_exam/Certified Data Engineer Professional  327题.pdf` — 完整题库（含答案）
