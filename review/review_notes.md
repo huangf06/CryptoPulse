@@ -45,6 +45,10 @@
 | 第二轮复习 | Q167-Q327 | 139/161 | 2026-04-23 |
 | **第二轮合计** | **Q1-Q327** | **277/327 (84.7%)** | **2026-04-23** |
 | **Day 2 模拟考 #1** | **60题随机抽样** | **60/60 (100%)** | **2026-04-24** |
+| **SkillCertPro 模拟考 #3** | **60题** | **40/60 (66.7%)** | **2026-04-24** |
+| **Udemy Quiz 001** | **59题** | **44/59 (74.6%)** | **2026-04-25** |
+| **CertSafari 模拟考 #2** | **60题** | **50/60 (83.3%)** | **2026-04-25** |
+| **Udemy 模拟考 #3** | **60题** | **53/60 (88.3%)** | **2026-04-26** |
 
 ---
 
@@ -4781,3 +4785,1295 @@ D. Shuffle Hash Joins are always more efficient than Sort Merge Joins
 
 ---
 
+## SkillCertPro 模拟考 #3 (2026-04-24)
+
+> 60题 | 得分 40/60 (66.7%) | 用时 01:01:50
+> 错题：Q3, Q5, Q6, Q7, Q17, Q19, Q26, Q28, Q30, Q31, Q34, Q35, Q41, Q43, Q46, Q48, Q49, Q51, Q54, Q55
+
+---
+
+### Q3 ❌ — Fact Table 设计优化（Partition+Cluster vs Denormalize）
+
+**原题：** Optimizing Fact Table Design — For a large fact table containing sales transactions in a lakehouse, which design consideration most effectively improves query performance?
+
+**选项：**
+A. Partition the table by transaction date and cluster by product ID. ✅
+B. Normalize sales data into multiple tables to reduce the size of the fact table.
+C. Denormalize related dimensions into the fact table to avoid join operations. ← 我选的
+D. Store the fact table in a columnar format without partitioning or clustering.
+
+**解析：** Partition by date + cluster by product ID 是 Delta Lake/Lakehouse 场景下的标准优化组合。Partition pruning 减少扫描范围，Z-order clustering 进一步优化数据布局。Denormalize（C）虽然避免 join，但会增大表体积、增加冗余、降低写入效率，且在 Lakehouse 场景下 join 的代价远小于传统数据库。
+
+**知识点：** `Delta Lake 优化` `Partition + Cluster 组合策略`
+
+---
+
+### Q5 ❌ — Spark Shuffle 瓶颈优化（Broadcast vs Custom Partitioner）
+
+**原题：** Optimizing Apache Spark Jobs for Large-scale Data Processing — you encounter performance bottlenecks related to data shuffling. What strategy would most effectively reduce shuffling overhead?
+
+**选项：**
+A. Increasing the size of the Spark executors and the number of cores to speed up the data processing
+B. Utilizing broadcast variables to minimize data transfer across nodes during join operations ✅
+C. Implementing a custom partitioner to ensure data is evenly distributed across partitions before shuffling ← 我选的
+D. Configuring the Spark session to use more efficient serialization formats like Parquet for intermediate data storage
+
+**解析：** 题目问的是减少 shuffle 开销。Broadcast join 直接消除了 shuffle（将小表广播到所有 executor），而 custom partitioner（C）只是改善 shuffle 的均匀性，shuffle 本身仍然存在。题目关键词是"minimize data transfer"。
+
+**知识点：** `Spark 性能优化` `Broadcast Join 消除 Shuffle`
+
+---
+
+### Q6 ❌ — 稀疏数据集存储（Parquet vs Delta Binary）
+
+**原题：** Efficient Storage of Sparse Datasets — For a lakehouse storing highly sparse datasets (e.g., user interaction matrices with numerous null values), which storage format or technique ensures efficiency?
+
+**选项：**
+A. Store data in a columnar format like Parquet, leveraging its built-in compression mechanisms for null values. ✅
+B. Normalize the dataset into multiple tables to separate dense columns from sparse ones, reducing storage overhead.
+C. Implement a custom sparse matrix storage format as a UDF that compresses null values and decompresses them during queries.
+D. Use Delta Lake's binary storage format with custom compression algorithms tailored to sparse data. ← 我选的
+
+**解析：** Parquet 本身对 null 值有极高效的存储：使用 definition levels 和 run-length encoding，null 值几乎不占空间。D 选项描述的"Delta Lake binary storage format with custom compression"并不是真实存在的功能，Delta Lake 底层就是 Parquet 文件。
+
+**知识点：** `Parquet Null 压缩机制` `Definition Levels + RLE`
+
+---
+
+### Q7 ❌ — 合规审计实现（Azure Policy+Sentinel vs Manual Audit）
+
+**原题：** Implementing Security and Compliance Auditing in Data Pipelines — In a regulated industry, ensure data pipelines in Azure Databricks comply with security and compliance requirements.
+
+**选项：**
+A. Configuring Azure Policy to audit and enforce compliance standards, with Databricks logs streamed to Azure Sentinel for security analysis and threat detection ✅
+B. Using Databricks audit logs with manual reviews for compliance adherence and configuring Azure Security Center for basic threat detection ← 我选的
+C. Enabling Azure Databricks audit logs, integrating with Azure Purview for data governance, and using custom scripts to analyze logs for compliance violations
+D. Streaming audit and activity logs to Azure Log Analytics, applying custom KQL queries for compliance auditing
+
+**解析：** 关键区分：Azure Policy 提供**自动化的**合规标准执行和审计，Azure Sentinel 提供**高级**威胁检测（SIEM+SOAR）。B 的"manual reviews"不满足自动化要求，Azure Security Center 是"basic"级别。在 regulated industry 场景下需要最高级别的自动化合规方案。
+
+**知识点：** `Azure Policy 自动合规` `Azure Sentinel SIEM/SOAR`
+
+---
+
+### Q17 ❌ — Spark DataFrame 加密存储（spark.io.encryption vs HDFS Encryption Zones）
+
+**原题：** Implementing Encryption-at-Rest within Spark DataFrames — What strategy ensures data is encrypted when stored?
+
+**选项：**
+A. Enable Spark's internal encryption mechanism by configuring spark.io.encryption.enabled to true. ← 我选的
+B. Utilize HDFS encryption zones for data stored by Spark, ensuring data is encrypted at the storage level. ✅
+C. Encrypt data manually before storing in DataFrames and decrypt upon reading, using UDFs for encryption/decryption operations.
+D. Rely on Spark's automatic encryption for persisted DataFrames, requiring no additional configuration.
+
+**解析：** `spark.io.encryption.enabled` 只加密 Spark **内部**的 shuffle 数据、broadcast 数据和 spill-to-disk 数据（即 data-in-transit/临时数据），**不**加密最终持久化存储的数据。真正的 encryption-at-rest 需要在存储层实现，HDFS Encryption Zones 在文件系统层面透明加密所有写入的数据。
+
+**知识点：** `spark.io.encryption ≠ at-rest` `HDFS Encryption Zones = 存储层透明加密`
+
+---
+
+### Q19 ❌ — Spark CBO 优化（Optimizer Hints vs ANALYZE TABLE）
+
+**原题：** Leveraging Spark's Cost-Based Optimizer for Complex Queries — How can you ensure CBO performs effectively for complex SQL queries?
+
+**选项：**
+A. Annotate queries with explicit optimizer hints to guide the CBO in choosing the most efficient execution plan. ← 我选的
+B. Collect and maintain table statistics (e.g., via ANALYZE TABLE COMPUTE STATISTICS) for all tables involved in the query to provide the CBO with necessary information. ✅
+C. Increase the value of spark.sql.cbo.enabled to a higher level than the default to enhance the optimizer's capabilities.
+D. Manually define the execution plan for complex queries, bypassing the CBO.
+
+**解析：** CBO 的核心依赖是**统计信息**。没有统计数据，CBO 无法做出准确的代价估算。ANALYZE TABLE COMPUTE STATISTICS 收集表的行数、列分布等信息，是 CBO 正常工作的前提。Optimizer hints（A）是绕过 CBO 而非利用 CBO，题目问的是如何确保 CBO 有效工作。
+
+**知识点：** `CBO 依赖统计信息` `ANALYZE TABLE COMPUTE STATISTICS` `Hints 绕过 CBO`
+
+---
+
+### Q26 ❌ — 预测 Pipeline 故障（Log Analytics vs Event Hubs+Stream Analytics+Azure ML）
+
+**原题：** Advanced Log Analysis for Predicting Data Pipeline Failures — Predict pipeline failures before they occur using historical log data from Azure Databricks.
+
+**选项：**
+A. Utilizing Azure Databricks notebooks to apply machine learning models on logs stored in Azure Blob Storage, analyzed with Azure Data Lake Analytics
+B. Streaming logs to Azure Event Hubs, then processing them with Azure Stream Analytics to feed into Azure Machine Learning for prediction ✅
+C. Exporting logs to Azure Data Lake Storage, using Databricks for data preparation, and Azure Synapse Analytics for running predictive models
+D. Aggregating logs in Azure Log Analytics, applying machine learning models directly within Log Analytics, and visualizing predictions in Azure Dashboards ← 我选的
+
+**解析：** 关键要求是"predicting failures before they occur"——需要**实时/近实时**处理。B 的架构是流式的：Event Hubs → Stream Analytics → Azure ML，提供低延迟的预测能力。D 的 Log Analytics 是批量分析工具，不适合实时预测。且 Log Analytics 中直接跑 ML 模型的能力有限。
+
+**知识点：** `实时预测 → 流式架构` `Event Hubs + Stream Analytics + Azure ML`
+
+---
+
+### Q28 ❌ — PII 数据加密（TDE+SSL vs Key Vault+Secret Scopes）
+
+**原题：** Securing PII stored in a Delta Lake on Databricks — What combination of Databricks and Azure features would you use to encrypt this sensitive data?
+
+**选项：**
+A. Implement Azure Key Vault for managing encryption keys and Databricks secret scopes to securely access those keys. ✅
+B. Rely on network security controls, such as Azure Virtual Network service endpoints, to encrypt data in transit.
+C. Use Transparent Data Encryption (TDE) provided by Azure Storage and enable SSL in Databricks clusters for data in transit. ← 我选的
+D. Activate Delta Lake's built-in encryption capabilities and manage keys manually within Databricks notebooks.
+
+**解析：** 题目强调的是 PII 数据加密的**管理方案**。Key Vault 提供集中化密钥管理（轮换、审计、访问控制），Databricks Secret Scopes 与 Key Vault 集成可安全引用密钥而不暴露明文。C 的 TDE 虽然也能加密，但没有解决密钥管理问题，SSL 只管 in-transit。A 是更完整的端到端加密密钥管理方案。
+
+**知识点：** `Key Vault + Secret Scopes = 密钥管理最佳实践` `TDE 缺乏密钥管理灵活性`
+
+---
+
+### Q30 ❌ — 流式异常检测阈值更新（Separate Cluster Retraining vs External ML Service）
+
+**原题：** Advanced Anomaly Detection with Streaming Data — which approach enables real-time anomaly detection with dynamically adjusted thresholds?
+
+**选项：**
+A. Batch process streaming data periodically, retrain the model offline, and update broadcast variables with new thresholds.
+B. Implement a continuous learning paradigm where streaming data is used to retrain models on a separate Spark cluster, updating the detection thresholds dynamically. ← 我选的
+C. Use foreachBatch to write streaming data to a Delta Lake table, periodically pausing the stream to retrain the model and update thresholds.
+D. Integrate Spark Streaming with an external machine learning service that continuously updates its model and thresholds, querying it for each batch of streaming data. ✅
+
+**解析：** D 的架构优势：将 ML 模型服务与流处理解耦。外部 ML 服务独立持续更新模型，流处理每个 batch 调用该服务获取最新阈值。B 的"separate Spark cluster"虽然也能工作，但重新训练模型并将阈值传回原始流处理集群的机制更复杂、更紧耦合。D 是标准的 ML serving 架构模式。
+
+**知识点：** `ML Serving 解耦模式` `外部服务 vs 集群内重训练`
+
+---
+
+### Q31 ❌ — 多服务日志聚合（Azure Monitor vs Log Analytics+KQL）
+
+**原题：** Log Aggregation for Multi-stage Data Pipelines — aggregate logs across a complex data pipeline spanning Event Hubs, Databricks, and Synapse Analytics.
+
+**选项：**
+A: Configure each service to send logs to Azure Log Analytics and use Kusto Query Language (KQL) for cross-service log analysis. ✅
+B: Use Azure Monitor to collect logs from each service and analyze them using the built-in features of Azure Portal. ← 我选的
+C: Develop a custom logging solution that aggregates logs in Azure Blob Storage for batch analysis in Databricks.
+D: Rely on the native logging capabilities of each service and manually correlate logs for troubleshooting.
+
+**解析：** Azure Monitor 是总框架，Log Analytics 是其下的具体分析工具。题目问的是跨服务日志**分析**的具体方案。A 明确指出了 Log Analytics workspace（统一汇聚点）+ KQL（强大的查询语言），可以执行跨服务关联查询。B 的"built-in features of Azure Portal"太笼统，没有说明具体的分析手段。
+
+**知识点：** `Log Analytics = 统一日志汇聚` `KQL = 跨服务关联查询`
+
+---
+
+### Q34 ❌ — 动态调整 Databricks Job 调度（jobs update vs jobs reset）
+
+**原题：** Given a need to dynamically adjust Databricks job schedules based on external triggers, what approach automates this using the Databricks CLI?
+
+**选项：**
+A. Manually update job schedules via the Databricks UI in response to external triggers.
+B. Use `databricks jobs update` with a JSON payload dynamically generated by an external application to adjust schedules. ✅
+C. Implement a continuous integration pipeline that triggers `databricks jobs reset` commands based on external events. ← 我选的
+D. Rely solely on the REST API for dynamic scheduling, as the CLI does not support job schedule modifications.
+
+**解析：** `jobs update` 是**增量更新**，只修改指定字段（如 schedule）。`jobs reset` 是**全量覆盖**，会替换整个 job 配置——风险高，容易丢失其他配置。对于"调整 schedule"这种局部修改，`jobs update` 更精确、更安全。
+
+**知识点：** `jobs update = 增量修改` `jobs reset = 全量覆盖（危险）`
+
+---
+
+### Q35 ❌ — 敏感数据 Lakehouse 安全模型（File-level Encryption vs Column-level Security）
+
+**原题：** Data Lakehouse Security Model for Sensitive Data — which strategy best ensures compliance for highly sensitive personal data?
+
+**选项：**
+A. Encrypt all data at rest and in transit, applying fine-grained access control at the file level based on user roles. ← 我选的
+B. Segment sensitive data into a dedicated, secured area of the lakehouse, applying column-level security and masking where necessary. ✅
+C. Store sensitive data in encrypted form within the same tables as non-sensitive data, decrypting on-the-fly during query execution.
+D. Utilize a hybrid approach, keeping sensitive data in a fully encrypted and isolated storage account with restricted access.
+
+**解析：** 合规的核心不只是加密，还有**数据分类隔离**和**最小权限访问**。B 提供了多层保护：1) 物理隔离（dedicated secured area），2) 列级安全（column-level security）可精确控制哪些字段可见，3) 数据脱敏（masking）保护敏感值。A 只有加密+文件级控制，粒度太粗——文件级别无法区分同一表中的敏感和非敏感列。
+
+**知识点：** `Column-level Security > File-level` `数据分类隔离 + 列级安全 + Masking`
+
+---
+
+### Q41 ❌ — REST API + Logic Apps 自动化调度（Event Grid vs REST API 启动 VM）
+
+**原题：** How can the Databricks REST API be utilized in conjunction with Azure Logic Apps to automate job scheduling?
+
+**选项：**
+A. Triggering Databricks jobs based on events in Azure Event Grid. ✅
+B. Directly creating Azure Logic App workflows from Databricks notebooks.
+C. Using the REST API to schedule Azure VMs to start Databricks jobs. ← 我选的
+D. Updating Azure Active Directory roles based on job outcomes.
+
+**解析：** Logic Apps 是事件驱动的工作流引擎，与 Event Grid 天然集成。Event Grid 可以捕获各种 Azure 事件（如 Blob 上传、队列消息等），Logic Apps 收到事件后调用 Databricks REST API 触发 job。C 的方案多了一层不必要的 VM 中间层，且 VM 不是标准的自动化调度模式。
+
+**知识点：** `Event Grid + Logic Apps = 事件驱动自动化` `避免不必要的 VM 中间层`
+
+---
+
+### Q43 ❌ — 非合规资源自动修复（Azure Policy+Functions vs Logic Apps+CLI）
+
+**原题：** Automated Remediation of Non-Compliant Resources in Azure Databricks — how to automate remediation to adhere to organizational security standards?
+
+**选项：**
+A. Utilizing Azure Policy with Azure Functions to trigger remediation scripts based on compliance evaluation results ✅
+B. Implementing a custom solution with Azure Logic Apps to monitor Azure Databricks resources and apply corrections using Azure CLI or PowerShell ← 我选的
+C. Configuring Azure Security Center to automatically remediate non-compliant resources within Azure Databricks workspaces
+D. Leveraging Azure Automation State Configuration to enforce desired state configurations for Databricks resources
+
+**解析：** Azure Policy 有内置的合规评估引擎，可以自动扫描资源并判断合规性。配合 Azure Functions 触发修复脚本是 Azure 原生的标准修复模式（Policy → Event → Function → Remediation）。B 的 Logic Apps 方案需要自建监控逻辑，不如 Azure Policy 的原生合规框架完整。
+
+**知识点：** `Azure Policy = 原生合规评估` `Policy + Functions = 标准自动修复模式`
+
+---
+
+### Q46 ❌ — MLflow 与 Azure ML 集成（AML Pipelines vs MLflow REST API Sync）
+
+**原题：** How can MLflow be integrated with Azure Machine Learning to enhance the tracking of machine learning experiments in Databricks?
+
+**选项：**
+A. By storing MLflow artifacts in Azure Machine Learning Datasets.
+B. Utilizing Azure Machine Learning pipelines as a backend for MLflow tracking. ← 我选的
+C. Syncing MLflow runs to Azure Machine Learning Experiments via the MLflow REST API. ✅
+D. Exporting MLflow tracking logs to Azure Log Analytics for enhanced monitoring.
+
+**解析：** MLflow 和 Azure ML Experiments 可以通过 MLflow REST API 同步运行数据。这是官方支持的集成方式：在 Databricks 中用 MLflow 追踪实验，通过 REST API 将 runs 同步到 Azure ML Experiments 实现统一管理。B 的说法不准确——Azure ML Pipelines 不是 MLflow tracking 的后端。
+
+**知识点：** `MLflow REST API 同步到 Azure ML Experiments` `官方集成路径`
+
+---
+
+### Q48 ❌ — Spark Streaming 容错（NOT 增强题型：Checkpointing vs Single-threaded Write）
+
+**原题：** When using Apache Spark to process streaming data ingested from Azure IoT Hub, which approach does **not** enhance fault tolerance and data consistency?
+
+**选项：**
+A. Enabling checkpointing in Spark streaming ← 我选的
+B. Implementing idempotent writes to the sink
+C. Using a single-threaded write operation to Azure Cosmos DB ✅
+D. Employing write-ahead logs (WAL) for Spark streaming
+
+**解析：** 这是 NOT 题型！Checkpointing（A）、Idempotent writes（B）、WAL（D）都是增强容错的标准手段。C 的 single-threaded write 不仅不增强容错（单线程故障=全部停止），还降低了并发性能。注意审题——"does NOT enhance"。
+
+**知识点：** `NOT 题型审题` `Checkpointing/WAL/Idempotent = 容错三件套`
+
+---
+
+### Q49 ❌ — MLflow 组件功能（MLflow Models vs MLflow Tracking）
+
+**原题：** In MLflow, which component is used to log parameters, metrics, and models during an experiment run?
+
+**选项：**
+A. MLflow Tracking ✅
+B. MLflow Projects
+C. MLflow Models ← 我选的
+D. MLflow Registry
+
+**解析：** MLflow 四大组件分工：
+- **Tracking**：记录（log）参数、指标、模型、artifacts
+- **Projects**：打包代码和环境的可复现格式
+- **Models**：模型打包和部署格式
+- **Registry**：模型版本管理和生命周期管理
+题目问"log parameters, metrics, and models"——这是 Tracking 的核心职责。Models 组件是关于模型的打包/部署格式，不是 logging。
+
+**知识点：** `MLflow Tracking = logging 组件` `Models = 打包部署格式`
+
+---
+
+### Q51 ❌ — REST API 创建集群参数（autoscale vs All of the above）
+
+**原题：** Which component is essential in the payload when creating a new Spark cluster using the Databricks REST API?
+
+**选项：**
+A. spark_version
+B. autoscale ← 我选的
+C. node_type_id
+D. All of the above ✅
+
+**解析：** Databricks Clusters API 创建集群时的必需参数包括 `spark_version`、`node_type_id`，以及集群大小配置（`num_workers` 或 `autoscale`）。三者都是 essential。我只选了 autoscale 一项，忽略了"All of the above"选项。
+
+**知识点：** `Clusters API 必需参数：spark_version + node_type_id + autoscale/num_workers`
+
+---
+
+### Q54 ❌ — ML 模型可扩展性测试（A/B Testing vs Azure ML 部署能力）
+
+**原题：** Scalability Testing for Machine Learning Models in Production — ensure deployed model scales effectively with increasing data volumes and user requests.
+
+**选项：**
+A. Utilizing Azure Machine Learning's model deployment and management capabilities to simulate load scenarios and gather performance metrics for analysis ✅
+B. Implementing custom scalability testing scripts within Databricks notebooks that incrementally increase data load and request rates
+C. Leveraging Databricks' MLflow for model tracking, combined with Azure Kubernetes Service (AKS) to simulate scalable deployment scenarios
+D. Conducting A/B testing with varying sizes of data inputs and concurrent requests, using Azure Event Hubs to generate traffic and Azure Monitor for performance insights ← 我选的
+
+**解析：** Azure ML 提供完整的模型部署和管理平台，包括内置的负载测试（load simulation）和性能指标收集能力。D 的 A/B testing 主要用于比较模型效果，不是可扩展性测试工具。Event Hubs 用于生成流量也不是标准的负载测试方式。
+
+**知识点：** `Azure ML = 模型部署+负载测试平台` `A/B Testing ≠ 可扩展性测试`
+
+---
+
+### Q55 ❌ — 批处理作业优化监控（Custom Dashboard vs 自动调整集群）
+
+**原题：** Advanced Resource Monitoring for Optimizing Job Execution Times — reduce execution times for batch processing jobs in Azure Databricks.
+
+**选项：**
+A. Leveraging Azure Monitor's application insights to track job execution metrics, analyzing data with Azure Machine Learning to identify optimization opportunities
+B. Using the Databricks Spark UI exclusively to monitor job and cluster performance, manually adjusting resources based on observations
+C. Implementing a custom metrics dashboard using Azure Log Analytics, aggregating job execution times, and cluster metrics to identify bottlenecks ← 我选的
+D. Configuring Azure Databricks to automatically adjust cluster sizes and configurations based on job execution patterns and resource utilization metrics ✅
+
+**解析：** 题目要求的是"reduce execution times"——需要的是**行动**而非仅仅**监控**。D 不仅监控还自动调整集群大小和配置，直接优化执行时间。C 只是建了一个 dashboard 来发现瓶颈，发现之后还需要手动操作。D 的自动化闭环更符合"advanced resource monitoring for optimization"的要求。
+
+**知识点：** `自动化调整 > 手动 Dashboard` `监控+自动行动 = 完整优化闭环`
+
+---
+
+### SkillCertPro 模拟考 #3 — 错题知识点汇总
+
+| 领域 | 错题数 | 题号 | 核心弱点 |
+|------|--------|------|---------|
+| Azure 服务集成/架构 | 8 | Q7, Q26, Q31, Q41, Q43, Q46, Q54, Q55 | Azure 服务之间的最佳组合方案，尤其是 Policy/Sentinel/Event Grid/Log Analytics 的区分 |
+| 安全与加密 | 4 | Q17, Q28, Q35, Q6 | spark.io.encryption vs 存储层加密；Key Vault vs TDE；Column-level vs File-level security |
+| Spark 性能优化 | 3 | Q5, Q19, Q3 | Broadcast Join 消除 Shuffle；CBO 依赖统计信息；Partition+Cluster 优于 Denormalize |
+| 流处理与 ML | 3 | Q30, Q48, Q49 | ML Serving 解耦架构；NOT 题型审题；MLflow 组件分工 |
+| CLI/API 操作 | 2 | Q34, Q51 | jobs update vs reset；Clusters API 必需参数 |
+
+**关键失分模式：**
+1. **Azure 生态服务选择**——最大失分项（8题），需要系统学习 Azure Policy/Sentinel/Event Grid/Log Analytics/Azure ML 各自定位
+2. **加密层级混淆**——spark.io.encryption（临时数据）vs HDFS Encryption Zones/Azure SSE（持久化数据）
+3. **NOT 题型粗心**——Q48 未注意到"does NOT enhance"
+4. **MLflow 组件分工不清**——Tracking vs Models vs Projects vs Registry
+
+---
+
+
+## Udemy Quiz 001: Q1 - Q59 (新题库)
+
+---
+
+### Quiz001-Q1 ❌ — UC权限-最小权限原则
+
+**Topic:** Data Governance
+
+**原题：**
+A data engineer wants to grant the engineering_group permission to create new tables in the existing schema prod_schema. They also want the analyst_group to be able to read data from all current and future tables in that schema.Which Unity Catalog SQL statements best satisfy these requirements?
+
+**选项：**
+A. GRANT CREATE, DELETE ON SCHEMA prod_schema TO engineering_group;GRANT SELECT ON SCHEMA prod_schema TO analyst_group;
+B. GRANT CREATE TABLE ON SCHEMA prod_schema TO engineering_group;GRANT SELECT ON SCHEMA prod_schema TO analyst_group; ✅
+C. GRANT CREATE TABLE ON SCHEMA prod_schema TO engineering_group;GRANT SELECT ON ANY TABLE IN SCHEMA prod_schema TO analyst_group;
+D. GRANT ALL PRIVILEGES ON SCHEMA prod_schema TO engineering_group;GRANT SELECT ON ANY TABLE IN SCHEMA prod_schema TO analyst_group;
+
+**我的答案：** D | **正确答案：** B
+
+**解析：**
+- 你选 D 错因：ALL PRIVILEGES is broader than required and does not follow least privilege.
+- 正确答案 B：Databricks documents CREATE TABLE on a schema as the privilege that allows a user to create a table or view in that schema. Databricks also documents that privileges granted on a schema are inherited by all current and future tables in that schema; specifically, granting SELECT on a schema grants SELECT on all current and future tables in that schema. (Unity Catalog privileges reference)
+- 核心原理：Unity Catalog uses a Hierarchical Privilege Model (Metastore > Catalog > Schema > Table). Permissions granted at a higher level are automatically inherited by child objects. Application: In this scenario, managing permissions table-by-table is inefficient. By applying SELECT at the Schema level, we utilize the inheritance theory to ensure analysts can read any table the engineers create immediately. Furthermore, we distinguish between DDL (Data Definition Language - Create/Drop) and DML (Data Manipulation Language - Select/Delete) to ensure engineers manage the structure without necessarily having carte blanche to modify the content or permissions of the entire schema.Documentation: Unity Catalog Privileges and Securable Objects
+
+**速记：** ALL PRIVILEGES 过宽，应用 CREATE TABLE + SELECT ON SCHEMA
+
+**知识点：** `UC权限-最小权限原则` `Data Governance`
+
+---
+
+### Quiz001-Q3 ❌ — DLT声明式去重
+
+**Topic:** Data Transformation, Cleansing, and Quality
+
+**原题：**
+A bronze_data table in a Delta Live Tables (DLT) pipeline uses dlt.read_stream(""source_data"") without any deduplication logic. The source data is a Kafka topic that occasionally delivers duplicate messages due to retries. How should the data engineer modify the logic in the bronze_data table to ensure duplicate records are removed before they reach the next layer?
+
+**选项：**
+A. Add the option spark.databricks.delta.delete.ignoreChanges=true to the pipeline configuration.
+B. Add a GROUP BY transformation with collect_list() to group records by key and select the most recent one.
+C. Use the df.dropDuplicates("unique_key") transformation in the pipeline, ensuring the table has an appropriate watermark enabled ✅
+D. Implement MERGE INTO in a foreachBatch to handle deduplication based on the unique key.
+
+**我的答案：** D | **正确答案：** C
+
+**解析：**
+- 你选 D 错因：MERGE INTO is a sink (write) operation. DLT abstracts the write layer. The question asks to modify the logic in the table definition (transformation), not the write mechanism. Also, foreachBatch is an imperative pattern that bypasses DLT's declarative nature.
+- 正确答案 C：In Structured Streaming (the engine behind DLT), dropDuplicates() is the specific API for removing records with identical keys. However, for a never-ending stream, Spark cannot keep every key in memory forever. The Watermark is mandatory here: it defines a time threshold (e.g., "1 hour"), allowing the engine to drop old state and free up memory. Without a watermark, the state grows indefinitely until failure.
+- 核心原理：Streaming deduplication is a Stateful Operation. The system must remember history to detect duplicates. Watermarking is the mechanism that bounds this state, converting an infinite memory problem into a finite one. Application: In DLT, you apply standard Spark Streaming transformations. By applying dropDuplicates with a watermark, you explicitly tell DLT: "Keep the state of keys for X duration to catch Kafka retries, then discard them." This ensures the bronze_data table only exposes unique records to the Silver layer without crashing the cluster due to memory exhaustion.Documentation: Streaming Deduplication
+
+**速记：** DLT 内用 dropDuplicates+watermark，不用 MERGE INTO foreachBatch
+
+**知识点：** `DLT声明式去重` `Data Transformation, Cleansing, and Quality`
+
+---
+
+### Quiz001-Q5 ❌ — VACUUM语法
+
+**Topic:** Cost & Performance Optimisation
+
+**原题：**
+A Delta Lake table has been partitioned by the order_date column. A data engineer needs to ensure that queries on this table, especially those filtering by customer_id, are as fast as possible.Which two maintenance commands should the engineer run? (Choose 2)
+
+**选项：**
+A. OPTIMIZE my_table ZORDER BY (customer_id); ✅
+B. VACUUM my_table RETAIN 0 HOURS; ✅
+C. OPTIMIZE my_table;
+D. ALTER TABLE my_table ADD PARTITION (order_date);
+E. OPTIMIZE my_table PARTITION BY (order_date);
+
+**我的答案：** A,E | **正确答案：** A,B
+
+**解析：**
+- 你选 E 错因：Invalid syntax.
+- 正确答案 A：The table is already physically partitioned by Date. However, customer_id data is scattered randomly within those date partitions. Z-Ordering is a technique that co-locates related data (clusters customer_id) within the physical files. This allows Delta Lake to use Min/Max statistics to skip irrelevant files (Data Skipping) when querying for a specific customer.
+- 正确答案 B：After running OPTIMIZE, the old files are logically deleted but remain on disk. VACUUM removes these unused files. This reduces the size of the directory and speeds up file listing operations, contributing to overall table health and query planning speed.
+- 核心原理：Data Layout Optimization (File Pruning). Query performance is largely defined by I/O: how much data can the engine avoid reading. Application: By applying Z-Order on customer_id, we align the physical layout of the data with the query pattern. If a query requests "Customer A", Delta checks the file statistics. Because of Z-Ordering, Customer A exists in only 1 file instead of 100. The engine skips 99 files. VACUUM completes the cycle by removing the "waste" produced by the reorganization.Documentation: Data Skipping and Z-Order
+
+**速记：** OPTIMIZE PARTITION BY 不存在；VACUUM RETAIN 0 HOURS 清理旧文件
+
+**知识点：** `VACUUM语法` `Cost & Performance Optimisation`
+
+---
+
+### Quiz001-Q10 ❌ — Streaming Upsert
+
+**Topic:** Data Ingestion & Acquisition
+
+**原题：**
+A data engineer is using Structured Streaming to ingest data. Due to business requirements, ingestion must be performed in an Upsert (update/insert) pattern into a Delta Lake table using the product_id key. Which Structured Streaming functionality allows executing this Upsert logic in each micro-batch?
+
+**选项：**
+A. writer.mode("merge")
+B. df.writeStream.trigger(once=True)
+C. df.writeStream.foreachBatch(upsert_to_delta).start() ✅
+D. df.writeStream.option("updateMode", "merge")
+
+**我的答案：** D | **正确答案：** C
+
+**解析：**
+- 你选 D 错因：updateMode is a fictitious option.
+- 正确答案 C：Structured Streaming does not support MERGE (Upsert) natively as a sink mode. To perform a merge, you must use foreachBatch. This function allows you to execute arbitrary Batch code on the output of each micro-batch. Inside the foreachBatch function, the engineer writes standard Delta Lake MERGE INTO syntax using the micro-batch DataFrame as the source.
+- 核心原理：Micro-batch Processing. Structured Streaming breaks a continuous stream into small, discrete DataFrames (micro-batches). Application: The foreachBatch API exposes this underlying batch to the user. It bridges the gap between Streaming (Continuous) and Batch (Complex Logic). Since MERGE is a complex batch operation available in Delta Lake, we use foreachBatch to apply that batch operation repeatedly to every increment of the stream, effectively achieving a "Streaming Upsert".Documentation: Upsert into Delta Lake using foreachBatch
+
+**速记：** foreachBatch 是 Streaming 做 MERGE 的唯一方式，updateMode 不存在
+
+**知识点：** `Streaming Upsert` `Data Ingestion & Acquisition`
+
+---
+
+### Quiz001-Q11 ❌ — APPLY CHANGES INTO
+
+**Topic:** Data Transformation, Cleansing, and Quality
+
+**原题：**
+A data engineer uses the APPLY CHANGES INTO pattern in DLT to maintain an SCD Type 1 table (customer_dim) tracking the latest customer states. Source data may contain duplicate records due to source system retries.How should the engineer configure the pipeline to ensure source duplicates do not break the CDC logic?
+
+**选项：**
+A. Define the SCD Type 1 table as a LIVE VIEW.
+B. Include the ignoreDuplicates=true option in the dlt.read_stream() function.
+C. Add a SEQUENCE BY column to order events and handle update conflicts. ✅
+D. Use a GROUP BY before the APPLY CHANGES INTO function.
+
+**我的答案：** B | **正确答案：** C
+
+**解析：**
+- 你选 B 错因：ignoreDuplicates in the reader might filter exact row duplicates, but it does not handle chronological conflicts (e.g., an update arriving out of order).
+- 正确答案 C：The SEQUENCE BY clause in APPLY CHANGES INTO is the conflict resolution mechanism. DLT uses a column (usually Timestamp or Version) to order the changes. If it receives duplicate keys (retries) or out-of-order updates, it uses the SEQUENCE BY value to determine which record is the "latest" truth. It applies the one with the highest sequence number and discards/orders the rest correctly.
+- 核心原理：Conflict Resolution in Eventual Consistency. When multiple events claim to define the state of an object, you need a deterministic rule to decide the winner.Application: APPLY CHANGES INTO implements this theory. By specifying SEQUENCE BY tx_time, the engineer tells DLT: "If you see two updates for Customer A, the one with the later timestamp is the truth." This automatically handles the "duplicate/retry" problem, as a retry will either have the same or older timestamp, and will be handled idempotently.Documentation: Change Data Capture with DLT
+
+**速记：** SEQUENCE BY 是冲突解决机制，ignoreDuplicates 不处理时序冲突
+
+**知识点：** `APPLY CHANGES INTO` `Data Transformation, Cleansing, and Quality`
+
+---
+
+### Quiz001-Q13 ❌ — System Tables SQL
+
+**Topic:** Monitoring and Alerting
+
+**原题：**
+A platform engineer needs to report the resource consumption, categorized by SKU tier, across all workspaces. The engineer decides to use the system.billing.usage system table to create a query. Which SQL query will accurately return the daily usage by product?
+
+**选项：**
+A. SELECT DATE_TRUNC('day', usage_start_time) AS usage_day, sku_name, SUM(usage_quantity) AS total_daily_dbus FROM system.billing.usage WHERE usage_quantity IS NOT NULL GROUP BY usage_day, sku_name ORDER BY usage_day;
+B. SELECT TO_DATE(usage_start_time) AS usage_day, sku_name, SUM(usage_quantity) AS total_daily_dbus FROM system.billing.usage WHERE usage_quantity IS NOT NULL GROUP BY usage_day, sku_name ORDER BY usage_day;
+C. SELECT CAST(usage_start_time AS DATE) AS usage_day, sku_name, COUNT(usage_quantity) AS dbu_count FROM system.billing.usage WHERE usage_quantity IS NOT NULL GROUP BY usage_day, sku_name ORDER BY usage_day;
+D. SELECT DATE(usage_start_time) AS usage_day, sku_name, SUM(usage_quantity) AS total_daily_dbus FROM system.billing.usage WHERE usage_quantity IS NOT NULL GROUP BY usage_day, sku_name ORDER BY usage_day; ✅
+
+**我的答案：** B | **正确答案：** D
+
+**解析：**
+- 你选 B 错因：TO_DATE is valid but Option D's DATE() function is the ANSI standard often preferred in these exams.
+- 正确答案 D：DATE(usage_start_time): Correctly extracts the calendar day.SUM(usage_quantity): Correctly aggregates the total DBUs consumed.GROUP BY: Correctly groups by the derived day and the product (SKU).
+- 核心原理：Aggregation of Metrics. To analyze consumption, one must sum the metric (usage_quantity) over the dimensions of interest (Time and Product). Application: The System Table billing.usage is the ledger. The query translates the business question ("Daily usage by product") into SQL: Grouping by Time (DATE) and Dimension (sku_name), and Aggregating the Metric (SUM).Documentation: System Tables - Billing Usage
+
+**速记：** DATE() vs TO_DATE() — 考试偏好 ANSI 标准 DATE()
+
+**知识点：** `System Tables SQL` `Monitoring and Alerting`
+
+---
+
+### Quiz001-Q15 ❌ — Delta属性冲突
+
+**Topic:** Debugging and Deploying
+
+**原题：**
+A Delta Lake table is updated via a daily MERGE INTO command that applies updates and deletions. The engineer regularly runs VACUUM my_table RETAIN 7 DAYS. However, file deletions caused by MERGE INTO keep failing. What is the most likely cause of the error?
+
+**选项：**
+A. The VACUUM retention value must be longer than the longest write interval, which is only 24 hours.
+B. The delta.logRetentionDuration must be less than 7 days.
+C. The delta.deletedFileRetentionDuration is too long (default 7 days), which conflicts with VACUUM. ✅
+D. The MERGE INTO command does not generate tombstones, so VACUUM has no files to remove.
+
+**我的答案：** D | **正确答案：** C
+
+**解析：**
+- 你选 D 错因：MERGE generates tombstones (logical deletes) when it rewrites files.
+- 正确答案 C：Databricks enforces a Safety Check (spark.databricks.delta.retentionDurationCheck.enabled). If you try to run VACUUM RETAIN 7 DAYS, but the table property delta.deletedFileRetentionDuration is set to something larger (or if strict checks prevent vacuuming files that might still be needed for consistency/streams), the command fails to prevent accidental data loss. The question implies a conflict between the command's request and the table's configuration safeguards.
+- 核心原理：Safe Consistency Horizons. In distributed systems, you cannot delete old data immediately because concurrent readers might be using it.Application: Delta Lake safeguards against aggressive cleanup. If a user tries to Vacuum files that are "too new" according to the safety configuration, the system blocks the operation. The error is a protection mechanism ensuring that history required for potential Time Travel or ongoing streams is not prematurely destroyed.Documentation: Vacuum Configuration and Safety Checks
+
+**速记：** deletedFileRetentionDuration 默认7天与 VACUUM RETAIN 7 DAYS 冲突
+
+**知识点：** `Delta属性冲突` `Debugging and Deploying`
+
+---
+
+### Quiz001-Q19 ❌ — Compute Policy
+
+**Topic:** Debugging and Deploying
+
+**原题：**
+A data engineer needs to productionize a new Spark application written by a teammate. This application has numerous external dependencies, including libraries, and requires custom environment variables and Spark configuration parameters to be set. Which two methods will help the data engineer accomplish the task? (Choose 2)
+
+**选项：**
+A. Create init scripts on DBFS.
+B. Use secrets in init scripts to store configuration data.
+C. Install libraries on DBFS.
+D. Use compute policies to set system properties, environment variables, and Spark configuration parameters. ✅
+E. Add libraries to compute policies. ✅
+
+**我的答案：** A,D | **正确答案：** D,E
+
+**解析：**
+- 你选 A 错因：Init scripts on DBFS are a legacy feature and often deprecated/discouraged due to security risks. They are difficult to govern.
+- 正确答案 D：Compute Policies are the modern Governance tool. Administrators can define a policy that enforces specific Spark Configurations and Environment Variables. Any cluster created with this policy automatically inherits these settings.
+- 正确答案 E：Compute Policies also support Compute-scoped libraries. You can define libraries in the policy, ensuring they are automatically installed on any cluster using that policy. This ensures the "consistent environment setup" required.
+- 核心原理：Policy-Based Governance. Instead of relying on users to configure environments correctly (manual), administrators define Templates (Policies) that enforce correctness. Application: By encoding the requirements (Libs + Env Vars) into a Policy, the engineer ensures reproducibility. Every time the job runs, it must use the Policy, which guarantees the environment is identical to the one defined in code, eliminating "it works on my machine" issues.Documentation: Cluster Policies and Library Management
+
+**速记：** Compute Policy 是现代方案，替代 DBFS init scripts（已弃用）
+
+**知识点：** `Compute Policy` `Debugging and Deploying`
+
+---
+
+### Quiz001-Q20 ❌ — UC Tags语法
+
+**Topic:** Data Governance
+
+**原题：**
+A data engineering team needs to implement a tagging system for their tables as part of an automated ETL process, and needs to apply tags programmatically to tables in Unity Catalog.Which SQL command adds tags to a table programmatically?
+
+**选项：**
+A. ALTER TABLE table_name SET TAGS ('key1' = 'value1', 'key2' = 'value2'); ✅
+B. APPLY TAGS ON table_name VALUES ('key1' = 'value1', 'key2' = 'value2');
+C. COMMENT ON TABLE table_name TAGS ('key1' = 'value1', 'key2' = 'value2');
+D. SET TAGS FOR table_name AS ('key1' = 'value1', 'key2' = 'value2');
+
+**我的答案：** D | **正确答案：** A
+
+**解析：**
+- 你选 D 错因：These are fictitious syntaxes. While logically sound in English, they are not valid SQL in Databricks.
+- 正确答案 A：This is the correct ANSI-compliant SQL syntax adopted by Databricks Unity Catalog for managing tags.
+- 核心原理：Metadata Management. Tags are key-value pairs attached to data objects for organization and discovery. Application: Automation requires programmatic interfaces. Unity Catalog exposes Metadata Management via standard SQL (ALTER TABLE), allowing the ETL process to tag tables as "Gold" or "PII" dynamically as part of the pipeline code, rather than requiring manual UI clicking.Documentation: Apply Tags to Data Objects
+
+**速记：** ALTER TABLE SET TAGS 是唯一正确语法，SET TAGS FOR 不存在
+
+**知识点：** `UC Tags语法` `Data Governance`
+
+---
+
+### Quiz001-Q24 ❌ — UC权限-最小权限原则
+
+**Topic:** Data Governance
+
+**原题：**
+At the start of a Databricks project, the IT team uses Terraform and a Service Principal to provision the workspace, Unity Catalog, external location, and volumes as managed assets.Project teams should be able to create and manage schemas, tables, and volumes within the catalog, but not rename, delete, or modify catalog permissions, which remain controlled by IT.Which privileges should be granted to the project group to support this setup?
+
+**选项：**
+A. USE CATALOG and USE SCHEMA on the catalog. ✅
+B. ALL PRIVILEGES and the MANAGE on the catalog.
+C. OWNER of the catalog.
+D. ALL PRIVILEGES on the catalog.
+
+**我的答案：** D | **正确答案：** A
+
+**解析：**
+- 你选 D 错因：Granting OWNER, MANAGE, or ALL PRIVILEGES on the Catalog object confers the right to DROP the catalog or change its permissions. This explicitly violates the requirement: "cannot rename, delete, or change catalog permissions; those remain under IT's control."
+- 正确答案 A：USE CATALOG allows the team to traverse the catalog object. In many contexts, this (combined with implied or specific CREATE grants handled by the setup) allows usage. Crucially, it does not grant the right to Delete (Drop) the catalog, satisfying the key constraint.
+- 核心原理：Separation of Duties. Infrastructure (IT) vs. Application (Data Team). IT owns the container (Catalog); Data Team owns the content (Schemas/Tables). Application: By checking the destructive capabilities of each privilege, we see that OWNER is too powerful. The Data Team are "Users" of the Catalog container, even if they are "Owners" of the Schemas inside it. Therefore, USE CATALOG is the appropriate bridge permission.Documentation: Unity Catalog Privileges (Manage Privileges)
+
+**速记：** USE CATALOG 允许遍历但不能 DROP；ALL PRIVILEGES 违反职责分离
+
+**知识点：** `UC权限-最小权限原则` `Data Governance`
+
+---
+
+### Quiz001-Q36 ❌ — DLT对象选型
+
+**Topic:** Data Modelling
+
+**原题：**
+A data engineer is designing a system leveraging Lakeflow Declarative Pipeline technology to process real-time truck telemetry data ingested from JSON files in S3 using Auto Loader. The data includes truck_id, timestamp, location, speed, and fuel_level. The system must support two use cases:Near-real-time monitoring of the latest location, speed, and fuel_level per truck_id for the operations team.Daily aggregated reports of total distance traveled and average fuel efficiency per truck_id for the management team.Which approach should the data engineer use for streaming tables and materialized views in the Lakeflow Declarative Pipeline to meet these requirements?
+
+**选项：**
+A. Define a streaming table to ingest and store the raw telemetry data, and create a materialized view to compute the latest location, speed, and fuel_level per truck_id for real-time monitoring. Create another materialized view to compute the daily aggregated distance and fuel efficiency per truck_id for reporting. ✅
+B. Define a materialized view to ingest and store the raw telemetry data, and create a streaming table to compute the latest location, speed, and fuel_level per truck_id for real-time monitoring. Create another materialized view to compute the daily aggregated distance and fuel efficiency per truck_id for reporting.
+C. Define a streaming table to ingest and store the raw telemetry data, and create a streaming table to compute the daily aggregated distance and fuel efficiency per truck_id. Create a materialized view to compute the latest location, speed, and fuel_level per truck_id for real-time monitoring.
+D. Define a streaming table to ingest and store the raw telemetry data, and create a streaming table to incrementally compute the latest location, speed, and fuel_level per truck_id for real-time monitoring. Create a materialized view to compute the daily aggregated distance and fuel efficiency per truck_id for reporting.
+
+**我的答案：** D | **正确答案：** A
+
+**解析：**
+- 你选 D 错因：Suggests using a Streaming Table for "Latest Location". A streaming table adds new rows; it does not overwrite. If you used a streaming table here, you would get a history of locations (a log), not a single "Latest Location" table. The Operations team would have to write complex queries to find the latest row every time they queried it.
+- 正确答案 A：Ingest: Streaming Table. Best for append-only raw data ingestion (Bronze).Latest Location: Materialized View. MVs are designed to compute the "Current State" (Silver) from a stream of events. The engine handles the state calculation (Latest per ID).Daily Aggregates: Materialized View. MVs are ideal for aggregations (Gold) that need to be recomputed or incrementally updated based on the data.
+- 核心原理：Medallion Architecture in DLT.Bronze (Raw): Append-only Stream (Streaming Table).Silver (Clean/State): Deduplicated/Latest State (Materialized View or Apply Changes).Gold (Aggregates): Business logic aggregations (Materialized View). Application: We map the requirements to the artifact types. "Near real-time monitoring of latest" requires a view that reflects the current state, not a list of history. A Materialized View over the stream (e.g., max_by(timestamp)) gives exactly this.Documentation: Delta Live Tables - Streaming Tables vs Materialized Views
+
+**速记：** Streaming Table=追加原始数据；Materialized View=计算当前状态/聚合
+
+**知识点：** `DLT对象选型` `Data Modelling`
+
+---
+
+### Quiz001-Q39 ❌ — TBLPROPERTIES vs spark.conf
+
+**Topic:** Data Governance
+
+**原题：**
+A data engineer is tasked with ensuring that a Delta table in Databricks continuously retains deleted files for 15 days (instead of the default 7 days), in order to permanently comply with the organization's data retention policy. Which code snippet correctly sets this retention period for deleted files?
+
+**选项：**
+A. spark.sql("ALTER TABLE my_table SET TBLPROPERTIES ('delta.deletedFileRetentionDuration' = 'interval 15 days')") ✅
+B. from delta.tables import *; deltaTable = DeltaTable.forPath(spark, "/mnt/data/my_table"); deltaTable.deletedFileRetentionDuration = "interval 15 days"
+C. spark.sql("VACUUM my_table RETAIN 15 HOURS")
+D. spark.conf.set("spark.databricks.delta.deletedFileRetentionDuration", "15 days")
+
+**我的答案：** D | **正确答案：** A
+
+**解析：**
+- 你选 D 错因：This is a Spark Session Config (ephemeral). It affects only the current cluster/notebook session, not the table itself permanently.
+- 正确答案 A：The property delta.deletedFileRetentionDuration must be set using ALTER TABLE SET TBLPROPERTIES. The value requires the syntax interval X days/hours. This persists the setting in the Delta Log.
+- 核心原理：Declarative Configuration. Embedding policy in the data object. Application: Data Retention is a compliance rule. It should not depend on the "script" running the cleanup. By setting the TBLPROPERTY, the table essentially "protects itself" against any Vacuum command that tries to delete files sooner than 15 days.Documentation: Configure Data Retention
+
+**速记：** ALTER TABLE SET TBLPROPERTIES 持久化；spark.conf.set 仅当前会话
+
+**知识点：** `TBLPROPERTIES vs spark.conf` `Data Governance`
+
+---
+
+### Quiz001-Q42 ❌ — Spark UI导航
+
+**Topic:** Monitoring and Alerting
+
+**原题：**
+When monitoring a complex workload, being able to see the query plan is critical to understanding what the workload is doing. Where can the visualization of the query plan be found?
+
+**选项：**
+A. In the Query Profiler under the Stages tab.
+B. In the Query Profiler under Query Source.
+C. In the Spark UI under the SQL/DataFrame tab. ✅
+D. In the Spark UI under the Jobs tab.
+
+**我的答案：** A | **正确答案：** C
+
+**解析：**
+- 你选 A 错因：While the Databricks SQL "Query Profile" exists, the specific location for the visual DAG of a Spark DataFrame operation is the Spark UI. "Stages" lists tasks, not the logical plan.
+- 正确答案 C：The Spark UI is the standard monitoring interface. The SQL/DataFrame tab is specifically designed to show the DAG (Directed Acyclic Graph) of the query plan. It visualizes the operators (Scan, Filter, HashAggregate, Exchange) as blue boxes connected by lines, allowing the engineer to see the structure of the execution and identifying bottlenecks like missing broadcasts.
+- 核心原理：Execution Plan Analysis. Visualizing how logical code translates to physical cluster operations. Application: The SQL Tab provides the "X-Ray" view. If a query is slow, the engineer looks here to see if a "Broadcast Join" is missing or if a "Scan" is reading too much data.Documentation: Spark UI - SQL Tab
+
+**速记：** Query Plan DAG 在 Spark UI → SQL/DataFrame tab，不在 Query Profiler
+
+**知识点：** `Spark UI导航` `Monitoring and Alerting`
+
+---
+
+### Quiz001-Q43 ❌ — Lakehouse Federation
+
+**Topic:** Data Sharing and Federation
+
+**原题：**
+A data company uses Databricks Unity Catalog and has multiple enterprise data sources, including PostgreSQL, Snowflake, and SQL Server. The central data platform team wants to configure Lakehouse Federation so analysts can query external tables directly in Databricks using Databricks SQL, without duplicating data. Which steps are necessary to configure Lakehouse Federation in a secure and governed manner?
+
+**选项：**
+A. spark.readStream.format("cloudFiles") \     .option("cloudFiles.format", "parquet") \     .load("s3://external-bucket/data") \     .writeStream.toTable("delta_table")
+B. CREATE STORAGE CREDENTIAL my_cred ...;CREATE EXTERNAL LOCATION my_loc     URL 's3://my-bucket/postgres-data'     WITH CREDENTIAL my_cred;
+C. -- 1. Create the ConnectionCREATE CONNECTION my_snowflake_conn     TYPE SNOWFLAKE     OPTIONS (      host '...',       user '...',       password '...'    );-- 2. Create the Foreign CatalogCREATE FOREIGN CATALOG snowflake_catalog     USING CONNECTION my_snowflake_conn     OPTIONS (database 'SALES_DB');-- 3. Grant AccessGRANT SELECT ON CATALOG snowflake_catalog TO `analysts`; ✅
+D. Use Partner Connect to create linked datasets, and apply table ACLs at the source system to govern access through Databricks.
+
+**我的答案：** D | **正确答案：** C
+
+**解析：**
+- 你选 D 错因：Partner Connect: This is a UI wizard to help start configurations, but it is not the architectural step definition.Governance Failure: Applying ACLs "at the source system" defeats the purpose of Unity Catalog. Lakehouse Federation allows you to govern access within Databricks, even if the user doesn't have a direct user account on the source Snowflake/Postgres system.
+- 正确答案 C：Step 1 (Connection): The CREATE CONNECTION statement stores the JDBC details (Host, Port, User, Password) securely within Unity Catalog.Step 2 (Foreign Catalog): The CREATE FOREIGN CATALOG statement maps a remote database schema to a top-level Catalog in Databricks. This effectively "mounts" the remote database metadata without moving the data rows.Step 3 (Governance): Once mounted, the Foreign Catalog acts like a normal Unity Catalog object. You can use standard GRANT SELECT statements to control who can query it, fulfilling the "secure and governed" requirement.
+- 核心原理：Data Virtualization (Federation). Traditionally, to analyze data from Postgres, you had to ETL (Extract-Transform-Load) it into your Data Warehouse. Federation allows the Query Engine (Databricks SQL) to send queries to the source (Postgres) and only retrieve the results, treating the remote source as a virtual local table.Application: In Option C, when an analyst runs SELECT * FROM snowflake_catalog.sales.orders, Databricks does not look at local storage. It translates that SQL into a Snowflake query, sends it via the Connection object, and streams the results back. This enables "Zero-Copy" architecture.Documentation: Lakehouse Federation Setup (Connections & Foreign Catalogs)
+
+**速记：** CREATE CONNECTION + CREATE FOREIGN CATALOG 是标准流程
+
+**知识点：** `Lakehouse Federation` `Data Sharing and Federation`
+
+---
+
+### Quiz001-Q59 ❌ — Spark性能优化
+
+**Topic:** Developing Code for Data Processing using Python and SQL
+
+**原题：**
+A data engineer needs to transform a large DataFrame (1 TB) containing a column temperature_f (Fahrenheit) into Celsius. They have a Python function def to_c(f): return (f-32)*5/9. The goal is to perform this transformation as efficiently as possible using PySpark.Which approach should the data engineer use?
+
+**选项：**
+A. Register the Python function as a UDF (spark.udf.register) and apply it to the column in SQL or DataFrame API.
+B. Use the rdd.map() transformation to apply the Python function to every row, then convert back to a DataFrame.
+C. Use native PySpark Column expressions: (F.col("temperature_f") - 32) * 5/9. ✅
+D. Use a Pandas UDF (@pandas_udf) with SCALAR type to apply the function.
+
+**我的答案：** D | **正确答案：** C
+
+**解析：**
+- 你选 D 错因：Better than A, worse than C: Pandas UDFs (Vectorized UDFs) improve performance by sending batches of data to Python (using Arrow) instead of single rows. While faster than option A, it still involves moving data out of the JVM to Python and back. For simple arithmetic, native expressions (Option C) are always superior.
+- 正确答案 C：Catalyst Optimizer: Using native column expressions (F.col, +, -, *) builds a logical plan that Spark understands fully. Spark compiles this into highly optimized Java bytecode (Whole Stage Codegen) that runs directly inside the JVM. It avoids Python overhead entirely and is usually 10x-100x faster than a Python UDF.
+- 核心原理：Catalyst Optimization & Serialization Overhead. Spark SQL/DataFrames run on the JVM. When you use "Native" functions (available in pyspark.sql.functions), Spark knows exactly what you are doing and optimizes it. When you use "Python Code" (UDFs), Spark treats it as a "Black Box"—it can't optimize it, and it has to pay the cost of moving data between Java and Python processes.Application: Always prioritize Native Functions > Pandas UDFs > Standard UDFs. For simple arithmetic (temperature conversion), native expressions are the gold standard for performance.Documentation: PySpark UDF Performance and Native Functions
+
+**速记：** Native Column Expr > Pandas UDF > Python UDF；简单运算永远用原生
+
+**知识点：** `Spark性能优化` `Developing Code for Data Processing using Python and SQL`
+
+---
+
+### Quiz 001 高频易错知识点汇总
+
+| 错误模式 | 题号 | 核心教训 |
+|---------|------|---------|
+| UC 权限 — 最小权限原则 | Q1, Q24 | CREATE TABLE + SELECT ON SCHEMA，不用 ALL PRIVILEGES |
+| UC 精确语法 | Q20, Q39 | ALTER TABLE SET TAGS / SET TBLPROPERTIES，不猜语法 |
+| DLT 对象选型 | Q3, Q11, Q36 | ST=追加，MV=状态/聚合，dropDuplicates+watermark 去重 |
+| APPLY CHANGES INTO | Q11 | SEQUENCE BY 解决时序冲突，不是 ignoreDuplicates |
+| Streaming foreachBatch | Q10 | MERGE INTO 只能通过 foreachBatch 在流中实现 |
+| TBLPROPERTIES vs spark.conf | Q39, Q15 | 持久化配置用 TBLPROPERTIES，spark.conf 仅当前会话 |
+| Compute Policy | Q19 | 替代 DBFS init scripts，管理 Spark conf + env vars + libs |
+| Lakehouse Federation | Q43 | CREATE CONNECTION → CREATE FOREIGN CATALOG |
+| Spark 性能层级 | Q59 | Native > Pandas UDF > Python UDF |
+| Spark UI 导航 | Q42 | Query Plan DAG → Spark UI SQL tab |
+| System Tables SQL | Q13 | DATE() 是 ANSI 标准，优先于 TO_DATE() |
+| VACUUM 机制 | Q5, Q15 | VACUUM 清理旧文件；deletedFileRetentionDuration 控制安全窗口 |
+
+---
+
+## CertSafari 模拟考 #2: 50/60 (83.3%) — 2026-04-25
+
+> 来源：CertSafari 002 Databricks Certified Data Engineer Professional | 60题
+
+### Q19 ❌ — MERGE INTO 性能优化 (Choose 2)
+
+**题目：** A data engineer is tuning a slow MERGE INTO operation on a large Delta table. The merge condition is `target.id = source.id`. The query profile indicates massive shuffling and scanning of the entire target table. Which two optimization techniques are most effective?
+
+**选项：**
+- A. Enable Low Shuffle Merge using `spark.databricks.delta.merge.enableLowShuffle = true`
+- B. Apply Z-Ordering on the `id` column of the target table
+- C. Use a Broadcast Hint on the target table side of the merge
+- D. Add a Source Predicate to the join condition (e.g., `target.date = source.date`) if `date` is a partition column
+- E. Increase the log retention duration
+
+**我的答案：** B, C | **正确答案：** B, D
+
+**解析：** B 选对了 — Z-Order on `id` 让 MERGE 的 scan 阶段可以用 Data Skipping (Min/Max pruning)，只读包含 source IDs 的文件。但 C 错了：Broadcast Hint 用于 target 表是荒谬的 — target 是大表（题目说 "large Delta table"），broadcast 大表会 OOM。D 才是正确的第二招：如果 `date` 是 partition column，加上 `target.date = source.date` 条件可以做 **Partition Pruning**，把搜索范围从全量历史缩小到一个分区。
+
+**决策规则：** MERGE 慢 → 两板斧：(1) Z-Order on join key = Data Skipping; (2) Partition predicate = Partition Pruning。Broadcast Hint 只用于小表。
+
+**知识点：** `MERGE优化` `Z-Order` `Partition Pruning` `Data Skipping`
+
+---
+
+### Q25 ❌ — System Tables: 查询历史
+
+**题目：** A Workspace Administrator needs to audit the query usage of SQL Warehouses to identify the most expensive queries run yesterday. They need to find the specific SQL text and the user who ran it. Which specific system table contains the query text and user identity?
+
+**选项：**
+- A. system.billing.usage
+- B. system.query.history
+- C. system.access.audit
+- D. system.access.audit
+
+**我的答案：** C | **正确答案：** B
+
+**解析：** `system.query.history` 是 SQL Warehouse 查询执行历史的集中存储，包含 `statement_text`、`executed_by`、`duration_ms`、`total_task_duration` 等字段 — 精准定位哪条 SQL、谁跑的、跑了多久。`system.access.audit` 记录的是访问审计事件（谁登录、谁访问了什么资源），不包含 SQL 文本和执行耗时。
+
+**决策规则：**
+- 查 SQL 文本 + 执行者 + 耗时 → `system.query.history`
+- 查访问/登录/权限变更事件 → `system.access.audit`
+- 查费用/DBU 消耗 → `system.billing.usage`
+
+**知识点：** `System Tables` `system.query.history` `Monitoring and Alerting`
+
+---
+
+### Q41 ❌ — Delta Surrogate Key (Identity Column)
+
+**题目：** A data engineer needs to add a Surrogate Key column `customer_sk` to a Delta table. This key must be unique, automatically generated and incrementing, managed entirely by the database engine. Which SQL syntax correctly defines this column?
+
+**选项：**
+- A. `customer_sk BIGINT GENERATED ALWAYS AS IDENTITY`
+- B. `customer_sk BIGINT AUTO_INCREMENT`
+- C. `customer_sk BIGINT DEFAULT uuid()`
+- D. TBLPROPERTIES `('delta.columnMapping.mode' = 'id')`
+
+**我的答案：** C | **正确答案：** A
+
+**解析：** Delta Lake 支持 ANSI SQL 标准的 `GENERATED ALWAYS AS IDENTITY` 语法。引擎内部维护 high-water mark，保证唯一性和严格递增（分布式环境下不一定连续）。`DEFAULT uuid()` 能生成唯一值，但 UUID 不递增、不是 BIGINT、且无序 — 题目明确要求 "incrementing"。`AUTO_INCREMENT` 是 MySQL 语法，Databricks 不支持。
+
+**决策规则：** Surrogate Key + unique + auto-incrementing + engine-managed → `GENERATED ALWAYS AS IDENTITY`（ANSI SQL 标准）。uuid() 只满足 unique，不满足 incrementing。
+
+**知识点：** `Identity Column` `GENERATED ALWAYS AS IDENTITY` `Surrogate Key` `Delta Lake DDL`
+
+---
+
+### Q42 ❌ — Structured Streaming 刷新静态表
+
+**题目：** A Structured Streaming pipeline joins a high-velocity stream with a static Delta table (updated daily). The stream does not pick up static table updates automatically, forcing restarts. How to fix?
+
+**选项：**
+- A. Configure the stream to read the static table as a streaming source with `readChangeFeed`, enabling a Stream-Stream join
+- B. No action needed; Spark automatically refreshes static tables
+- C. This is a limitation; must restart
+- D. Apply a UDF to lookup the value for every row
+
+**我的答案：** B | **正确答案：** A
+
+**解析：** Spark Structured Streaming 中，Stream-Static join 的静态表在 query 启动时被读入并缓存，**不会自动刷新**。这是已知行为，B 完全错误。解法是把静态表也当 streaming source 读（用 `readChangeFeed` 读取 CDF），转成 Stream-Stream join。这样当 campaign 表更新时，变更会流入 state store，后续 join 立即看到新数据，无需重启。
+
+**决策规则：** Stream-Static join 的 static 部分不会自动刷新。要实时看到更新 → 改为 Stream-Stream join（对 static 表开 CDF + readStream）。
+
+**知识点：** `Structured Streaming` `Stream-Stream Join` `Change Data Feed` `readChangeFeed`
+
+---
+
+### Q43 ❌ — Unity Catalog Lineage 缺失原因
+
+**题目：** A data steward sees lineage from Bronze to Silver but not Silver to Gold. The Silver-to-Gold job runs on Single User Access Mode with a Python UDF. What causes the missing lineage?
+
+**选项：**
+- A. UC only supports INSERT INTO SQL syntax for lineage
+- B. UC Lineage requires Shared Access Mode, not Single User
+- C. Python UDF breaks lineage capture
+- D. Lineage must be manually enabled
+
+**我的答案：** C | **正确答案：** B
+
+**解析：** 这是 Access Mode 的安全隔离层级问题。**Shared Access Mode** 运行时有严格的 security proxy，拦截所有 logical plan，能保证完整的 lineage capture（包括 column-level）。**Single User Access Mode** 给用户 raw access to driver/VM，历史上和架构上会绕过部分审计 hook，导致 lineage 捕获不完整。Python UDF 本身不是根因 — 在 Shared Mode 下 Python UDF 也能被 lineage 捕获。
+
+**决策规则：** UC Lineage 缺失 → 首先检查 Access Mode。Single User = lineage gap 的最常见原因。修复方法：改用 Shared Access Mode。
+
+**知识点：** `Unity Catalog Lineage` `Access Mode` `Shared vs Single User` `Security Proxy`
+
+---
+
+### Q44 ❌ — DABs 中引用 Secrets
+
+**题目：** A data engineer deploys a job via DABs that needs an API Key from Databricks Secrets (`scope=api_secrets, key=token`). How to reference it in `databricks.yml` as a Spark Environment Variable?
+
+**选项：**
+- A. `API_TOKEN: {{secrets/api_secrets/token}}`
+- B. `API_TOKEN: ${var.api_token}`
+- C. `API_TOKEN: dbutils.secrets.get('api_secrets', 'token')`
+- D. Not possible in YAML
+
+**我的答案：** C | **正确答案：** A
+
+**解析：** Databricks 支持专用的插值语法 `{{secrets/<scope>/<key>}}`，可以直接在 Job 定义的 Spark Configuration 和 Environment Variables 字段中使用。Cluster Manager 在 provisioning 集群时解析这个语法，从 vault 取值注入环境变量，**值在日志和 UI 中被 redact**。`dbutils.secrets.get()` 是 notebook 代码内的运行时调用，不能作为 YAML 配置值 — YAML 解析时 Python 代码不会被执行。
+
+**决策规则：** DABs/Job YAML 中引用 Secret → `{{secrets/scope/key}}`。`dbutils.secrets.get()` 只在 notebook 代码中使用。`${var.xxx}` 是 DABs 变量替换，不直接访问 secrets。
+
+**知识点：** `DABs` `Databricks Secrets` `{{secrets/scope/key}}` `spark_env_vars`
+
+---
+
+### Q45 ❌ — Structured Streaming Sessionization
+
+**题目：** A data engineer builds a Structured Streaming app to track user sessions (30-min inactivity timeout). Which code pattern correctly implements this custom stateful logic?
+
+**选项：**
+- A. `df.groupBy(...).applyInPandas(session_func, schema=...)`
+- B. `df.groupByKey(lambda x: x.user_id).flatMapGroupsWithState(session_func, OutputMode.Append(), GroupStateTimeout.EventTimeTimeout())`
+- C. `Window.partitionBy(user_id).orderBy(timestamp)` + `F.lag()`
+- D. Static join with session table
+
+**我的答案：** C | **正确答案：** B
+
+**解析：** Sessionization 需要**跨多事件的自定义有状态聚合**：追踪每个 user_id 的最后事件时间戳，30 分钟无活动则关闭 session。只有 `flatMapGroupsWithState` + `EventTimeTimeout` 能处理这种自定义状态逻辑：
+1. `groupByKey(user_id)` — 按用户分组
+2. `flatMapGroupsWithState` — 接收事件迭代器 + GroupState（存储上次时间戳），自定义逻辑判断 session 边界
+3. `EventTimeTimeout()` — 30 分钟无事件自动触发 state 过期，emit 关闭的 session
+
+Window function + lag 只能标记时间间隔，不能维护跨 micro-batch 的状态，也不能自动处理超时。Window function 是 batch 操作，在 streaming 中无法跨 batch 维护 session 状态。
+
+**决策规则：** Streaming + 自定义有状态逻辑 + 超时 → `flatMapGroupsWithState` + `GroupStateTimeout`。Window function 只适合 batch 或无状态的 streaming 转换。
+
+**知识点：** `flatMapGroupsWithState` `GroupStateTimeout` `Sessionization` `Stateful Streaming`
+
+---
+
+### Q50 ❌ — Higher-Order Functions: transform
+
+**题目：** A table has column `items` of type `ARRAY<STRUCT<id, price, qty>>`. For items with qty > 5, reduce price by 10%. Array structure must remain unchanged. Which query uses Higher-Order Functions correctly?
+
+**选项：**
+- A. `SELECT transform(items, i -> struct(i.id, CASE WHEN i.qty > 5 THEN i.price * 0.9 ELSE i.price END as price, i.qty)) ...`
+- B. `SELECT filter(items, i -> i.qty > 5) ...`
+- C. `SELECT explode(items) as i, CASE WHEN i.qty > 5 THEN i.price * 0.9 ELSE i.price END ...`
+- D. `SELECT reduce(items, 0, (acc, i) -> acc + i.price) ...`
+
+**我的答案：** C | **正确答案：** A
+
+**解析：** `transform` 是数组的 map 操作符 — 对每个元素应用 lambda，产生**同大小的新数组**。lambda 内用 `struct()` 重建 struct，CASE WHEN 实现条件价格修改，保持数组基数不变。`explode` 会把数组拆成多行，破坏了 "array structure must remain unchanged" 的要求。`filter` 只保留满足条件的元素（改变了数组大小）。`reduce` 聚合成单值。
+
+**决策规则：**
+- 逐元素变换，保持数组结构 → `transform`
+- 筛选元素 → `filter`
+- 拆成多行 → `explode`
+- 聚合成单值 → `reduce`/`aggregate`
+
+**知识点：** `Higher-Order Functions` `transform` `filter` `explode` `Array<Struct>`
+
+---
+
+### Q56 ❌ — Scalar Iterator Pandas UDF
+
+**题目：** A Pandas UDF for ML scoring on 100M rows. The model initialization takes 5 seconds per batch, making the job extremely slow. Which code pattern initializes the model only once per partition?
+
+**选项：**
+- A. `def predict(iterator: Iterator[pd.Series]) -> Iterator[pd.Series]: model = load_model(); for series in iterator: yield model.predict(series)`
+- B. `@pandas_udf(double, PandasUDFType.SCALAR) def predict(series: pd.Series) -> pd.Series: model = load_model(); return model.predict(series)`
+- C. Regular UDF with `spark.udf.register`
+- D. Broadcast variable + Pandas UDF
+
+**我的答案：** B | **正确答案：** A
+
+**解析：** 这是 **Scalar Iterator** 模式。A 的签名是 `Iterator[pd.Series] -> Iterator[pd.Series]`，Spark 给函数一个 batch 迭代器。函数在 Python worker 启动时调用一次 `load_model()`，然后遍历所有 batch (`for series in iterator`)，yield 结果。这样 5 秒的初始化成本被分摊到整个 partition 的百万行上。B 是普通 Scalar UDF — 每个 batch 都调用一次 `load_model()`，10万行/batch × N个batch = N次 5 秒初始化。
+
+**关键区分：**
+- `Iterator[pd.Series] -> Iterator[pd.Series]` = Scalar Iterator（初始化一次）
+- `pd.Series -> pd.Series` = Scalar（每 batch 初始化）
+
+**知识点：** `Pandas UDF` `Scalar Iterator` `Iterator pattern` `Model initialization optimization`
+
+---
+
+### Q60 ❌ — Unity Catalog 独有功能 (Choose 2)
+
+**题目：** An enterprise migrates from legacy Hive Metastore to Unity Catalog. Which two architectural features are exclusive to UC and NOT available in the legacy model?
+
+**选项：**
+- A. Centralized Access Control: permissions defined once apply across multiple workspaces
+- B. Data Lineage: automated table-level and column-level lineage capture
+- C. ACID Transactions: Delta Lake support
+- D. Notebook Versioning: Git integration
+- E. Cluster Policies: restrict cluster configurations
+
+**我的答案：** B, E | **正确答案：** A, B
+
+**解析：** B 选对了。E 错了 — Cluster Policies 在 legacy workspace model 中就已存在，不是 UC 独有功能。A 才是 UC 的核心架构优势：legacy 模型中 Hive Metastore 嵌入在每个 workspace 内，3 个 workspace = 3 套独立权限，用户离职要在 3 个地方分别撤权。UC 把 Metastore 提升到 Account/Region 级别，权限定义一次、跨所有 workspace 生效。
+
+**排除法：**
+- C (ACID) = Delta Lake 提供，和 UC 无关
+- D (Notebook Versioning) = Repos/Git integration 提供，和 UC 无关
+- E (Cluster Policies) = workspace-level 功能，UC 之前就有
+
+**知识点：** `Unity Catalog` `Centralized Access Control` `Cross-workspace Governance` `Automated Lineage`
+
+---
+
+### CertSafari #2 错题分类分析
+
+| 分类 | 题号 | 数量 |
+|------|------|------|
+| Structured Streaming 高级模式 | Q42, Q45 | 2 |
+| Unity Catalog (Lineage / Governance) | Q43, Q60 | 2 |
+| Higher-Order Functions / SQL 语法 | Q41, Q50 | 2 |
+| Pandas UDF 模式 | Q56 | 1 |
+| DABs / Secrets 配置 | Q44 | 1 |
+| MERGE 优化 | Q19 | 1 |
+| System Tables | Q25 | 1 |
+
+### 关键发现
+
+**1. Structured Streaming 有状态操作是盲区 (Q42, Q45)**
+两题都涉及 Streaming 的高级模式：Stream-Stream join (CDF) 和 flatMapGroupsWithState (sessionization)。你倾向选"简单"方案（auto-refresh / window function），但 streaming 的正确答案往往是更重量级的专用 API。
+
+**考试规则：**
+- Static 表不自动刷新 → readChangeFeed + Stream-Stream join
+- 自定义有状态逻辑 + 超时 → flatMapGroupsWithState + GroupStateTimeout
+- Window function 在 streaming 中不能维护跨 batch 状态
+
+**2. Unity Catalog 功能边界不清 (Q43, Q60)**
+Q43：把 Python UDF 当成 lineage 断裂原因，实际是 Access Mode 问题（Shared vs Single User）。
+Q60：把 Cluster Policies 当成 UC 独有，实际它是 workspace-level 功能。
+核心问题：没有清楚区分"UC 独有"和"Databricks 平台通用"。
+
+**UC 独有功能清单：**
+- Centralized cross-workspace access control
+- Automated table/column-level lineage
+- Data sharing (Delta Sharing)
+- Lakehouse Federation
+
+**3. 语法混淆：runtime API vs 声明式配置 (Q41, Q44)**
+Q41：`uuid()` vs `GENERATED ALWAYS AS IDENTITY` — uuid 不递增。
+Q44：`dbutils.secrets.get()` 是 runtime 调用，不能放 YAML 配置 — `{{secrets/scope/key}}` 才是声明式引用。
+
+**4. Higher-Order Functions 选型 (Q50)**
+explode 改变表的 grain（一行变多行），transform 保持 grain。题目要求 "array structure must remain unchanged" → transform。
+
+---
+
+### 模拟考进度对比
+
+| 指标 | SkillCertPro #1 | SkillCertPro #2 | CertSafari #2 | Udemy #3 |
+|------|-----------------|-----------------|---------------|----------|
+| 总分 | 40/60 (66.7%) | 54/60 (90%) | 50/60 (83.3%) | 53/60 (88.3%) |
+| 错题数 | 20 | 6 | 10 | 7 |
+| Streaming 错误 | 3 | 0 | 2 | 1 |
+| UC/Governance 错误 | 4 | 0 | 2 | 2 |
+| SQL/函数语法 | 2 | 0 | 2 | 1 |
+| DABs/配置 | 0 | 0 | 1 | 0 |
+| 数据建模 | 0 | 2 | 0 | 1 |
+| Cost/Performance | 0 | 0 | 0 | 2 |
+| PySpark API | 0 | 0 | 0 | 1 |
+
+---
+
+
+## Udemy 模拟考 #3: 53/60 (88.3%) — 2026-04-26
+
+---
+
+### Q12 ❌ — Stateful Streaming 扩容不生效（shuffle partitions 绑定 checkpoint）
+
+**原题：**
+A data engineer is running a stateful Structured Streaming job that performs a `groupBy(window(...))` aggregation. The job has been running for months. Recently, the engineer increased the cluster size from 10 workers to 20 workers to handle increased load. However, monitoring shows that the new 10 workers are completely idle (0% CPU), while the original 10 workers are still maximizing their CPU usage. The streaming query is stuck processing the same number of partitions as before.
+
+What is the root cause of this lack of parallelism, and how can the engineer resolve it?
+
+**选项：**
+A. Cause: state stores (RocksDB) 绑定到特定的 shuffle partitions，加节点不会增加 partition 数。Resolution: 停止流，调高 `spark.sql.shuffle.partitions`，用**新的 checkpoint location** 重启。 ✅
+B. Cause: 新节点缺少 IAM role / Service Principal 权限，无法参与计算。Resolution: 更新 Instance Profile 或 UC 权限。
+C. Cause: Dynamic Allocation 未启用/配置错误。Resolution: 启用 `spark.dynamicAllocation.enabled = true`。
+D. Cause: Dynamic Allocation 被禁用。Resolution: 启用它。
+
+**我的答案：** B | **正确答案：** A
+
+**解析：**
+关键线索：新 worker "completely idle (0% CPU)" 但旧 worker CPU 拉满 —— 这不是权限问题（权限错误会直接报 AccessDeniedException 或让 job crash）。
+
+核心机制：
+- Stateful streaming 的并行度由 `spark.sql.shuffle.partitions` 决定（默认 200）
+- State store (RocksDB) 的数据按 `hash(key) % partitions` 物理分片存储
+- **Checkpoint 锁定了 partition 数量**：不能在已有 checkpoint 上改 partition 数（state 文件的 hash 映射会错位/corrupt）
+- 所以加节点 ≠ 加并行度，多余的 core 分不到任何 partition，自然空闲
+
+**解决方案：**
+1. 停止流
+2. 调高 `spark.sql.shuffle.partitions`（匹配新的 core 数）
+3. **必须用新的 checkpoint location 重启**（丢弃旧 state）
+4. 经验：初始化流时就 over-provision shuffle.partitions，为未来扩容留空间
+
+**知识点：** `Structured Streaming` `State Store` `RocksDB` `spark.sql.shuffle.partitions` `Checkpoint`
+
+---
+
+### Q19 ❌ — Broadcast Join 超时（broadcastTimeout vs autoBroadcastJoinThreshold）
+
+**原题：**
+A data engineer optimizes a join between a large table (10 TB) and a smaller table (200 MB). The engineer explicitly forces a Broadcast Join using `.join(broadcast(small_df))`. However, the job fails with a `TimeoutException: Futures timed out after [300 seconds]`. The logs indicate that the driver successfully collected the small table, but timed out while trying to broadcast it to the executors.
+
+What is the most appropriate configuration change to resolve this specific error?
+
+**选项：**
+A. Increase `spark.sql.broadcastTimeout` to a value larger than 300 seconds (e.g., 600). ✅
+B. Increase `spark.sql.autoBroadcastJoinThreshold` to 500MB.
+C. Switch to a Sort Merge Join by removing the `broadcast()` hint.
+D. Increase the Driver memory `spark.driver.memory`.
+
+**我的答案：** B | **正确答案：** A
+
+**解析：**
+两个参数的区别必须搞清楚：
+- `spark.sql.autoBroadcastJoinThreshold`：控制 Spark **自动** 决定是否 broadcast 的大小阈值。**当你已经用了 `broadcast()` hint 强制 broadcast 时，这个参数完全无关**
+- `spark.sql.broadcastTimeout`：控制 broadcast 操作的超时时间（默认 300s）。报错 "Futures timed out after 300 seconds" 直接对应这个参数
+
+题目说 driver 已经成功 collect 了 small table，只是在分发到 executor 时超时（网络慢/集群大/TorrentBroadcast 传输慢）。解决方案就是延长超时。
+
+**易错点：** 看到 "200MB table" 就联想到 threshold，但题目明确说用了 `broadcast()` hint，threshold 已经不在决策路径中。
+
+**知识点：** `spark.sql.broadcastTimeout` `spark.sql.autoBroadcastJoinThreshold` `Broadcast Join`
+
+---
+
+### Q20 ❌ — UC Tags 删除语法（UNSET TAGS vs DROP TAGS）
+
+**原题：**
+A data engineer is cleaning up metadata in Unity Catalog. A specific table `finance.gold.revenue_reports` has several stale tags (`status = deprecated`, `owner = bob`) that need to be removed programmatically.
+
+Which SQL syntax correctly removes these specific tags from the table?
+
+**选项：**
+A. `ALTER TABLE finance.gold.revenue_reports DROP TAGS ('status', 'owner')`
+B. `ALTER TABLE finance.gold.revenue_reports UNSET TAGS ('status', 'owner')` ✅
+C. `REMOVE TAGS ('status', 'owner') FROM finance.gold.revenue_reports`
+D. `UPDATE finance.gold.revenue_reports SET TAGS ('status' = NULL, 'owner' = NULL)`
+
+**我的答案：** A | **正确答案：** B
+
+**解析：**
+Databricks SQL 中 tag 管理的关键字对：
+- **设置/更新 tag**：`ALTER TABLE ... SET TAGS ('key' = 'value')`
+- **删除 tag**：`ALTER TABLE ... UNSET TAGS ('key1', 'key2')`
+
+`DROP` 用于删除对象（TABLE, SCHEMA, COLUMN），不用于删除 tag。这和 `TBLPROPERTIES` 的模式一致：
+- `ALTER TABLE ... SET TBLPROPERTIES`
+- `ALTER TABLE ... UNSET TBLPROPERTIES`
+
+**记忆：** SET ↔ UNSET 配对用于 properties/tags；DROP 用于删除对象。
+
+**知识点：** `ALTER TABLE SET/UNSET TAGS` `Unity Catalog metadata`
+
+---
+
+### Q29 ❌ — UC 权限委托（MANAGE 的隐含权限）
+
+**原题：**
+Central IT 要把 marketing catalog 的管理权委托给 Marketing Data Team。要求：
+1. 能在 catalog 中创建新 Schema
+2. 能管理 catalog 内所有对象的权限
+3. **不能** DROP catalog 或更改其 ownership
+
+**选项：**
+A. `GRANT USE CATALOG + GRANT MANAGE ON CATALOG marketing`
+B. `GRANT USE CATALOG + GRANT CREATE SCHEMA ON CATALOG marketing` ✅
+C. `GRANT USE CATALOG ON CATALOG marketing`（只有 USE，不够）
+D. `GRANT ALL PRIVILEGES ON CATALOG marketing`（权限过大）
+
+**我的答案：** A | **正确答案：** B
+
+**解析：**
+这题的关键陷阱：**MANAGE on CATALOG 权限过大**。
+
+`MANAGE` 在 catalog 级别允许：
+- 更改 catalog owner
+- 授予/撤销 catalog 上的权限
+- **DROP catalog**
+
+这直接违反需求 #3。
+
+正确模式是 **USE CATALOG + CREATE SCHEMA**：
+- `CREATE SCHEMA` 让 marketing 团队能建新 schema
+- 创建 schema 时创建者自动成为 schema owner
+- Schema owner 可以管理 schema 内所有对象的权限（满足需求 #2）
+- 对于已有 schema，Central IT 可以单独转移 schema ownership 给 marketing_admin_group
+
+**核心原则：** 委托 "内容管理" 而非 "容器管理"。MANAGE on catalog = 容器管理权，CREATE SCHEMA = 内容管理权。
+
+**知识点：** `Unity Catalog MANAGE` `CREATE SCHEMA` `权限委托模式` `Ownership inheritance`
+
+---
+
+### Q34 ❌ — Delta Lake FK/PK 约束不强制执行
+
+**原题：**
+数据架构师在 Unity Catalog 中创建了 FK 约束：
+```sql
+ALTER TABLE sales_fact ADD CONSTRAINT date_fk
+FOREIGN KEY (date_key) REFERENCES date_dim (date_key);
+```
+然后 pipeline 插入了一个 `date_key = '2099-01-01'`（在 date_dim 中不存在）的记录。运行时行为是什么？
+
+**选项：**
+A. 插入失败，抛出 ConstraintViolationException
+B. 插入成功。FK 约束仅为 "Informational Only"，运行时不强制执行。 ✅
+C. 插入被隔离，违规行重定向到 exception table。
+D. 插入成功但有 warning，后续 JOIN 会失败。
+
+**我的答案：** A | **正确答案：** B
+
+**解析：**
+Databricks/Delta Lake 中 PK 和 FK 约束是 **Informational Constraints**（声明式，不强制执行）。
+
+原因：在分布式存储系统中强制引用完整性需要对每次写入扫描整个 referenced table，代价过高。
+
+这些约束的实际用途：
+1. **查询优化器**利用 PK/FK 信息生成更优执行计划（如消除不必要的 join）
+2. **BI 工具**（Tableau, Power BI）读取这些元数据自动构建 schema model
+3. **文档化**数据模型关系
+
+**数据质量保证的责任在 ETL pipeline**：用 DLT expectations、MERGE 逻辑、自定义 assertion 来验证数据完整性。
+
+**注意：** `NOT NULL` 和 `CHECK` 约束**是**被强制执行的。只有 PK 和 FK 是 informational only。
+
+**知识点：** `Informational Constraints` `PK/FK` `Delta Lake` `NOT NULL/CHECK enforced`
+
+---
+
+### Q44 ❌ — PySpark Struct 嵌套字段提取（dot notation）
+
+**原题：**
+DataFrame `events_df` 有嵌套列 `payload`，schema 为 `Struct<user: Struct<id: integer, email: string>, timestamp: long>`。要提取 `email` 字段为新的顶级列 `user_email`。
+
+**选项：**
+A. `events_df.withColumn("user_email", F.col("payload.user.email"))` ✅
+B. `events_df.select(F.struct("payload").getField("user").getField("email"))`
+C. `events_df.withColumn("user_email", F.explode("payload.user.email"))`
+D. `events_df.filter(F.col("payload.user.email").isNotNull()).alias("user_email")`
+
+**我的答案：** D | **正确答案：** A
+
+**解析：**
+这题不应该错。
+
+- **A (正确)**：`F.col("payload.user.email")` — dot notation 直接导航 Struct 层级，`withColumn` 添加为新列。最简洁、最标准。
+- **B**：`F.struct("payload")` 是创建新 struct，不是引用已有列。`getField` 语法也不对。
+- **C**：`explode` 用于展开 Array/Map，不是 Struct。
+- **D (我选的)**：`filter` 是过滤行，不是创建列。`.alias()` 用于重命名列/DataFrame，放在 filter 结果上不会创建新列。
+
+**记忆：**
+- Struct 导航：`col("a.b.c")` dot notation
+- Array 展开：`explode()` — 一行变多行
+- Array 不展开变换：`transform()` — 保持 grain
+- Struct 全展开：`select("col.*")`
+
+**知识点：** `PySpark Struct` `dot notation` `withColumn` `explode vs transform`
+
+---
+
+### Q47 ❌ — Spot Instance 配置（Driver 必须 On-Demand）
+
+**原题：**
+非关键的 petabyte 级历史数据回填任务，要求尽量降低成本。使用 Spot Instances 的最佳集群配置？
+
+**选项：**
+A. Driver: On-Demand, Workers: All Spot ✅
+B. Driver: Spot, Workers: All Spot
+C. Driver: Spot, Workers: 50% Spot, 50% On-Demand
+D. Driver: On-Demand, Workers: All On-Demand
+
+**我的答案：** B | **正确答案：** A
+
+**解析：**
+Spot Instance 的核心风险：云厂商可以随时回收。
+
+**Driver vs Worker 被回收的后果完全不同：**
+- **Driver 被回收 → 整个 job 立即失败**。Driver 持有 SparkContext、task scheduler、accumulator 等全局状态。丢失 = 全部重来。
+- **Worker 被回收 → 只丢失该节点的 task**。Spark 会在其他节点重试 failed task。Databricks 还有 decommissioning 机制尝试迁移 shuffle 数据。
+
+所以最佳策略：
+- **Driver 永远 On-Demand**（保护 job 的 "大脑"）
+- **Workers 用 Spot**（省钱，丢了可以重试）
+
+我选 B 的思路是 "非关键任务 → 全部 Spot 最省钱"，但忽略了 Driver 被回收后整个 petabyte 级 job 要从头重跑的代价，这比 Driver 一个节点省的钱大得多。
+
+**知识点：** `Spot Instances` `Driver On-Demand` `Worker Spot` `Decommissioning`
+
+---
+
+### Udemy #3 高频易错知识点汇总
+
+| 类别 | 知识点 | 错题 |
+|------|--------|------|
+| Streaming | Stateful streaming 并行度锁定在 checkpoint，扩容需新 checkpoint | Q12 |
+| Spark Config | `broadcastTimeout` ≠ `autoBroadcastJoinThreshold`；hint 覆盖 threshold | Q19 |
+| UC SQL 语法 | SET/UNSET TAGS 配对；DROP 用于删除对象 | Q20 |
+| UC 权限 | MANAGE on CATALOG 过大（可 DROP catalog）；CREATE SCHEMA + ownership 委托模式 | Q29 |
+| Delta Lake | PK/FK = Informational Only，运行时不强制；NOT NULL/CHECK 强制 | Q34 |
+| PySpark API | Struct 用 dot notation `col("a.b.c")`；explode 只用于 Array/Map | Q44 |
+| 集群配置 | Driver 永远 On-Demand；Spot 只给 Workers | Q47 |

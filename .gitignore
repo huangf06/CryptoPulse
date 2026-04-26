@@ -16,3 +16,7 @@ Thumbs.db
 
 # Databricks
 .databricks/
+
+# Temp/intermediate artifacts
+*.png
+_scrape_state.json

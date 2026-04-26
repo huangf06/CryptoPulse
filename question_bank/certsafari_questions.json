@@ -1,0 +1,1196 @@
+[
+  {
+    "id": 7059,
+    "domain": "Domain 7: Ensuring Data Security and Compliance",
+    "vendor": "databricks",
+    "options": [
+      "The administrator must first take ownership of the dashboard and then grant the `IS OWNER` permission to the new lead analyst.",
+      "The administrator can directly edit the dashboard's permissions and grant the `CAN MANAGE` permission to the new lead analyst, who can then take ownership.",
+      "The administrator must export the dashboard's JSON definition and re-import it as the new lead analyst.",
+      "The administrator must use the Databricks CLI to run a `databricks workspace transfer-owner` command."
+    ],
+    "question": "A senior data analyst left the company, and they were the owner of a critical production dashboard. A workspace administrator needs to transfer full control of this dashboard to a new lead analyst. The administrator does not want to change the 'Modified By' information or take ownership themselves. What is the most direct way to achieve this using workspace ACLs?",
+    "is_active": true,
+    "subdomain": "7.1 Applying Data Security mechanisms",
+    "created_at": "2025-10-17T09:06:18.429786+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. This action violates two key requirements. First, the administrator would be taking ownership, which is explicitly disallowed. Second, an administrator cannot directly grant the `IS OWNER` status; this is a state of ownership, not a grantable permission. The correct permission to grant for this purpose is `CAN MANAGE`."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. Workspace administrators have implicit `CAN MANAGE` permissions on all workspace objects. This allows them to modify an object's permissions without being its owner. By granting `CAN MANAGE` to the new lead analyst, the administrator empowers them to perform all management actions, including making themselves the new owner. This is the standard, direct procedure that meets all requirements."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. Exporting and re-importing the dashboard is an indirect workaround that creates a new dashboard object rather than transferring ownership of the existing one. This process would lose the original object's history and metadata, such as its unique ID and 'Modified By' information, and is not the proper way to manage asset ownership."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. The `databricks workspace transfer-owner` command is fictitious and does not exist in the Databricks CLI. Ownership and access control for workspace objects are managed through the Permissions API or the workspace UI by assigning specific permission levels like `CAN MANAGE`."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "B"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 13810,
+    "domain": "Domain 4: Data Sharing and Federation",
+    "vendor": "databricks",
+    "options": [
+      "REVOKE SELECT ON SHARE <share_name> FROM RECIPIENT <recipient_name>;",
+      "DROP RECIPIENT <recipient_name>;",
+      "ALTER RECIPIENT <recipient_name> ROTATE TOKEN;",
+      "ALTER SHARE <share_name> REMOVE RECIPIENT <recipient_name>;"
+    ],
+    "question": "A data engineering team manages several Delta Shares for external partners using the open sharing protocol (Databricks-to-Open). A partner reports that their access token has been compromised. The security team's protocol requires the immediate and definitive invalidation of the compromised credential from the Unity Catalog metastore, while ensuring other partners on the same share are unaffected. Which SQL command should the data engineer run to meet this requirement?",
+    "is_active": true,
+    "subdomain": "4.1 Data Sharing and Federation",
+    "created_at": "2026-02-02T18:14:05.905412+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. This command only revokes the recipient's ability to access the specified share. It does not invalidate the compromised token itself or remove the recipient object from the metastore. The security protocol requires definitive invalidation of the credential, and leaving the recipient object active, even with no privileges, fails to meet this standard."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. This is the most definitive action to invalidate a compromised token. Dropping the recipient object immediately deletes it and its associated token from the Unity Catalog metastore, rendering the compromised credential useless. This action is isolated to the specific recipient and does not affect the share itself or any other recipients who have access to it. The partner's access can be restored by creating a new recipient and providing them with a new activation link."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. While token rotation is a valid security concept, `ROTATE TOKEN` is not a standard clause for the `ALTER RECIPIENT` SQL command in Databricks. This syntax is invalid and will result in an error. The correct procedure for rotating a token via SQL is to drop and recreate the recipient."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. This command uses invalid SQL syntax for managing Delta Sharing. The standard way to remove a recipient's access to a share is with the `REVOKE SELECT ON SHARE ... FROM RECIPIENT ...` command. Furthermore, this action would only sever the link between the share and the recipient, not invalidate the compromised credential itself."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "B"
+    ],
+    "last_updated_at": "2026-02-02T18:14:05.854+00:00",
+    "revision_required": null,
+    "revision_of_question_id": 7019
+  },
+  {
+    "id": 6958,
+    "domain": "Domain 8: Data Governance",
+    "vendor": "databricks",
+    "options": [
+      "Manually navigating through the Catalog Explorer UI to find and apply the `gdpr_relevant` tag to each identified table.",
+      "Developing a Python script that connects to the metastore, queries the information schema for tables matching GDPR criteria (e.g., column names), and programmatically applies the tag using `ALTER TABLE ... SET TAGS`.",
+      "Instructing all data engineers to remember to add the `gdpr_relevant` tag in the `TBLPROPERTIES` clause of their `CREATE TABLE` statements.",
+      "Granting the `APPLY TAG` privilege to the entire data engineering team and relying on them to tag their tables during development."
+    ],
+    "question": "A financial services company must identify and tag all tables containing General Data Protection Regulation (GDPR) relevant data across hundreds of schemas in Unity Catalog. The governance team requires a solution that is both auditable and scalable, ensuring that as new tables with GDPR data are created, they are also tagged appropriately. Which approach best meets these requirements?",
+    "is_active": true,
+    "subdomain": "8.1 Data Governance",
+    "created_at": "2025-10-17T08:58:10.397411+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. Manually navigating through the Catalog Explorer UI is not a scalable or efficient solution for hundreds of schemas. This process is highly prone to human error, lacks auditability, and does not provide a sustainable method for tagging new tables as they are created."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. This approach is highly scalable, auditable, and automated. A script can programmatically query the `information_schema` across the entire metastore to identify tables based on defined criteria (like column names indicative of PII). It can then apply tags consistently using SQL commands. This script can be scheduled to run periodically, ensuring that both existing and newly created tables are automatically discovered and tagged, fulfilling the governance requirements."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. Relying on individual data engineers to remember to apply tags is an unreliable and error-prone strategy. It lacks central enforcement and auditability, cannot guarantee consistency, and does not address the primary requirement of tagging the hundreds of existing tables."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. While granting the `APPLY TAG` privilege is necessary, simply relying on manual compliance from the team is not a robust governance solution. This approach lacks the automation, scalability, and central auditing required to ensure all relevant tables are consistently and correctly tagged across a large-scale environment."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "B"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 28868,
+    "domain": "Domain 9: Debugging and Deploying",
+    "vendor": "databricks",
+    "options": [
+      "Define the base pipeline configuration under `resources: pipelines:` with common settings like the source code path.",
+      "In the `targets: dev:` block, redefine the pipeline under `resources: pipelines:` to set `development: true` and `continuous: false`.",
+      "In the `targets: prod:` block, redefine the pipeline under `resources: pipelines:` to set `continuous: true` and specify the production `cluster_policy_id`.",
+      "Define two completely separate pipeline resources, one named `pipeline_dev` and one named `pipeline_prod`, and use the `include` block to toggle them.",
+      "Set the `mode: continuous` flag at the top level of the `databricks.yml` file and use a variable to override it in the CI/CD pipeline.",
+      "Use the `run_as` block in the pipeline definition to dynamically switch between triggered and continuous modes based on the user."
+    ],
+    "question": "A data engineer is configuring a Databricks Asset Bundle that includes a Delta Live Tables (DLT) pipeline. The pipeline needs to be deployed to both a `dev` and a `prod` target. In the `dev` environment, the pipeline should run in triggered mode and use a small cluster. In the `prod` environment, it must run in continuous mode and use a larger cluster policy.\n\nWhich configurations in the `databricks.yml` file are valid for achieving this?",
+    "is_active": true,
+    "subdomain": "9.2 Deploying CI/CD",
+    "created_at": "2026-04-08T11:00:09.259741+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. Defining the base pipeline configuration under `resources: pipelines:` is the standard Databricks Asset Bundles pattern for sharing common settings across targets. This is where you place settings such as the pipeline name and source code path, then override environment-specific values in target-specific blocks."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. Target-specific overrides under `targets: dev:` can redefine the same pipeline resource and set environment-specific properties such as `development: true` and `continuous: false`. This ensures the dev deployment runs in triggered mode with dev-oriented settings."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. A `targets: prod:` block can override the same pipeline resource to enable `continuous: true` and apply a production `cluster_policy_id` or similar compute policy. This matches the requirement for a larger, more controlled production cluster configuration."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. Databricks Asset Bundles are designed to use target overrides for environment-specific behavior. Defining separate resources and attempting to toggle them via `include` is not the standard or recommended pattern for multi-environment deployment."
+      },
+      {
+        "option": "E",
+        "explanation": "Incorrect. `mode: continuous` is not a valid top-level configuration flag for a bundle. Pipeline modes are specific to the pipeline resource and should be configured within the resources or targets blocks, not globally via top-level flags."
+      },
+      {
+        "option": "F",
+        "explanation": "Incorrect. The `run_as` block is used to specify the security context (user or service principal) that will deploy or own the resources. It does not control functional pipeline settings like whether a DLT pipeline is continuous or triggered."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A",
+      "B",
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 6948,
+    "domain": "Domain 2: Data Ingestion & Acquisition",
+    "vendor": "databricks",
+    "options": [
+      "Create two separate streaming jobs, one for each source, that both write to the same Delta table, relying on Delta's ACID properties to manage concurrency.",
+      "Configure Auto Loader to read from a parent directory containing both the Parquet files and a sink for Event Hubs data, letting it handle both sources simultaneously.",
+      "Create a `readStream` DataFrame for the Parquet files using Auto Loader and another `readStream` DataFrame for the Event Hubs source, then combine them using `unionByName` before writing to the Delta sink.",
+      "Use a `foreachBatch` function that, within each micro-batch, conditionally reads from either the file path or the Event Hubs source."
+    ],
+    "question": "A data engineer needs to build a unified ingestion pipeline that consolidates customer data from two different streaming sources into a single 'bronze' Delta table. Source 1 is a continuous stream of Parquet files arriving in a cloud storage location. Source 2 is a continuous stream of JSON events from Azure Event Hubs. What is the most idiomatic Databricks approach to implement this using a single streaming query?",
+    "is_active": true,
+    "subdomain": "2.1 Data Ingestion & Acquisition",
+    "created_at": "2025-10-17T08:58:04.411119+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. This approach violates the core requirement of using a 'single streaming query'. While Delta Lake's ACID properties would safely handle concurrent writes from two separate jobs, this pattern introduces unnecessary management complexity and is not considered the idiomatic Databricks approach for creating a unified ingestion pipeline."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. This approach is not feasible because Auto Loader is designed specifically for ingesting files from cloud storage. It cannot directly read from or be configured to handle streaming message sources like Azure Event Hubs. The two source types are fundamentally different and require different readers."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. This is the standard and most idiomatic Structured Streaming pattern for this scenario. The engineer would define two separate streaming DataFrames using `spark.readStream`: one for the Parquet files using Auto Loader (`.format(\"cloudFiles\")`) and another for Event Hubs using its specific connector. These two streams are then combined into one using the `unionByName` transformation. The resulting unified DataFrame is then written to the Delta sink with a single `.writeStream` operation, fulfilling all requirements."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. This represents a misunderstanding of the `foreachBatch` function. `foreachBatch` is an output sink operation used to apply custom logic or batch operations to the output of a stream for each micro-batch. It is not designed for reading data or defining a streaming source. Attempting to read sources within it is inefficient, complex, and goes against the declarative nature of the Structured Streaming API."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 18639,
+    "domain": "Domain 2: Data Ingestion & Acquisition",
+    "vendor": "databricks",
+    "options": [
+      "`.trigger(availableNow=True)`",
+      "`.trigger(processingTime='10 minutes')`",
+      "`.option(\"maxFilesPerTrigger\", 1)`",
+      "`.outputMode(\"complete\")`"
+    ],
+    "question": "A data engineer has a Structured Streaming pipeline that runs continuously in production. For integration testing, the engineer needs to run the pipeline to process all currently available data from the source and then automatically stop, mimicking a batch job.\n\nWhich `writeStream` trigger configuration should be used specifically for the integration test run?",
+    "is_active": true,
+    "subdomain": "2.1 Data Ingestion & Acquisition",
+    "created_at": "2026-02-20T10:50:04.894535+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. According to Databricks documentation, the `availableNow=True` trigger is designed for incremental batch processing. It processes all data available in the source at the start of the query in one or more micro-batches and then automatically stops the stream, which perfectly fits the requirement for an integration test that mimics a batch job."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The `processingTime` trigger is used for continuous execution. It configures the stream to run a new micro-batch at a fixed interval (in this case, every 10 minutes). The stream will not stop automatically after processing the initially available data."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. This is an Auto Loader option that limits the number of new files processed in a single micro-batch. It is used for rate-limiting or controlling batch size but does not change the fundamental execution mode of the stream from continuous to batch-like."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. The `outputMode` setting determines what data is written to the sink, while the `trigger` setting controls when the stream executes. `complete` mode writes the entire updated result table after every trigger and is typically used with aggregations; it does not cause the stream to stop."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A"
+    ],
+    "last_updated_at": "2026-02-20T10:50:04.839+00:00",
+    "revision_required": null,
+    "revision_of_question_id": 6952
+  },
+  {
+    "id": 13843,
+    "domain": "Domain 3: Data Transformation, Cleansing, and Quality",
+    "vendor": "databricks",
+    "options": [
+      "The pipeline update fails with a constraint violation error.",
+      "The record is written to the `sales_silver` table, and a violation is logged in the pipeline's event log.",
+      "The record is not written to `sales_silver`, but it is instead routed to a separate quarantine table for later analysis.",
+      "The record is discarded and not written to the `sales_silver` table or any other table."
+    ],
+    "question": "A data engineer is building a Lakeflow Spark Declarative Pipeline (SDP) using Python. A silver table, `sales_silver`, is being created from a streaming bronze source, `sales_bronze`. A data quality rule is defined to ensure the `sale_amount` is always positive. A record arrives in the bronze stream with a `sale_amount` of -10. The pipeline is defined with the following code:\n\npython\nfrom pyspark import pipelines as dp\n\n@dp.table(\n  comment=\"Cleaned sales data with valid amounts.\"\n)\n@dp.expect_or_drop(\"positive_amount\", \"sale_amount > 0\")\ndef sales_silver():\n  return dp.read_stream(\"sales_bronze\").select(\"*\")\n\n\nWhat is the outcome of this Lakeflow pipeline update for this specific record?",
+    "is_active": true,
+    "subdomain": "3.1 Data Transformation, Cleansing, and Quality",
+    "created_at": "2026-02-03T19:33:54.375388+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. A pipeline failure is triggered by an `@dp.expect_or_fail` rule. The `@dp.expect_or_drop` rule is designed to handle invalid data gracefully by removing it, allowing the pipeline to continue processing valid records without failing."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. This is the behavior of a standard `@dp.expect` rule, which is used for monitoring data quality without altering the data flow. The `_or_drop` clause explicitly instructs the pipeline to remove any record that violates the expectation from the target dataset."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. Routing invalid records to a separate quarantine table is an advanced pattern in Lakeflow (implemented with multiple datasets and views), not a built-in action of a single decorator. The rule used here, @dp.expect_or_drop, drops the invalid record from the data flow; it does not write it to any table, including a quarantine table.\""
+      },
+      {
+        "option": "D",
+        "explanation": "Correct. The `@dp.expect_or_drop` rule instructs the Lakeflow pipeline to filter out any records that do not meet the specified condition (`sale_amount > 0`). The invalid record is permanently dropped from the data stream and is not included in the target `sales_silver` table or a quarantine table, though the violation is still recorded in the pipeline's event log metrics."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "D"
+    ],
+    "last_updated_at": "2026-02-03T19:33:54.331+00:00",
+    "revision_required": null,
+    "revision_of_question_id": 7008
+  },
+  {
+    "id": 28835,
+    "domain": "Domain 3: Data Transformation, Cleansing, and Quality",
+    "vendor": "databricks",
+    "options": [
+      "`expr(\"transform(filter(sensor_readings, x -> x.value > 100), x -> x.timestamp)\")`",
+      "`expr(\"collect_list(filter(explode(sensor_readings), x -> x.value > 100).timestamp)\")`",
+      "`expr(\"array_extract(array_filter(sensor_readings, 'value > 100'), 'timestamp')\")`",
+      "`expr(\"extract_timestamps(filter_array(sensor_readings, value > 100))\")`"
+    ],
+    "question": "A DataFrame contains a column `sensor_readings` which is an array of structs. Each struct has two fields: `timestamp` and `value`. A data engineer needs to filter this array to only keep readings where `value > 100`, and then extract an array of just the `timestamp` values. They want to achieve this without exploding the array to avoid performance penalties.\nWhich Spark SQL expression efficiently accomplishes this transformation?",
+    "is_active": true,
+    "subdomain": "3.1 Data Transformation, Cleansing, and Quality",
+    "created_at": "2026-04-08T09:53:23.970062+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. This expression uses Spark SQL higher-order functions. The `filter` function removes array elements that do not satisfy the predicate (value > 100), and the `transform` function maps the remaining structs to their `timestamp` field. This approach is efficient because it processes the array in-place without using `explode`, which would otherwise create multiple rows and require a costly aggregation."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. This option uses `explode`, which converts the array into multiple rows. This is explicitly what the question asks to avoid due to performance penalties. Furthermore, the syntax provided is not valid Spark SQL as functions like `filter` cannot be chained directly onto the output of `explode` in this manner within an `expr` string."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. While `filter` is a valid function, `array_extract` is not a standard Spark SQL higher-order function for projecting fields from an array of structs. Standard Spark SQL uses `transform` with a lambda expression for this task."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. `extract_timestamps` and `filter_array` are not built-in Spark SQL functions. The expression does not follow the correct syntax for higher-order functions using lambda expressions (e.g., `element -> logic`)."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7015,
+    "domain": "Domain 9: Debugging and Deploying",
+    "vendor": "databricks",
+    "options": [
+      "The cluster's driver logs (log4j output), as they contain the full Java/Python stack traces and detailed error messages from libraries like the JDBC driver.",
+      "The cluster's event log, which provides high-level information about cluster startup and shutdown events.",
+      "The `system.query.history` table, to analyze the SQL commands sent to the external database.",
+      "The 'Metrics' tab for the cluster, to check for CPU and memory spikes during the job run."
+    ],
+    "question": "A complex data processing job fails with a cryptic error message in the Databricks Jobs UI. The job involves reading from an external database using a JDBC driver and performs several transformations before writing to a Delta table. The data engineer suspects the issue is related to the database connection but needs a detailed stack trace to confirm. The Spark UI for the failed run is unavailable because the driver crashed.",
+    "is_active": true,
+    "subdomain": "9.1 Debugging and Troubleshooting",
+    "created_at": "2025-10-17T09:05:34.577847+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. When the Spark driver crashes, the Spark UI becomes unavailable. In this scenario, the driver logs are the primary source for root cause analysis. These logs capture the standard output (stdout) and standard error (stderr) streams from the driver process, which include the full Java/Python stack traces and detailed error messages from all libraries, including the JDBC driver. This is the most effective place to find the specific connection error that led to the crash."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The cluster's event log tracks high-level cluster lifecycle events, such as starting, terminating, or resizing. While it will record that the cluster terminated unexpectedly, it does not contain application-level error messages or the detailed stack traces needed to diagnose a code or connection issue."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. The `system.query.history` table is a feature of Unity Catalog that logs metadata about SQL queries executed on SQL warehouses or clusters. It is useful for auditing and analyzing query performance but does not capture low-level errors like JDBC connection failures or provide the stack traces associated with a driver crash."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. The 'Metrics' tab provides visibility into cluster resource utilization, such as CPU, memory, and network I/O. While a resource spike might indicate a performance problem that could lead to a crash, the metrics themselves do not provide the specific error message or stack trace needed to identify the root cause of the failure, especially for an issue like a database connection error."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 18641,
+    "domain": "Domain 7: Ensuring Data Security and Compliance",
+    "vendor": "databricks",
+    "options": [
+      "Anonymize the data by running `UPDATE` statements on all tables to set all columns related to the `user_id` to `NULL` or a generic value.",
+      "Implement a streaming pipeline that listens for deletion messages on a Kafka topic. For each message, the stream triggers `DELETE` commands across all tables.",
+      "Provide a Databricks notebook to the support team. They will manually enter a `user_id` and run the notebook, which contains `DELETE FROM table WHERE user_id = ...` for every table.",
+      "Create a centralized 'deletion_requests' Delta table. An automated, scheduled job reads new requests from this table, iterates through a list of target tables to execute parameterized `DELETE` operations, and logs the outcome of each deletion back to the request table."
+    ],
+    "question": "To comply with data privacy regulations like GDPR's 'Right to be Forgotten', a data engineering team must design a robust and auditable system for purging specific users' data from dozens of Delta tables upon request. The user identifier is `user_id`. Which of the following system designs is the most appropriate and scalable for this task?",
+    "is_active": true,
+    "subdomain": "7.2 Ensuring Compliance",
+    "created_at": "2026-02-20T13:02:57.617882+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. While pseudonymization is a valid GDPR strategy, the requirement is to 'purge' (delete) the data. This approach modifies the data but does not remove the records, failing to meet the specific purging requirement. Furthermore, if other columns could be used to re-identify the user, this may not achieve true anonymization."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. This approach is overly complex and inefficient for 'Right to be Forgotten' requests, which are typically ad-hoc and processed in batches, not as a continuous high-velocity stream. A scheduled batch job is a more cost-effective and manageable solution for this use case."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. This manual process is not robust, scalable, or easily auditable in a systematic way. It is highly prone to human error, lacks automation, and becomes unmanageable as the number of requests or tables grows."
+      },
+      {
+        "option": "D",
+        "explanation": "Correct. This design is a recommended best practice for handling auditable deletion requests at scale. Using a centralized control table provides a clear, auditable log of all requests and their status. An automated, scheduled job ensures the process is robust, repeatable, and not dependent on manual intervention.\n\nFor full compliance, this foundational approach must be augmented with a periodic `VACUUM` command to physically remove the underlying data files. If deletion vectors are enabled, the `REORG TABLE ... APPLY (PURGE)` command is also necessary to rewrite data files and physically commit the deletions."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "D"
+    ],
+    "last_updated_at": "2026-02-20T13:02:57.589+00:00",
+    "revision_required": null,
+    "revision_of_question_id": 6993
+  },
+  {
+    "id": 7228,
+    "domain": "Domain 5: Monitoring and Alerting",
+    "vendor": "databricks",
+    "options": [
+      "In the Spark UI's 'Executors' tab `stderr` logs, once the cluster is running again.",
+      "In the cluster's 'Spark UI' tab, under the 'Environment' section.",
+      "In the 'Driver Logs' section of the associated compute resource's UI page.",
+      "In the `system.access.query_history` table, which logs all statement executions."
+    ],
+    "question": "A Spark job fails immediately upon submission from a notebook, and the Spark UI is not available. The engineer suspects an error in the initial driver script, such as an incorrect import or a configuration issue. Where is the most appropriate place to find a detailed error traceback for this type of failure?",
+    "is_active": true,
+    "subdomain": "5.1 Monitoring",
+    "created_at": "2025-10-17T10:36:43.987534+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. The scenario explicitly states the Spark UI is not available because the job fails immediately. Therefore, the Executors tab cannot be accessed. Furthermore, executor logs contain output from worker tasks, not from the initial driver script that failed before executors were even launched."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The Spark UI is not available, making this option inaccessible. Even if it were, the 'Environment' section displays Spark properties, system variables, and classpath entries, not error logs or tracebacks from script execution."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. When a Spark job fails during initialization, before the SparkContext is fully established and the Spark UI is launched, the primary location for logs is the driver's standard output and standard error streams. These are captured by Databricks and made available in the 'Driver Logs' section on the cluster's detail page. This is the exact place to find tracebacks for issues like incorrect imports, syntax errors, or fatal configuration problems that prevent the application from starting."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. The `system.access.query_history` table is part of the system tables used for auditing and high-level monitoring. While it may record that a statement failed, it does not store the detailed Java/Python traceback required to debug a driver script initialization failure."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 28841,
+    "domain": "Domain 3: Data Transformation, Cleansing, and Quality",
+    "vendor": "databricks",
+    "options": [
+      "Use the `groupBy(\"store_id\").pivot(\"product_category\").sum(\"revenue\")` method.",
+      "Use a `SELECT` statement with conditional aggregations, such as `SUM(CASE WHEN product_category = 'CategoryA' THEN revenue ELSE 0 END)`.",
+      "Use the `unpivot` function on the `product_category` and `revenue` columns.",
+      "Use a window function partitioned by `store_id` and ordered by `product_category`.",
+      "Use `groupBy(\"store_id\").agg(collect_list(\"revenue\"))` and then explode the resulting list."
+    ],
+    "question": "A PySpark DataFrame `sales_data` has columns `store_id`, `product_category`, and `revenue`. A data engineer needs to transform this data so that each `store_id` has exactly one row, and there is a separate column for each distinct `product_category` containing the total revenue for that category at that store.\nWhich of the following approaches can achieve this transformation efficiently in PySpark?",
+    "is_active": true,
+    "subdomain": "3.1 Data Transformation, Cleansing, and Quality",
+    "created_at": "2026-04-08T09:53:24.384734+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. This is the most direct PySpark approach. The `pivot` function is specifically designed to transform unique values from a column into separate columns, and combined with `groupBy` and an aggregation like `sum`, it produces the required one row per store format."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. This represents a manual pivot using conditional aggregation. It is a standard and efficient SQL-based technique to transform rows into columns by summing revenues based on matching categories, resulting in one row per store with category-specific columns."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. The `unpivot` function (or `stack` in Spark) performs the inverse operation: it converts columns into rows. This would be used if the data was already pivoted and needed to be normalized."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. Window functions allow for calculations across a range of rows related to the current row, but they do not change the schema or collapse the result into one row per store. They are used for running totals or rankings, not pivoting."
+      },
+      {
+        "option": "E",
+        "explanation": "Incorrect. While `collect_list` aggregates values into an array, it does not create separate columns for categories. `explode` then turns that array back into multiple rows, which is the opposite of the requirement to have exactly one row per store."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A",
+      "B"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7181,
+    "domain": "Domain 1: Developing Code for Data Processing using Python and SQL",
+    "vendor": "databricks",
+    "options": [
+      "Use `GROUP BY` on the primary key and sequence key in the source stream query and take the first record.",
+      "This scenario is not supported and will always result in a pipeline failure.",
+      "The `APPLY CHANGES` API automatically handles this by randomly picking one of the duplicate records.",
+      "Add a `STORED AS SCD TYPE 1` clause to the target table definition, which enables automatic deduplication."
+    ],
+    "question": "You are using the `APPLY CHANGES` API to process a CDC data stream where, due to network conditions, duplicate events for the same primary key can occasionally arrive with the same sequence value (e.g., timestamp). The pipeline must deterministically process only one of these duplicates to avoid errors. How should the `APPLY CHANGES` query be structured to gracefully handle this scenario?",
+    "is_active": true,
+    "subdomain": "1.2 Building and Testing an ETL pipeline with Lakeflow Declarative Pipelines, SQL, and Apache Spark on the Databricks platform",
+    "created_at": "2025-10-17T09:47:10.080587+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. The `APPLY CHANGES` API requires that each combination of primary key and sequencing key be unique in the source data. When duplicates exist, the pipeline will fail. The standard pattern to resolve this is to pre-process the source stream to deduplicate it before it reaches the `APPLY CHANGES` statement. Using a `GROUP BY` clause on the primary and sequence keys, or more robustly, a window function like `ROW_NUMBER()` partitioned by these keys, allows you to deterministically select a single record and ensure the uniqueness constraint is met."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. This is a common scenario in CDC pipelines, and Delta Live Tables is designed to handle it. However, it does not happen automatically. The developer is required to implement explicit logic in the source query to handle the duplicates and provide a clean, unique stream of changes to the `APPLY CHANGES` API."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. Delta Live Tables pipelines are designed to be deterministic and auditable. Automatically and randomly picking a record would violate this principle, leading to non-reproducible pipeline runs. The developer must explicitly define the logic for which record to keep."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. The `STORED AS SCD TYPE 1` clause is applied to the target table and dictates how updates are handled (i.e., overwriting the entire existing row). It does not perform any deduplication on the incoming source stream. The error originates from ambiguity in the source data, which must be resolved before the data is applied to the target, regardless of its SCD type."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7048,
+    "domain": "Domain 4: Data Sharing and Federation",
+    "vendor": "databricks",
+    "options": [
+      "In the hub workspace, create one open-sharing recipient for each spoke workspace and manage tokens for each.",
+      "In the hub workspace, create a single, monolithic share for all curated data. Then, add each spoke workspace's Metastore ID as a recipient to that single share.",
+      "In the hub workspace, create three separate shares (e.g., `finance_share`, `marketing_share`, `sales_share`), add the relevant tables to each, and then assign the corresponding spoke workspace's Metastore ID as a recipient to its specific share.",
+      "Set up Lakehouse Federation from each spoke workspace back to the hub workspace to access the data."
+    ],
+    "question": "A large enterprise uses a \"hub and spoke\" model. A central \"data hub\" workspace produces curated datasets. Three \"spoke\" workspaces (Finance, Marketing, Sales) need access to different subsets of these datasets. The architect wants to manage access centrally with the principle of least privilege. What is the most scalable and secure Delta Sharing approach?",
+    "is_active": true,
+    "subdomain": "4.1 Data Sharing and Federation",
+    "created_at": "2025-10-17T09:05:34.577847+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. This describes open sharing, which relies on manually managed bearer tokens. This approach is less secure and scalable compared to Databricks-to-Databricks sharing. It introduces the operational overhead of distributing and rotating tokens and is not the recommended pattern for sharing between Unity Catalog-enabled workspaces."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. While this uses the correct Databricks-to-Databricks sharing mechanism, creating a single monolithic share for all data violates the principle of least privilege. It would grant the Finance, Marketing, and Sales workspaces access to all curated datasets, not just the subsets they are authorized to see."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. This approach perfectly aligns with all requirements. Creating separate, purpose-built shares in the central hub workspace allows for granular, centrally managed access control. Assigning each spoke's Metastore ID as a recipient uses the secure, tokenless Databricks-to-Databricks sharing protocol. This enforces the principle of least privilege by ensuring each spoke only receives the data it needs, making it both highly secure and scalable."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. Lakehouse Federation is designed for creating connections and querying data in external data sources (like PostgreSQL, MySQL, Redshift) from Databricks, not for sharing data between Databricks workspaces. Delta Sharing is the purpose-built feature for this use case. Furthermore, this approach would require configuration in each spoke, violating the central management requirement."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 28845,
+    "domain": "Domain 2: Data Ingestion & Acquisition",
+    "vendor": "databricks",
+    "options": [
+      "Set .option(\"mode\", \"DROPMALFORMED\") to bypass the errors and log them to the driver console.",
+      "Configure .option(\"cloudFiles.rescuedDataColumn\", \"_rescued_data\") to capture unparsed or type-mismatched data into a specific column.",
+      "Set .option(\"badRecordsPath\", \"<path>\") to route the entire malformed JSON file to a quarantine directory.",
+      "Use .option(\"cloudFiles.schemaEvolutionMode\", \"rescue\") to automatically create new columns for any malformed data."
+    ],
+    "question": "An Auto Loader pipeline ingests JSON logs from cloud storage into a Delta table. Occasionally, the upstream application produces poorly formatted JSON or introduces data type mismatches for existing fields. The data engineer must ensure that the pipeline does not fail, no data is dropped, and any unparseable or mismatched data is retained in the target table for later debugging.\n\nWhich Auto Loader configuration best satisfies these requirements?",
+    "is_active": true,
+    "subdomain": "2.1 Data Ingestion & Acquisition",
+    "created_at": "2026-04-08T10:44:57.213046+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. The DROPMALFORMED mode ignores corrupt records, which violates the requirement that no data should be dropped. Furthermore, it does not provide a mechanism to store the problematic data within the target Delta table for debugging."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. The cloudFiles.rescuedDataColumn option captures fields that do not match the expected schema or are malformed into a designated JSON column (defaulting to _rescued_data). This allows the ingestion process to proceed without failing and ensures all original data is preserved in the destination table for troubleshooting."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. While badRecordsPath captures corrupt records to an external storage location, the requirement specifically states that the data should be retained in the target table. Using this option would exclude the malformed data from the primary Delta table."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. Although 'rescue' is a valid schema evolution mode that utilizes a rescued data column, the description provided in this option is wrong. It claims the mode 'automatically creates new columns' for malformed data, which is actually the behavior of 'addNewColumns'. The 'rescue' mode stores mismatched data in a single dedicated column."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "B"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7033,
+    "domain": "Domain 4: Data Sharing and Federation",
+    "vendor": "databricks",
+    "options": [
+      "Set up a nightly batch job using the Databricks BigQuery connector to ingest the data into Delta tables.",
+      "Configure Lakehouse Federation to create a read-only foreign catalog that points to the BigQuery project.",
+      "Use Delta Sharing to share the tables from BigQuery to Databricks.",
+      "Create external tables in Unity Catalog pointing directly to the underlying storage of the BigQuery tables."
+    ],
+    "question": "A data architect is designing a data mesh architecture using Databricks. One domain team manages its data in a dedicated Google BigQuery project. The architect wants to make this data available to other teams as a catalog in Unity Catalog without creating data pipelines. They also need to ensure that when a data scientist queries this data, the query is executed by BigQuery's engine, not the Databricks cluster. Which configuration achieves this?",
+    "is_active": true,
+    "subdomain": "4.1 Data Sharing and Federation",
+    "created_at": "2025-10-17T09:05:34.577847+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. This approach directly violates both requirements. Setting up a batch job constitutes creating a data pipeline, and ingesting the data into Delta tables means the data is copied. Consequently, queries would be executed by the Databricks cluster against the Delta tables, not by BigQuery's engine, and would also introduce data latency."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. Lakehouse Federation is the Databricks feature designed for this exact scenario. It allows you to create a read-only foreign catalog in Unity Catalog that references an external data source like BigQuery. This makes the BigQuery data discoverable and queryable within Databricks without moving or copying it. Most importantly, queries against tables in this foreign catalog are pushed down and executed by the source system's engine, in this case, BigQuery, satisfying all the requirements."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. Delta Sharing is a protocol for sharing Delta Lake tables *from* a Databricks workspace *to* other consumers. It does not enable Databricks to federate queries to an external system like BigQuery. The data flow and purpose are the opposite of what is required."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. This is not technically feasible. BigQuery uses a proprietary, managed storage system that is not directly accessible as files in a cloud object store. Unity Catalog external tables are designed to point to data in common formats (like Parquet, CSV, etc.) residing in cloud storage (GCS, S3, ADLS), not the internal managed storage of another data warehouse."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "B"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 28853,
+    "domain": "Domain 7: Ensuring Data Security and Compliance",
+    "vendor": "databricks",
+    "options": [
+      "Set `delta.deletedFileRetentionDuration = '14 days'` and run `VACUUM` daily.",
+      "Set `delta.deletedFileRetentionDuration = '30 days'` and run `VACUUM RETAIN 30 DAYS` daily.",
+      "Set `delta.logRetentionDuration = '14 days'` and run `OPTIMIZE` daily.",
+      "Run `DELETE` commands daily and rely on Databricks auto-compaction to physically remove the files."
+    ],
+    "question": "A regulatory policy dictates that all deleted PII must be physically removed from storage within 30 days of the logical delete. However, the data science team requires Time Travel capabilities for exactly 14 days for model reproducibility.\n\nHow should the data engineer configure the Delta table properties and maintenance jobs to satisfy both requirements?",
+    "is_active": true,
+    "subdomain": "7.2 Ensuring Compliance",
+    "created_at": "2026-04-08T10:59:33.289721+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. Setting `delta.deletedFileRetentionDuration = '14 days'` ensures that the files necessary for Time Travel are retained for the required 14-day window. Running `VACUUM` daily will then physically remove any files that have been logically deleted for more than 14 days. This satisfies the regulatory requirement to remove data within 30 days (since 14 is less than 30) while meeting the data science team's specific retention needs."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. While setting the retention to 30 days would satisfy the regulatory limit of removing data within 30 days, it ignores the requirement for Time Travel capabilities for exactly 14 days. Furthermore, the regulatory policy is a maximum limit (within 30 days), and the 14-day requirement is more specific for the business use case."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. `delta.logRetentionDuration` controls how long the history of the transaction log is kept, which impacts how far back you can see the table's history, but it does not control the physical deletion of data files. `OPTIMIZE` is used for file compaction and performance, not for purging deleted data."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. A `DELETE` command in Delta Lake is a logical operation that marks data as deleted in the transaction log. It does not physically remove the data files from storage. Auto-compaction is a performance feature that combines small files but does not handle the secure, physical deletion required for PII compliance."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 13862,
+    "domain": "Domain 5: Monitoring and Alerting",
+    "vendor": "databricks",
+    "options": [
+      "By looking for an error event that indicates a schema mismatch, which would appear just before the successful evolution.",
+      "By comparing the notebook path in the `flow_definition` event across different pipeline updates.",
+      "By querying for `user_event` events with a message indicating schema evolution has occurred.",
+      "By querying `flow_progress` events for the relevant flow, ordering by timestamp, and identifying the first event where the `details.flow_progress.schema` contains the new column."
+    ],
+    "question": "A source table for a Lakeflow Spark Declarative Pipelines pipeline has a new column added. The pipeline is configured with schema evolution enabled. An engineer needs to determine exactly which pipeline update first detected and applied this schema change. How can they find this information in the event log?",
+    "is_active": true,
+    "subdomain": "5.1 Monitoring",
+    "created_at": "2026-02-04T08:05:13.716883+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. With schema evolution enabled, additive changes (e.g. new columns) are handled without errors, so no schema-mismatch error event is logged."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. Comparing notebook path in flow_definition does not tell you when the schema changed; that information is in the schema (or schema_json) fields of flow_definition, not in the notebook path."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. user_action events are for user actions (create, start, cancel, etc.). Schema evolution is reflected in structural events like flow_definition, not in user_action."
+      },
+      {
+        "option": "D",
+        "explanation": "Correct. The pipeline event log is queryable. flow_definition events include details.schema and details.schema_json. Query flow_definition for the relevant flow, order by timestamp, and find the first event whose schema includes the new column to identify the update that first applied the evolution. flow_progress does not contain schema; it only has status, metrics, and data_quality."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "D"
+    ],
+    "last_updated_at": "2026-02-04T08:05:13.666+00:00",
+    "revision_required": null,
+    "revision_of_question_id": 7242
+  },
+  {
+    "id": 7025,
+    "domain": "Domain 9: Debugging and Deploying",
+    "vendor": "databricks",
+    "options": [
+      "The 'Environment' tab, by checking the `spark.shuffle.spill.compress` configuration.",
+      "The 'Executors' tab, by looking at the 'Peak Memory' usage for each executor.",
+      "The 'SQL / DataFrame' tab, by inspecting the logical plan for 'Exchange' operators.",
+      "The 'Stages' tab, by examining the aggregated metrics for 'Shuffle Spill (Memory)' and 'Shuffle Spill (Disk)'."
+    ],
+    "question": "A data engineer observes a job running slowly and notices high disk I/O on the worker nodes in the cluster metrics. They suspect that Spark is spilling data to disk during a shuffle-intensive operation like a `repartition()` or `join()`. Which part of the Spark UI provides explicit metrics to confirm the amount of memory and disk spillage?",
+    "is_active": true,
+    "subdomain": "9.1 Debugging and Troubleshooting",
+    "created_at": "2025-10-17T09:05:34.577847+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. The 'Environment' tab displays the static configuration properties of the Spark application, including settings related to shuffling and spilling like `spark.shuffle.spill.compress`. However, it does not provide any runtime metrics on whether spilling actually occurred or the amount of data spilled."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The 'Executors' tab provides metrics about resource usage per executor, such as 'Peak Memory'. While high memory usage can be a precursor to spilling, it is only an indirect indicator and does not provide the explicit metrics for shuffle spill to memory or disk."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. The 'SQL / DataFrame' tab is useful for analyzing the query's physical and logical plans. It helps identify shuffle-intensive operations, which are represented by 'Exchange' operators in the physical plan. This tells you *where* a shuffle is happening, but it does not provide quantitative metrics on the amount of data spilled during that shuffle."
+      },
+      {
+        "option": "D",
+        "explanation": "Correct. The 'Stages' tab provides detailed, aggregated metrics for all tasks within a specific stage. For stages involving a shuffle, this tab explicitly displays 'Shuffle Spill (Memory)' and 'Shuffle Spill (Disk)' metrics. These values directly quantify the total amount of data that was spilled, making this the definitive location to confirm and diagnose shuffle-related performance issues."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "D"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7030,
+    "domain": "Domain 4: Data Sharing and Federation",
+    "vendor": "databricks",
+    "options": [
+      "An init script that exports the credentials as environment variables.",
+      "A Databricks Secret stored in a secret scope.",
+      "An external location with a defined storage credential.",
+      "A Unity Catalog function that returns the credentials."
+    ],
+    "question": "When configuring a Lakehouse Federation connection to an external data source like PostgreSQL or SQL Server, what Databricks object must be created and referenced in the `CREATE CONNECTION` statement to securely store the required credentials?",
+    "is_active": true,
+    "subdomain": "4.1 Data Sharing and Federation",
+    "created_at": "2025-10-17T09:05:34.577847+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. Using an init script to export credentials as environment variables is an insecure practice. Init scripts are intended for cluster initialization, and storing secrets this way can expose them in cluster configurations or logs. It is not the recommended or integrated method for managing credentials for Lakehouse Federation."
+      },
+      {
+        "option": "B",
+        "explanation": "Correct. Databricks Secrets, stored within a secret scope, are the designated and secure method for managing sensitive credentials. The `CREATE CONNECTION` statement is designed to reference these secrets directly, ensuring that passwords and other sensitive information are never exposed in plain text within the code or metastore."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. An external location and its associated storage credential are used to manage access to external cloud object storage systems like S3, ADLS, or GCS. They are not used for storing credentials like usernames and passwords for relational database connections used in Lakehouse Federation."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. A Unity Catalog function is used for data transformation and processing, similar to a UDF (User-Defined Function). This is not a recognized or secure method for storing or retrieving credentials for establishing database connections."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "B"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7058,
+    "domain": "Domain 7: Ensuring Data Security and Compliance",
+    "vendor": "databricks",
+    "options": [
+      "`SELECT` on the model",
+      "`APPLY TAG` on the model",
+      "`EXECUTE` on the model",
+      "`READ_METADATA` on the model"
+    ],
+    "question": "An ML Engineer has registered a new model, `fraud_detector`, in the Unity Catalog Model Registry. They need to grant an application's service principal the ability to load the model and use it for scoring (inference) via a job. The service principal should not be able to modify the model version, transition its stage, or view its training details. What is the most precise and least-privileged permission to grant the service principal on the model?",
+    "is_active": true,
+    "subdomain": "7.1 Applying Data Security mechanisms",
+    "created_at": "2025-10-17T09:06:18.429786+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. The `SELECT` privilege is applicable to data objects such as tables and views, allowing a principal to read data. It is not a valid permission for registered models in Unity Catalog and does not grant the ability to perform inference."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The `APPLY TAG` privilege is a data governance permission that allows a principal to add and edit tags on an object. It is completely unrelated to loading or using a model for inference."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. The `EXECUTE` privilege is the most precise and least-privileged permission for this scenario. It specifically allows a principal to load a registered model and use it for inference (scoring) without granting any rights to modify the model, its versions, its stage, or view its detailed training metadata. This perfectly aligns with the principle of least privilege for an automated application or job."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. The `READ_METADATA` privilege allows a principal to view a model's metadata, which includes training details and version history. The requirements explicitly state the service principal should *not* be able to view these details, making this permission overly permissive for the specified task."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7101,
+    "domain": "Domain 10: Data Modelling",
+    "vendor": "databricks",
+    "options": [
+      "Switch from partitioning to Liquid Clustering on `view_date`.",
+      "Enable Change Data Feed (CDF) on the table to track deletions more easily.",
+      "Implement Z-ORDER indexing on the `user_id` column.",
+      "Denormalize the user's attributes into the viewing history table."
+    ],
+    "question": "A media company stores user viewing history in a Delta table. To comply with privacy regulations, they must delete specific user records upon request. The table is large and partitioned by `view_date`. When a deletion request for a `user_id` is received, the operation is taking too long because the user's data is spread across many partitions. To improve the performance of these DELETE operations, which design modification should be implemented?",
+    "is_active": true,
+    "subdomain": "10.1 Data Modelling",
+    "created_at": "2025-10-17T09:14:01.452053+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. Both partitioning and Liquid Clustering are data layout optimization techniques. Optimizing the layout based on `view_date` will not improve the performance of operations that filter on `user_id`. The data for a single user would still be scattered across files organized by date, requiring a full table scan."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. Change Data Feed (CDF) is a feature used to record row-level changes to a Delta table. It is useful for downstream consumers to process incremental changes but does not impact the performance of the DML operations (like DELETE) that generate those changes."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. The core performance issue is that the `DELETE` operation must scan numerous files across many partitions to find all records for a specific `user_id`. Implementing Z-ORDER indexing on the `user_id` column co-locates related data by grouping similar `user_id` values within the same set of files. This allows the query engine to use file statistics (min/max values for the `user_id` column) to dramatically improve data skipping, avoiding reads of files that do not contain the target `user_id`, thus speeding up the deletion."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. Denormalization is a data modeling technique aimed at improving read query performance by reducing the need for joins. It does not alter the physical data layout in a way that would improve the performance of deleting records based on a specific `user_id`."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7021,
+    "domain": "Domain 4: Data Sharing and Federation",
+    "vendor": "databricks",
+    "options": [
+      "Delta Sharing only supports sharing tables, not views.",
+      "The view must be materialized into a new table before it can be shared.",
+      "The view is a dynamic view that uses a function which cannot be securely evaluated for the recipient, as their identity context does not exist in a provider's account.",
+      "The base tables (`customers` and `sales`) referenced by the view have not been explicitly added to the same share."
+    ],
+    "question": "A data engineering team wants to share a view that joins customer data with sales data and applies row-level filtering. When they attempt to add the view to a share, they encounter an error. The view's definition is `CREATE VIEW regional_sales AS SELECT * FROM sales s JOIN customers c ON s.cust_id = c.id WHERE c.region = TBL_ACL_REGION()`. TBL_ACL_REGION is a custom SQL UDF that implements dynamic filtering. Why is this view not shareable?",
+    "is_active": true,
+    "subdomain": "4.1 Data Sharing and Federation",
+    "created_at": "2025-10-17T09:05:34.577847+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. Delta Sharing natively supports sharing both tables and views. The issue is with the content and definition of the view, not the object type itself."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. While materializing the view into a static table is a potential workaround, it is not a general requirement for sharing views. The root cause of the error is the dynamic nature of the view's implementation."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. This is the root cause of the issue. The view is considered dynamic because it uses the `TBL_ACL_REGION()` UDF, which presumably depends on the identity of the user executing the query (e.g., using `current_user()` or checking group membership). When a view is shared via Delta Sharing, the query is executed within the recipient's security context, but the function and data reside in the provider's account. The provider's system has no way to resolve or trust the recipient's identity, making it impossible to securely evaluate the function. This restriction prevents the sharing of views that rely on user-context-specific logic."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. When sharing a view, the underlying base tables do not need to be explicitly added to the share. Access to the necessary base table data is implicitly granted through the shared view. The error stems from the non-shareable function in the view's definition, not from missing dependencies in the share."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 7104,
+    "domain": "Domain 10: Data Modelling",
+    "vendor": "databricks",
+    "options": [
+      "Alter the table to be partitioned by `customer_segment` and `product_category`, and then run `OPTIMIZE`.",
+      "Create and maintain a Z-ORDER index on `customer_segment` and `product_category`.",
+      "Alter the table to use Liquid Clustering with `customer_segment` and `product_category` as the clustering keys.",
+      "Create a materialized view that aggregates the data by the new columns."
+    ],
+    "question": "A data team manages a large, multi-terabyte Delta table containing customer transaction data. The table was initially partitioned by `transaction_date`. Over time, query patterns have evolved, and now most queries filter on `customer_segment` and `product_category`. The distribution of data across these new columns is highly skewed, and the team wants to improve performance without the management overhead of a complex partitioning scheme. What is the most appropriate action?",
+    "is_active": true,
+    "subdomain": "10.1 Data Modelling",
+    "created_at": "2025-10-17T09:14:01.452053+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. Partitioning on columns with high skew is a well-known anti-pattern. It would lead to a mix of very large and very small partitions, causing data skew issues for queries and inefficient file listing. This directly contradicts the goal of improving performance and avoiding complex management overhead."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. While Z-Ordering improves data skipping for queries with multiple filter predicates, it is less effective on highly skewed data and requires manual maintenance by periodically running `OPTIMIZE ZORDER BY`. This introduces management overhead, which the team wants to avoid. While better than partitioning, it is not the most appropriate modern solution."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. Liquid Clustering is the most appropriate solution as it is specifically designed to handle skewed data and evolving query patterns with minimal management. It automatically and incrementally clusters data as it is written, removing the need for partitioning or manual `OPTIMIZE` commands like Z-Ordering. This directly addresses both the performance and low-overhead requirements."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. A materialized view is designed to accelerate aggregate queries, not general filter-based queries on a base table. This approach would not solve the underlying data layout problem for the ad-hoc queries described and would add the overhead of maintaining the view."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 6966,
+    "domain": "Domain 8: Data Governance",
+    "vendor": "databricks",
+    "options": [
+      "Only the metastore admin.",
+      "Any member of the `etl_developers` group.",
+      "The user who created the table, the owner of the `staging.uploads` schema, and the metastore admin.",
+      "Only the owner of the `staging.uploads` schema."
+    ],
+    "question": "An administrator executes the following statement: `GRANT CREATE TABLE ON SCHEMA staging.uploads TO `etl_developers`;`. A member of the `etl_developers` group successfully creates a table named `staging.uploads.new_customer_data`. According to the Unity Catalog security model, who, by default, has the authority to grant `SELECT` permission on this newly created table to other principals?",
+    "is_active": true,
+    "subdomain": "8.1 Data Governance",
+    "created_at": "2025-10-17T08:58:10.397411+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. While the metastore admin has broad administrative privileges and can grant permissions on any object, they are not the only principal with this authority by default. The object's owner and the parent schema's owner also have grant rights."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The `CREATE TABLE` privilege granted to the `etl_developers` group allows its members to create tables, but it does not confer grant privileges on all members for tables created by others within the group. Only the specific user who creates the table becomes its owner."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. According to the Unity Catalog security model, the principal that creates an object becomes its owner. The owner has all privileges on the object, including the ability to grant permissions to others. Additionally, the owner of the parent schema and the metastore admin also have the authority to manage and grant permissions on child objects within their scope."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. The owner of the `staging.uploads` schema does have the authority to grant permissions on the new table, but they are not the only one. The user who created the table (its owner) and the metastore admin also have this capability by default."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  },
+  {
+    "id": 13850,
+    "domain": "Domain 9: Debugging and Deploying",
+    "vendor": "databricks",
+    "options": [
+      "Open the Spark UI for the completed update and inspect the task metrics for the transformation.",
+      "Query the target Delta table for rows where `col_timestamp` is NULL.",
+      "Query the pipeline's event log, filter for `event_type = 'flow_progress'`, and inspect the `data_quality.expectations` array within the `details` column to find the `failed_records` count for the 'valid_timestamp' constraint.",
+      "Check the cluster driver logs for entries related to dropped records."
+    ],
+    "question": "A Lakeflow Spark Declarative Pipeline has been configured with an expectation: `@dp.expect_or_drop(\"valid_timestamp\", \"col_timestamp IS NOT NULL\")`. A pipeline update runs and completes successfully, but a data engineer suspects that some source records were dropped due to this rule. To confirm and quantify the impact, the engineer needs to find the exact number of records that violated this specific data quality rule.\n",
+    "is_active": true,
+    "subdomain": "9.1 Debugging and Troubleshooting",
+    "created_at": "2026-02-03T20:09:20.305125+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. The Spark UI provides metrics on job execution, task performance, and resource utilization. While useful for performance debugging, it does not offer detailed, queryable information about specific data quality expectation violations or the exact count of dropped records."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The @dp.expect_or_drop rule prevents records that fail the expectation from being written to the target table. Querying the target table for the invalid condition will not return any of the dropped records, since they were never written there."
+      },
+      {
+        "option": "C",
+        "explanation": "Correct. The pipeline event log is the authoritative source for execution and data quality metrics. For expectations with warn or drop actions, metrics are recorded. By querying flow_progress events, an engineer can inspect the details.data_quality.expectations structure to get the exact failed_records count for the named expectation 'valid_timestamp'. With a fail action, the pipeline would terminate without recording these metrics."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. While cluster driver logs are useful for debugging Spark-level errors or misconfigurations, they do not provide a structured, aggregate count of records failing a specific data quality rule. The pipeline event log is specifically designed for capturing these operational and quality metrics in a queryable format."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "C"
+    ],
+    "last_updated_at": "2026-02-03T20:09:20.269+00:00",
+    "revision_required": null,
+    "revision_of_question_id": 7046
+  },
+  {
+    "id": 13847,
+    "domain": "Domain 5: Monitoring and Alerting",
+    "vendor": "databricks",
+    "options": [
+      "In a `flow_progress` event for the first data flow.",
+      "In a `user_action` event created when the update was started.",
+      "In the `details` field of an `update_progress` event where the state is `FAILED`.",
+      "In the top-level `error` field of an event record, which contains a structured object with a detailed message and stack trace."
+    ],
+    "question": "A data engineer starts a Lakeflow pipeline update, but it fails immediately with a validation error, such as a syntax issue in a notebook. The engineer queries the event log to find the root cause. Where in the event log will the engineer find a structured object containing the detailed error message and stack trace?",
+    "is_active": true,
+    "subdomain": "5.1 Monitoring",
+    "created_at": "2026-02-03T19:54:52.215504+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Incorrect. The `flow_progress` event tracks the execution status of a specific data flow (e.g., STARTING, RUNNING, COMPLETED). A validation error occurs during the pipeline initialization phase, before any data flows begin to execute. Therefore, no `flow_progress` event would be generated for this type of failure."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The `user_action` event type logs actions initiated by a user, such as starting or creating the pipeline update. It confirms the user's request but does not capture system-generated errors like syntax or validation failures detected by the Lakeflow framework during initialization."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. While an `update_progress` event with a state of `FAILED` correctly indicates that the pipeline update has terminated unsuccessfully, its `details` field contains progress information, not the root cause of the error. The detailed error message and stack trace are found in the top-level `error` field of the event, not within the `details` object."
+      },
+      {
+        "option": "D",
+        "explanation": "Correct. When a failure like a validation error occurs, Lakeflow populates the top-level `error` field in the relevant event record (e.g., an `update_progress` event). This field contains a structured object with the complete error details, including the exception type, a descriptive message, and the full stack trace, providing the precise information needed for debugging."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "D"
+    ],
+    "last_updated_at": "2026-02-03T19:54:52.188+00:00",
+    "revision_required": null,
+    "revision_of_question_id": 7240
+  },
+  {
+    "id": 28864,
+    "domain": "Domain 8: Data Governance",
+    "vendor": "databricks",
+    "options": [
+      "`analytics.information_schema.columns`",
+      "`analytics.information_schema.tables`",
+      "`analytics.information_schema.column_tags`",
+      "`analytics.information_schema.table_metadata`"
+    ],
+    "question": "A data engineer is tasked with creating a centralized data dictionary dashboard. They need to extract the descriptions (comments) of all columns for tables within the `analytics` catalog's `customer_360` schema.\n\nWhich system view should the data engineer query to retrieve the column-level comments for the tables in this schema?",
+    "is_active": true,
+    "subdomain": "8.1 Data Governance",
+    "created_at": "2026-04-08T11:00:00.951082+00:00",
+    "certificate": "data-engineer-professional",
+    "is_archived": false,
+    "explanations": [
+      {
+        "option": "A",
+        "explanation": "Correct. The `information_schema.columns` view in Databricks Unity Catalog contains detailed metadata about columns within tables, including the `comment` field. Querying this view for the specific catalog and schema is the standard way to retrieve column-level descriptions for a data dictionary."
+      },
+      {
+        "option": "B",
+        "explanation": "Incorrect. The `information_schema.tables` view provides metadata at the table and view level, such as table names, types, and table-level comments, but it does not provide column-level details."
+      },
+      {
+        "option": "C",
+        "explanation": "Incorrect. The `information_schema.column_tags` view is used for managing and auditing metadata tags applied to columns for governance purposes (like PII classification). It does not contain the standard column comments/descriptions."
+      },
+      {
+        "option": "D",
+        "explanation": "Incorrect. `table_metadata` is not a standard view within the Databricks Unity Catalog `information_schema`. Metadata for tables and columns are separated into the `tables` and `columns` views respectively."
+      }
+    ],
+    "question_type": "multiple_choice",
+    "correct_answers": [
+      "A"
+    ],
+    "last_updated_at": null,
+    "revision_required": null,
+    "revision_of_question_id": null
+  }
+]
